@@ -1,11 +1,17 @@
 /* jshint moz:true */
+/* global Components, Services, SessionStore, APP_SHUTDOWN */
 
-const {classes: Cc, interfaces: Ci, utils: Cu} = Components;
+//const {classes: Cc, interfaces: Ci, utils: Cu} = Components; // stupid WebStorm inspector doesn't understand destructuring assignment
+const Cc = Components.classes;
+const Ci = Components.interfaces;
+const Cu = Components.utils;
+
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource:///modules/sessionstore/SessionStore.jsm");
 const ss = Cc["@mozilla.org/browser/sessionstore;1"].getService(Ci.nsISessionStore);
 //Cu.import("resource://gre/modules/AddonManager.jsm");
 
+//noinspection JSUnusedGlobalSymbols
 function startup(data, reason)
 {
 	console.log("Extension " + data.id + "(ver " + data.version + ") has been srarted up!");
@@ -20,6 +26,7 @@ function startup(data, reason)
 	windowListener.register();
 }
 
+//noinspection JSUnusedGlobalSymbols
 function shutdown(aData, aReason)
 {
 	if (aReason == APP_SHUTDOWN) return;
@@ -27,10 +34,12 @@ function shutdown(aData, aReason)
 	console.log("Addon has been shut down!");
 }
 
+//noinspection JSUnusedGlobalSymbols
 function install(aData, aReason) { }
+//noinspection JSUnusedGlobalSymbols
 function uninstall(aData, aReason) { }
 
-/*start - windowlistener*/
+//noinspection JSUnusedGlobalSymbols
 var windowListener = {
 	
 	onOpenWindow: function (aXULWindow) {
@@ -61,7 +70,7 @@ var windowListener = {
 					Services.prefs.setBoolPref("browser.sessionstore.debug", oldPref);
 					aDOMWindow.document.querySelector('#tt-label1').value = 'entry: after _internal.onLoad()';
 					windowListener.loadIntoWindowPart2(aDOMWindow); // Part2
-				},
+				}
 			});
 			
 		}, false);
@@ -135,13 +144,16 @@ var windowListener = {
 		//////////////////// SPLITTER ///////////////////////////////////////////////////////////////////////
 		let splitter = aDOMWindow.document.createElement('splitter');
 		propsToSet = {
-			id: 'tt-splitter',
+			id: 'tt-splitter'
 			//class: 'sidebar-splitter' //im just copying what mozilla does for their social sidebar splitter
 			//I left it out, but you can leave it in to see how you can style the splitter
 		};
-		for (let p in propsToSet) {
-			splitter.setAttribute(p, propsToSet[p]);
-		}
+		//for (let p in propsToSet) { // to delete
+		//	if (propsToSet.hasOwnProperty(p)) {
+		//		splitter.setAttribute(p, propsToSet[p]);
+		//	}
+		//}
+		Object.keys(propsToSet).forEach( (p)=>{splitter.setAttribute(p, propsToSet[p]);} );
 		//browser.appendChild(splitter);
 		browser.insertBefore( splitter, aDOMWindow.document.querySelector('#appcontent') );
 		//////////////////// END SPLITTER ///////////////////////////////////////////////////////////////////////
@@ -153,10 +165,13 @@ var windowListener = {
 			width: '200'
 			//persist: 'width' //mozilla uses persist width here, i dont know what it does and cant see it how makes a difference so i left it out
 		};
-		for (let p in propsToSet) {
-			sidebar.setAttribute(p, propsToSet[p]);
-		}
-		//browser.appendChild(sidebar);
+		//for (let p in propsToSet) { // to delete
+		//	if (propsToSet.hasOwnProperty(p)) {
+		//		sidebar.setAttribute(p, propsToSet[p]);
+		//	}
+		//}
+		//browser.appendChild(sidebar); // to delete
+		Object.keys(propsToSet).forEach( (p)=>{sidebar.setAttribute(p, propsToSet[p])} );
 		browser.insertBefore(sidebar, splitter);
 		//////////////////// END VBOX ///////////////////////////////////////////////////////////////////////
 			
@@ -166,9 +181,12 @@ var windowListener = {
 			id: 'tt-label1',
 			value: 'tt-label1'
 		};
-		for (let p in propsToSet) {
-			label1.setAttribute(p, propsToSet[p]);
-		}
+		//for (let p in propsToSet) {
+		//	if (propsToSet.hasOwnProperty(p)) {
+		//		label1.setAttribute(p, propsToSet[p]);
+		//	}
+		//}
+		Object.keys(propsToSet).forEach( (p)=>{label1.setAttribute(p, propsToSet[p]);} );
 		sidebar.appendChild(label1);
 		//////////////////// END LABEL ///////////////////////////////////////////////////////////////////
 		//////////////////// LABEL 2///////////////////////////////////////////////////////////////////////
@@ -177,9 +195,12 @@ var windowListener = {
 			id: 'tt-label2',
 			value: 'tt-label2'
 		};
-		for (let p in propsToSet) {
-			label2.setAttribute(p, propsToSet[p]);
-		}
+		//for (let p in propsToSet) {
+		//	if (propsToSet.hasOwnProperty(p)) {
+		//		label2.setAttribute(p, propsToSet[p]);
+		//	}
+		//}
+		Object.keys(propsToSet).forEach( (p)=>{label2.setAttribute(p, propsToSet[p]);} );
 		sidebar.appendChild(label2);
 		//////////////////// END LABEL 2///////////////////////////////////////////////////////////////////
 		//////////////////// LABEL 3///////////////////////////////////////////////////////////////////////
@@ -188,9 +209,12 @@ var windowListener = {
 			id: 'tt-label3',
 			value: 'tt-label3'
 		};
-		for (let p in propsToSet) {
-			label3.setAttribute(p, propsToSet[p]);
-		}
+		//for (let p in propsToSet) { // to delete
+		//	if (propsToSet.hasOwnProperty(p)) {
+		//		label3.setAttribute(p, propsToSet[p]);
+		//	}
+		//}
+		Object.keys(propsToSet).forEach( (p)=>{label3.setAttribute(p, propsToSet[p]);} );
 		sidebar.appendChild(label3);
 		//////////////////// END LABEL 3///////////////////////////////////////////////////////////////////
 		//////////////////// LABEL 4///////////////////////////////////////////////////////////////////////
@@ -199,9 +223,12 @@ var windowListener = {
 			id: 'tt-label4',
 			value: 'tt-label4'
 		};
-		for (let p in propsToSet) {
-			label4.setAttribute(p, propsToSet[p]);
-		}
+		//for (let p in propsToSet) { // to delete
+		//	if (propsToSet.hasOwnProperty(p)) {
+		//		label4.setAttribute(p, propsToSet[p]);
+		//	}
+		//}
+		Object.keys(propsToSet).forEach( (p)=>{label4.setAttribute(p, propsToSet[p]);} );
 		sidebar.appendChild(label4);
 		//////////////////// END LABEL 4///////////////////////////////////////////////////////////////////
 		//////////////////// LABEL 5///////////////////////////////////////////////////////////////////////
@@ -210,9 +237,12 @@ var windowListener = {
 			id: 'tt-label5',
 			value: 'tt-label5'
 		};
-		for (let p in propsToSet) {
-			label5.setAttribute(p, propsToSet[p]);
-		}
+		//for (let p in propsToSet) { // to delete
+		//	if (propsToSet.hasOwnProperty(p)) {
+		//		label5.setAttribute(p, propsToSet[p]);
+		//	}
+		//}
+		Object.keys(propsToSet).forEach( (p)=>{label5.setAttribute(p, propsToSet[p]);} );
 		sidebar.appendChild(label5);
 		//////////////////// END LABEL 5///////////////////////////////////////////////////////////////////
 		//////////////////// LABEL 6///////////////////////////////////////////////////////////////////////
@@ -221,9 +251,10 @@ var windowListener = {
 			id: 'tt-label6',
 			value: 'tt-label6'
 		};
-		for (let p in propsToSet) {
-			label6.setAttribute(p, propsToSet[p]);
-		}
+		//for (let p in propsToSet) { to delete
+		//	label6.setAttribute(p, propsToSet[p]);
+		//}
+		Object.keys(propsToSet).forEach( (p)=>{label6.setAttribute(p, propsToSet[p]);} );
 		sidebar.appendChild(label6);
 		//////////////////// END LABEL 6///////////////////////////////////////////////////////////////////
 		//////////////////// LABEL 7///////////////////////////////////////////////////////////////////////
@@ -232,9 +263,10 @@ var windowListener = {
 			id: 'tt-label7',
 			value: 'tt-label7'
 		};
-		for (let p in propsToSet) {
-			label7.setAttribute(p, propsToSet[p]);
-		}
+		//for (let p in propsToSet) {
+		//	label7.setAttribute(p, propsToSet[p]);
+		//}
+		Object.keys(propsToSet).forEach( (p)=>{label7.setAttribute(p, propsToSet[p]);} );
 		sidebar.appendChild(label7);
 		//////////////////// END LABEL 7///////////////////////////////////////////////////////////////////
 		//////////////////// LABEL 8///////////////////////////////////////////////////////////////////////
@@ -243,9 +275,10 @@ var windowListener = {
 			id: 'tt-label8',
 			value: 'tt-label8'
 		};
-		for (let p in propsToSet) {
-			label8.setAttribute(p, propsToSet[p]);
-		}
+		//for (let p in propsToSet) { // to delete
+		//	label8.setAttribute(p, propsToSet[p]);
+		//}
+		Object.keys(propsToSet).forEach( (p)=>{label8.setAttribute(p, propsToSet[p]);} );
 		sidebar.appendChild(label8);
 		//////////////////// END LABEL 8///////////////////////////////////////////////////////////////////
 
@@ -256,15 +289,16 @@ var windowListener = {
 			label: 'reboot',
 			oncommand: 'btn1CommandHandler(event);'
 		};
-		for (let p in propsToSet) {
-			btn1.setAttribute(p, propsToSet[p]);
-		}
+		//for (let p in propsToSet) { // to delete
+		//	btn1.setAttribute(p, propsToSet[p]);
+		//}
+		Object.keys(propsToSet).forEach( (p)=>{btn1.setAttribute(p, propsToSet[p]);} );
 		aDOMWindow.btn1CommandHandler = function f(event) {
 			aDOMWindow.document.querySelector('#tt-button1').label = 'rebooted #' + ('counter' in f ? ++f.counter : (f.counter = 1));
 			for (let i=0; i<g.tabs.length; ++i) {
 				ss.setTabValue(g.tabs[i], 'ttLevel', '0');
 				ss.deleteTabValue(g.tabs[i], 'ttSS');
-				tree.treeBoxObject.invalidateRow(i);
+				//tree.treeBoxObject.invalidateRow(i);
 			}
 		};
 		sidebar.appendChild(btn1);
@@ -276,9 +310,10 @@ var windowListener = {
 			label: 'tt-button2',
 			oncommand: 'btn2CommandHandler(event);'
 		};
-		for (let p in propsToSet) {
-			btn2.setAttribute(p, propsToSet[p]);
-		}
+		//for (let p in propsToSet) {
+		//	btn2.setAttribute(p, propsToSet[p]);
+		//}
+		Object.keys(propsToSet).forEach( (p)=>{btn2.setAttribute(p, propsToSet[p]);} );
 		sidebar.appendChild(btn2);
 		//////////////////// END BUTTON 2 //////////////////////////////////////////////////////////////////
 		//////////////////// BUTTON 3 ////////////////////////////////////////////////////////////////////////
@@ -288,9 +323,10 @@ var windowListener = {
 			label: 'tt-button3',
 			oncommand: 'btn3CommandHandler(event);'
 		};
-		for (let p in propsToSet) {
-			btn3.setAttribute(p, propsToSet[p]);
-		}
+		//for (let p in propsToSet) {
+		//	btn3.setAttribute(p, propsToSet[p]);
+		//}
+		Object.keys(propsToSet).forEach( (p)=>{btn3.setAttribute(p, propsToSet[p]);} );
 		aDOMWindow.btn3CommandHandler = function f(event) {
 			aDOMWindow.document.querySelector('#tt-button3').label = 'tt-button3 #' + ('counter' in f ? ++f.counter : (f.counter = 1));
 			
@@ -305,9 +341,10 @@ var windowListener = {
 			type: 'panel',
 			oncommand: 'btn4CommandHandler(event);'
 		};
-		for (let p in propsToSet) {
-			btn4.setAttribute(p, propsToSet[p]);
-		}
+		//for (let p in propsToSet) {
+		//	btn4.setAttribute(p, propsToSet[p]);
+		//}
+		Object.keys(propsToSet).forEach( (p)=>{btn4.setAttribute(p, propsToSet[p]);} );
 		aDOMWindow.btn4CommandHandler = function f(event) {
 			aDOMWindow.document.querySelector('#tt-button4').label = 'tt-button4 #' + ('counter' in f ? ++f.counter : (f.counter = 1));
 
@@ -335,11 +372,12 @@ var windowListener = {
 		propsToSet = {
 			id: 'tt-button5',
 			label: 'Favicon',
-			oncommand: 'btn5CommandHandler(event);',
+			oncommand: 'btn5CommandHandler(event);'
 		};
-		for (let p in propsToSet) {
-			btn5.setAttribute(p, propsToSet[p]);
-		}
+		//for (let p in propsToSet) {
+		//	btn5.setAttribute(p, propsToSet[p]);
+		//}
+		Object.keys(propsToSet).forEach( (p)=>{btn5.setAttribute(p, propsToSet[p]);} );
 		aDOMWindow.btn5CommandHandler = function f(event) {
 			aDOMWindow.document.querySelector('#tt-button5').label = 'Faviconed #' + ('counter' in f ? ++f.counter : (f.counter = 1));
 			for (let i=0; i<g.tabs.length; ++i) {
@@ -374,7 +412,7 @@ var windowListener = {
 		// end to delete
 		//////////////////// END BUTTON 5/////////////////////////////////////////////////////////////////
 		//////////////////// DROP INDICATOR ////////////////////////////////////////////////////////////////////////
-		let ind = aDOMWindow.document.getAnonymousElementByAttribute(aDOMWindow.gBrowser.tabContainer, "anonid", "tab-drop-indicator").cloneNode();
+		let ind = aDOMWindow.document.getAnonymousElementByAttribute(aDOMWindow.gBrowser.tabContainer, 'anonid', 'tab-drop-indicator').cloneNode(true);
 		ind.removeAttribute('anonid');
 		ind.id = 'tt-drop-indicator';
 		ind.collapsed = true;
@@ -432,22 +470,24 @@ var windowListener = {
 			treelines: 'true',
 			hidecolumnpicker: "true",
 			//onmousemove: "document.querySelector('#ttLabel2').value = this.treeBoxObject.getRowAt(event.clientX, event.clientY); document.querySelector('#ttLabel3').value = this.currentIndex;", // for debug
-			onmousemove: "document.querySelector('#tt-label2').value = event.clientX - this.boxObject.x;", // for debug
+			onmousemove: "document.querySelector('#tt-label2').value = event.clientX - this.boxObject.x;" // for debug
 		};
-		for (let p in propsToSet) {
-			t.setAttribute(p, propsToSet[p]);
-		}
+		//for (let p in propsToSet) {
+		//	t.setAttribute(p, propsToSet[p]);
+		//}
+		Object.keys(propsToSet).forEach( (p)=>{t.setAttribute(p, propsToSet[p]);} );
 		let treecols = aDOMWindow.document.createElement('treecols'); // <treecols>
 		let treecol = aDOMWindow.document.createElement('treecol'); // <treecol>
 		propsToSet = {
 			id: 'namecol', // to delete ??
 			flex: '1',
 			primary: 'true',
-			hideheader: 'true',
+			hideheader: 'true'
 		};
-		for (let p in propsToSet) {
-			treecol.setAttribute(p, propsToSet[p]);
-		}
+		//for (let p in propsToSet) {
+		//	treecol.setAttribute(p, propsToSet[p]);
+		//}
+		Object.keys(propsToSet).forEach( (p)=>{treecol.setAttribute(p, propsToSet[p]);} );
 		let treechildren = aDOMWindow.document.createElement('treechildren'); // <treechildren>
 		treecols.appendChild(treecol);
 		t.appendChild(treecols);
@@ -513,12 +553,13 @@ var windowListener = {
 			id: 'tt-button6',
 			label: 'collapsed panel button',
 			oncommand: 'btn6CommandHandler(event);',
-			type: 'panel',
+			type: 'panel'
 			//collapsed: 'true'
 		};
-		for (let p in propsToSet) {
-			btn6.setAttribute(p, propsToSet[p]);
-		}
+		//for (let p in propsToSet) {
+		//	btn6.setAttribute(p, propsToSet[p]);
+		//}
+		Object.keys(propsToSet).forEach( (p)=>{btn6.setAttribute(p, propsToSet[p]);} );
 		aDOMWindow.btn6CommandHandler = function f(event) {
 			aDOMWindow.document.querySelector('#tt-button6').label = 'tt-button6 #' + ('counter' in f ? ++f.counter : (f.counter = 1));
 
@@ -527,7 +568,8 @@ var windowListener = {
 		sidebar.appendChild(btn6);
 		//////////////////// END BUTTON 6 COLLAPSED /////////////////////////////////////////////////////////////////
 
-		Object.defineProperty(aDOMWindow, 't', { get: function() {return aDOMWindow.gBrowser.mCurrentTab;}, configurable: true}); // for debug
+		//noinspection JSUnusedGlobalSymbols
+		Object.defineProperty(aDOMWindow, 't', { get: () => aDOMWindow.gBrowser.mCurrentTab, configurable: true}); // for debug
 	}, // loadIntoWindowPart1: function(aDOMWindow) {
 	
 	loadIntoWindowPart2: function(aDOMWindow) {
@@ -546,7 +588,7 @@ var windowListener = {
 			DROP_AFTER: 1,
 
 			get nPinned() {
-				let c=0;
+				let c;
 				for (c=0; c<g.tabs.length; ++c) {
 					if (!g.tabs[c].pinned) {
 						break;
@@ -638,7 +680,7 @@ var windowListener = {
 						g.moveTabTo(aTab, tPosTo-1);
 					}
 				} else if (mode===tree.view.DROP_AFTER) {
-					if ( tt.hasAnyChildren(tPosTo) ) {
+					if ( this.hasAnyChildren(tPosTo) ) {
 						ss.setTabValue(aTab, 'ttLevel', (parseInt(ss.getTabValue(g.tabs[tPosTo], 'ttLevel'))+1).toString());
 					} else {
 						ss.setTabValue(aTab, 'ttLevel', ss.getTabValue(g.tabs[tPosTo], 'ttLevel') );
@@ -779,7 +821,7 @@ var windowListener = {
 					toolbar.removeChild(toolbar.lastChild);
 				}
 				// then create new toolbarbuttons for all pinned tabs
-				for (let i=0; i<tt.nPinned; ++i) {
+				for (let i=0; i<this.nPinned; ++i) {
 					let toolbarbtn = aDOMWindow.document.createElement('toolbarbutton');
 					toolbarbtn.setAttribute('image', g.tabs[i].image);
 					toolbarbtn.setAttribute('tooltiptext', g.tabs[i].label);
@@ -806,6 +848,7 @@ var windowListener = {
 					panel.removeEventListener('popupshown', onPopupShown);
 
 					aDOMWindow.document.querySelector('#tt-label4').value = 'popupshown'; // to delete
+					//noinspection JSUnusedGlobalSymbols
 					treeFeedback.treeBoxObject.view = {
 						numStart: tab._tPos,
 						numEnd: tt.lastDescendantPos(tab._tPos),
@@ -869,7 +912,7 @@ var windowListener = {
 						},
 						toggleOpenState: function (row) {
 							//this.treeBox.invalidateRow(row);
-						},
+						}
 					};
 					let borderTopWidth = parseInt( aDOMWindow.getComputedStyle(treeFeedback).getPropertyValue('border-top-width') );
 					let borderBottomWidth = parseInt( aDOMWindow.getComputedStyle(treeFeedback).getPropertyValue('border-bottom-width') );
@@ -1003,6 +1046,7 @@ var windowListener = {
 			}
 		}); // g._endRemoveTab = new Proxy(g._endRemoveTab, {
 
+		//noinspection JSUnusedGlobalSymbols
 		tree.view = {
 			treeBox: null,
 			selection: null,
@@ -1083,6 +1127,7 @@ var windowListener = {
 				}
 				
 				// for links:
+				//noinspection RedundantIfStatementJS
 				if (dataTransfer.mozTypesAt(0).contains('text/uri-list')) {
 					return true;
 				}
@@ -1112,7 +1157,7 @@ var windowListener = {
 					let newTab = g.loadOneTab(url, {inBackground: true, allowThirdPartyFixup: true});
 					tt.moveTabToPlus(newTab, tPosTo, orientation);
 				}
-			}, // drop(row, orientation, dataTransfer)
+			} // drop(row, orientation, dataTransfer)
 		}; // tree.view = {
 
 		aDOMWindow.btn2CommandHandler = function f(event) {
@@ -1300,7 +1345,7 @@ var windowListener = {
 		g.tabContainer.addEventListener("TabSelect", function(event) {
 			tree.view.selection.select(event.target._tPos-tt.nPinned);
 		}, false);
-	}, // loadIntoWindowPart2: function(aDOMWindow) {
+	} // loadIntoWindowPart2: function(aDOMWindow) {
 	
 };
 /*end - windowlistener*/
