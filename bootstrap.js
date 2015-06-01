@@ -882,7 +882,6 @@ var windowListener = {
 						g.tabContainer.removeEventListener('TabOpen', onPreAddTabWithoutRef, true);
 						if ( ss.getTabValue(event.target, 'ttLevel') === '' ) { // despite MDN it returns '' instead of undefined
 							ss.setTabValue(event.target, 'ttLevel', '0');
-							// ss.setTabValue(event.target, 'ttEmpty', 'true'); // to delete
 						}
 						tree.treeBoxObject.rowCountChanged(event.target._tPos-tt.nPinned, 1);
 					}, true);
@@ -892,30 +891,33 @@ var windowListener = {
 						aDOMWindow.document.addEventListener('SSTabRestoring', function onSSing(event) {
 							aDOMWindow.document.removeEventListener('SSTabRestoring', onSSing, true);
 							let tab = event.originalTarget; // the tab being restored
-							tree.treeBoxObject.rowCountChanged(tab._tPos-tt.nPinned, 1);
-							// need to restore twisty
-							let pTab = tt.parentTab(tab);
-							if (pTab) {
-								//ss.setTabValue(pTab, 'ttEmpty', 'false'); // to delete
-								tree.treeBoxObject.invalidateRow(pTab._tPos-tt.nPinned);
-							}
+							if (tab.pinned) {
+								tt.redrawToolbarbuttons();
+							} else {
+								tree.treeBoxObject.rowCountChanged(tab._tPos - tt.nPinned, 1);
+								// need to restore twisty
+								let pTab = tt.parentTab(tab);
+								if (pTab) {
+									tree.treeBoxObject.invalidateRow(pTab._tPos - tt.nPinned);
+								}
 
-							if (ss.getTabValue(tab, 'ttSS')) { // if tab had direct children, then make them children again
-								let arr = JSON.parse(ss.getTabValue(tab, 'ttSS'));
-								tt.shiftRight(tab._tPos+1);
-								for (let i=tab._tPos+2; i<g.tabs.length; ++i) { // +2 on purpose
-									if (tt.levelInt(i) <= tt.levelInt(tab)) {
-										break;
-									}
-									if (tt.levelInt(i) == tt.levelInt(tab)+1) {
-										if (arr.indexOf(g.tabs[i].linkedPanel) == -1) {
+								if (ss.getTabValue(tab, 'ttSS')) { // if tab had direct children, then make them children again
+									let arr = JSON.parse(ss.getTabValue(tab, 'ttSS'));
+									tt.shiftRight(tab._tPos + 1);
+									for (let i = tab._tPos + 2; i < g.tabs.length; ++i) { // +2 on purpose
+										if (tt.levelInt(i) <= tt.levelInt(tab)) {
+											break;
+										}
+										if (tt.levelInt(i) == tt.levelInt(tab) + 1) {
+											if (arr.indexOf(g.tabs[i].linkedPanel) == -1) {
+												tt.shiftRight(i);
+											}
+										} else {
 											tt.shiftRight(i);
 										}
-									} else {
-										tt.shiftRight(i);
 									}
+									ss.deleteTabValue(tab, 'ttSS');
 								}
-								ss.deleteTabValue(tab, 'ttSS');
 							}
 						}, true);
 					}, true);
@@ -944,9 +946,6 @@ var windowListener = {
 					}
 					ss.setTabValue(tab, 'ttSS', JSON.stringify(arr));
 					// end for SS
-					//if ( tt.hasAnySiblings(tPos+1) ) { // Adding twisty in case it didn't have one // to delete
-					//	ss.setTabValue(g.tabs[tPos+1], 'ttEmpty', 'false'); // to delete
-					//} // to delete
 					for (let i=tPos+2; i<g.tabs.length; ++i) {
 						if ( g.tabs[i]	&& parseInt(ss.getTabValue(g.tabs[i], 'ttLevel')) > parseInt(ss.getTabValue(g.tabs[tPos+1], 'ttLevel')) ) {
 							ss.setTabValue(g.tabs[i], 'ttLevel', (parseInt(ss.getTabValue(g.tabs[i], 'ttLevel'))-1).toString());
@@ -957,10 +956,13 @@ var windowListener = {
 					ss.setTabValue(g.tabs[tPos+1], 'ttLevel', (parseInt(ss.getTabValue(g.tabs[tPos+1], 'ttLevel'))-1).toString());
 				} else if ( parseInt(ss.getTabValue(tab, 'ttLevel'))>=1 && !tt.hasAnySiblings(tPos) ) { // closing the last child, the first condition may be omitted, for now
 					let pTab = tt.parentTab(tab);
-					//ss.setTabValue(pTab, 'ttEmpty', 'true'); // to delete
 					tree.treeBoxObject.invalidateRow(pTab._tPos-tt.nPinned);
 				}
 				let ret = target.apply(thisArg, argumentsList); // after this, "tab.pinned" is always 'false' therefore we use "pinned" which we prepared early
+
+				//let recentlyUsedTabs = Array.filter(g.tabs, (tab) => !tab.closing).sort((tab1, tab2) => tab2.lastAccessed - tab1.lastAccessed);
+				//g.selectedTab = recentlyUsedTabs[0];
+				
 				if (pinned) {
 					tt.redrawToolbarbuttons();
 				} else {
@@ -1094,6 +1096,10 @@ var windowListener = {
 		g.pinTab = new Proxy(g.pinTab, {
 			apply: function(target, thisArg, argumentsList) {
 				let tab = argumentsList[0];
+				if (ss.getTabValue(tab, 'ttLevel') == '') { // if there is no information about 'ttLevel' then it means SS is calling gBrowser.pinTab(newlyCreatedEmptyTab)
+					target.apply(thisArg, argumentsList); // dispatches 'TabPinned' event, returns nothing
+					return; // then just do nothing
+				}
 				let tPos = argumentsList[0]._tPos;
 				if ( tt.hasAnyChildren(tPos) ) { // if we are pinning a parent then make the first child a new parent
 					for (let i=tPos+2; i<g.tabs.length; ++i) {
@@ -1283,7 +1289,7 @@ var windowListener = {
  * + move everything to the left
  * + add dropping links on the tree
  * + add dropping links on the toolbar(pinned tabs bar)
- * select LST
+ * focus LST after closing tab
  * tab flipping
  * pref to enable lines alongside tree
  * and of course selection including pinned tabs
