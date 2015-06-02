@@ -958,17 +958,14 @@ var windowListener = {
 					let pTab = tt.parentTab(tab);
 					tree.treeBoxObject.invalidateRow(pTab._tPos-tt.nPinned);
 				}
-				let ret = target.apply(thisArg, argumentsList); // after this, "tab.pinned" is always 'false' therefore we use "pinned" which we prepared early
 
-				//let recentlyUsedTabs = Array.filter(g.tabs, (tab) => !tab.closing).sort((tab1, tab2) => tab2.lastAccessed - tab1.lastAccessed);
-				//g.selectedTab = recentlyUsedTabs[0];
+				target.apply(thisArg, argumentsList); // returns nothing // after this, "tab.pinned" is always 'false' therefore we use "pinned" which we prepared early
 				
 				if (pinned) {
 					tt.redrawToolbarbuttons();
 				} else {
 					tree.treeBoxObject.rowCountChanged(tPos - tt.nPinned, -1);
 				}
-				return ret;
 			}
 		}); // g._endRemoveTab = new Proxy(g._endRemoveTab, {
 
@@ -1272,6 +1269,14 @@ var windowListener = {
 			}
 		};
 
+		g.removeTab =  new Proxy(g.removeTab, { // only for FLST after closing tab
+			apply: function(target, thisArg, argumentsList) {
+				let recentlyUsedTabs = Array.filter(g.tabs, (tab) => !tab.closing).sort((tab1, tab2) => tab2.lastAccessed - tab1.lastAccessed);
+				g.selectedTab = recentlyUsedTabs[1];
+				return target.apply(thisArg, argumentsList);
+			}
+		}); // g.removeTab =  new Proxy(g._endRemoveTab, {
+		
 		g.tabContainer.addEventListener("TabSelect", function(event) {
 			tree.view.selection.select(event.target._tPos-tt.nPinned);
 		}, false);
