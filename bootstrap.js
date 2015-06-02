@@ -319,38 +319,7 @@ var windowListener = {
 			oncommand: 'btn5CommandHandler(event);'
 		};
 		Object.keys(propsToSet).forEach( (p)=>{btn5.setAttribute(p, propsToSet[p]);} );
-		aDOMWindow.btn5CommandHandler = function f(event) {
-			aDOMWindow.document.querySelector('#tt-button5').label = 'Faviconed #' + ('counter' in f ? ++f.counter : (f.counter = 1));
-			for (let i=0; i<g.tabs.length; ++i) {
-				if (g.tabs[i].pinned) {
-					let toolbarbtn = aDOMWindow.document.createElement('toolbarbutton');
-					toolbarbtn.setAttribute('image', g.tabs[i].image);
-					toolbarbtn.setAttribute('tooltiptext', g.tabs[i].label);
-					// there are sites with at least 32x32px images therefore buttons would have become huge
-					toolbarbtn.setAttribute('collapsed', 'true'); // we don't want to see the size of the toolbar changing every time a site with a big icon gets pinned
-					toolbar.appendChild(toolbarbtn); // anonymous nodes appear only after appendChild
-					let image = aDOMWindow.document.getAnonymousNodes(toolbarbtn)[0];
-					image.setAttribute('height', '16px'); // we reduce such big images
-					toolbarbtn.removeAttribute('collapsed'); // and finally show it after image size became normal
-				}
-			}
-		};
-
-		// to delete
 		sidebar.appendChild(btn5);
-		btn5.ondragover = function(event) {
-			event.preventDefault();
-			event.stopPropagation();
-
-			label7.value = 'dragover btn5';
-		};
-		btn5.ondragleave = function(event) {
-			event.preventDefault();
-			event.stopPropagation();
-
-			label7.value = 'dragleave btn5';
-		};
-		// end to delete
 		//////////////////// END BUTTON 5/////////////////////////////////////////////////////////////////
 		//////////////////// DROP INDICATOR ////////////////////////////////////////////////////////////////////////
 		let ind = aDOMWindow.document.getAnonymousElementByAttribute(aDOMWindow.gBrowser.tabContainer, 'anonid', 'tab-drop-indicator').cloneNode(true);
@@ -395,7 +364,7 @@ var windowListener = {
 
 		//////////////////// TREE ///////////////////////////////////////////////////////////////////////
 		/*
-			<tree id="tt" flex="1" seltype="single" context="tabContextMenu" onselect="selectHandler(event);">
+			<tree id="tt" flex="1" seltype="single" context="tabContextMenu" onselect="selectHandler(event);"> // approximately
 					<treecols>
 						 <treecol id="namecol" label="Name" primary="true" flex="1"/>
 					</treecols>
@@ -749,6 +718,11 @@ var windowListener = {
 					let toolbarbtn = aDOMWindow.document.createElement('toolbarbutton');
 					toolbarbtn.setAttribute('image', g.tabs[i].image);
 					toolbarbtn.setAttribute('tooltiptext', g.tabs[i].label);
+					toolbarbtn.setAttribute('type', 'radio');
+					toolbarbtn.setAttribute('group', 'RadioGroup');
+					if (g.tabs[i].selected) {
+						toolbarbtn.setAttribute('checked', 'true');
+					}
 					// there are sites with at least 32x32px images therefore buttons would have become huge
 					toolbarbtn.setAttribute('collapsed', 'true'); // we don't want to see the size of the toolbar changing every time a site with a big icon gets pinned
 					toolbar.appendChild(toolbarbtn); // anonymous nodes appear only after appendChild
@@ -1276,9 +1250,16 @@ var windowListener = {
 				return target.apply(thisArg, argumentsList);
 			}
 		}); // g.removeTab =  new Proxy(g._endRemoveTab, {
+
+		aDOMWindow.btn5CommandHandler = function f(event) {
+			aDOMWindow.document.querySelector('#tt-button5').label = 'Faviconed #' + ('counter' in f ? ++f.counter : (f.counter = 1));
+			tt.redrawToolbarbuttons();
+		};
 		
 		g.tabContainer.addEventListener("TabSelect", function(event) {
-			tree.view.selection.select(event.target._tPos-tt.nPinned);
+			let tab = event.target;
+			tab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(tab._tPos - tt.nPinned);
+			tt.redrawToolbarbuttons();
 		}, false);
 	} // loadIntoWindowPart2: function(aDOMWindow) {
 	
@@ -1294,7 +1275,7 @@ var windowListener = {
  * + move everything to the left
  * + add dropping links on the tree
  * + add dropping links on the toolbar(pinned tabs bar)
- * focus LST after closing tab
+ * + focus LST after closing tab
  * tab flipping
  * pref to enable lines alongside tree
  * and of course selection including pinned tabs
@@ -1311,8 +1292,10 @@ var windowListener = {
  * make negative margin relative instead of absolute in arrow
  * let draggedTab = event.dataTransfer.mozGetDataAt(TAB_DROP_TYPE, 0);
  * full screen mode
+ * check for about:config relatedToCurrent option. Will my addon still work?
 */
 /*
  * known bugs:
  * dropping links on native tabbar
  */
+// did now - toolbar buttons indicate currently selected pinned tab
