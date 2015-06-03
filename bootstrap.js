@@ -1111,7 +1111,7 @@ var windowListener = {
 
 		g.unpinTab = new Proxy(g.unpinTab, {
 			apply: function(target, thisArg, argumentsList) {
-				if (argumentsList.length>0 || argumentsList[0]) { // just in case
+				if (argumentsList.length>0 && argumentsList[0] && argumentsList[0].pinned) { // It seems SS invokes gBrowser.unpinTab for every tab(pinned and not pinned)
 					let tab = argumentsList[0];
 					let tPos = argumentsList[0]._tPos;
 
@@ -1245,8 +1245,11 @@ var windowListener = {
 
 		g.removeTab =  new Proxy(g.removeTab, { // only for FLST after closing tab
 			apply: function(target, thisArg, argumentsList) {
-				let recentlyUsedTabs = Array.filter(g.tabs, (tab) => !tab.closing).sort((tab1, tab2) => tab2.lastAccessed - tab1.lastAccessed);
-				g.selectedTab = recentlyUsedTabs[1];
+				let tab = argumentsList[0];
+				if (g.mCurrentTab === tab) {
+					let recentlyUsedTabs = Array.filter(g.tabs, (tab) => !tab.closing).sort((tab1, tab2) => tab2.lastAccessed - tab1.lastAccessed);
+					g.selectedTab = recentlyUsedTabs[0]===g.mCurrentTab ? recentlyUsedTabs[1] : recentlyUsedTabs[0];
+				}
 				return target.apply(thisArg, argumentsList);
 			}
 		}); // g.removeTab =  new Proxy(g._endRemoveTab, {
@@ -1298,4 +1301,4 @@ var windowListener = {
  * known bugs:
  * dropping links on native tabbar
  */
-// did now - toolbar buttons indicate currently selected pinned tab
+// now doing - newly introduced bug with undo close tab
