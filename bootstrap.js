@@ -378,9 +378,9 @@ var windowListener = {
 			seltype: 'single',
 			context: 'tabContextMenu',
 			treelines: 'true',
-			hidecolumnpicker: "true",
+			hidecolumnpicker: "true"
 			//onmousemove: "document.querySelector('#ttLabel2').value = this.treeBoxObject.getRowAt(event.clientX, event.clientY); document.querySelector('#ttLabel3').value = this.currentIndex;", // for debug
-			onmousemove: "document.querySelector('#tt-label2').value = event.clientX - this.boxObject.x;" // for debug
+			//onmousemove: "document.querySelector('#tt-label2').value = event.clientX - this.boxObject.x;" // for debug
 		};
 		Object.keys(propsToSet).forEach( (p)=>{t.setAttribute(p, propsToSet[p]);} );
 		let treecols = aDOMWindow.document.createElement('treecols'); // <treecols>
@@ -720,6 +720,7 @@ var windowListener = {
 					toolbarbtn.setAttribute('tooltiptext', g.tabs[i].label);
 					toolbarbtn.setAttribute('type', 'radio');
 					toolbarbtn.setAttribute('group', 'RadioGroup');
+					toolbarbtn.setAttribute('context', 'tabContextMenu');
 					if (g.tabs[i].selected) {
 						toolbarbtn.setAttribute('checked', 'true');
 					}
@@ -1259,6 +1260,22 @@ var windowListener = {
 			tt.redrawToolbarbuttons();
 		};
 		
+		aDOMWindow.TabContextMenu.updateContextMenu = new Proxy(aDOMWindow.TabContextMenu.updateContextMenu, {
+			apply: function(target, thisArg, argumentsList) {
+				let aPopupMenu = argumentsList[0];
+				if (aPopupMenu.triggerNode.localName == 'toolbarbutton') {
+					let tPos = Array.prototype.indexOf.call(aPopupMenu.triggerNode.parentNode.childNodes, aPopupMenu.triggerNode) - 1; // -1 for the arrow hbox
+					// we use 'Object.defineProperty' because aPopupMenu.triggerNode is not a writable property, plain 'aPopupMenu.triggerNode = blaBlaBla' doesn't work
+					// and furthermore it's an inherited getter property:
+					Object.defineProperty(aPopupMenu, 'triggerNode', {configurable: true, enumerable: true, writable: false, value: g.tabs[tPos]});
+					target.apply(thisArg, argumentsList); // returns nothing
+					delete aPopupMenu.triggerNode; // because it was an inherited property we can delete it to restore default value
+					return;
+				}
+				target.apply(thisArg, argumentsList); // returns nothing
+			}
+		});
+		
 		g.tabContainer.addEventListener("TabSelect", function(event) {
 			let tab = event.target;
 			tab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(tab._tPos - tt.nPinned);
@@ -1282,7 +1299,7 @@ var windowListener = {
  * tab flipping
  * pref to enable lines alongside tree
  * and of course selection including pinned tabs
- * move pinned tabs(toolbarbuttons)
+ * + move pinned tabs(toolbarbuttons)
  * use gBrowser._numPinnedTabs or gBrowser.tabContainer._lastNumPinned
  * context menu for pinned tabs(toolbarbuttons)
  * ctrl+shift+PgUp/PgDown behaviour
@@ -1301,4 +1318,4 @@ var windowListener = {
  * known bugs:
  * dropping links on native tabbar
  */
-// now doing - newly introduced bug with undo close tab
+// now doing - context menu for pinned tabs
