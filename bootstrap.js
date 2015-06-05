@@ -709,29 +709,32 @@ var windowListener = {
 			},
 			
 			redrawToolbarbuttons: function() { // It's better to redraw all toolbarbuttons every time then add one toolbarbutton at a time. There were bugs when dragging and dropping them very fast
-				// first we delete all toolbarbuttons
-				while (toolbar.lastChild.tagName == 'toolbarbutton') {
-					toolbar.removeChild(toolbar.lastChild);
-				}
-				// then create new toolbarbuttons for all pinned tabs
-				for (let i=0; i<this.nPinned; ++i) {
-					let toolbarbtn = aDOMWindow.document.createElement('toolbarbutton');
-					toolbarbtn.setAttribute('image', g.tabs[i].image);
+				// reusing existing toolbarbuttons
+				let n = toolbar.childNodes.length - 1; // -1 for the arrow hbox
+				let max = Math.max(this.nPinned, n);
+				let min = Math.min(this.nPinned, n);
+				for (let i=0; i<max; ++i) {
+					let toolbarbtn;
+					if (i<min) { // reusing existing toolbarbuttons here
+						toolbarbtn = toolbar.childNodes[i+1]; // +1 for the arrow hbox
+					} else if (this.nPinned > n) { // we added a new pinned tab(tabs)
+						toolbarbtn = aDOMWindow.document.createElement('toolbarbutton');
+						toolbar.appendChild(toolbarbtn);
+					} else if (this.nPinned < n) { // we removed a pinned tab(tabs)
+						toolbarbtn = toolbar.childNodes[i+1]; // +1 for the arrow hbox
+						toolbar.removeChild(toolbarbtn);
+						continue;
+					}
 					toolbarbtn.setAttribute('tooltiptext', g.tabs[i].label);
 					toolbarbtn.setAttribute('type', 'radio');
 					toolbarbtn.setAttribute('group', 'RadioGroup');
 					toolbarbtn.setAttribute('context', 'tabContextMenu');
-					if (g.tabs[i].selected) {
-						toolbarbtn.setAttribute('checked', 'true');
-					}
-					// there are sites with at least 32x32px images therefore buttons would have become huge
-					toolbarbtn.setAttribute('collapsed', 'true'); // we don't want to see the size of the toolbar changing every time a site with a big icon gets pinned
-					toolbar.appendChild(toolbarbtn); // anonymous nodes appear only after appendChild
-					let image = aDOMWindow.document.getAnonymousNodes(toolbarbtn)[0];
+					toolbarbtn.checked = g.tabs[i].selected;
+					let image = aDOMWindow.document.getAnonymousNodes(toolbarbtn)[0]; // there are sites with at least 32x32px images therefore buttons would have become huge
 					image.setAttribute('height', '16px'); // we reduce such big images
-					toolbarbtn.removeAttribute('collapsed'); // and finally show it after image size became normal
+					toolbarbtn.setAttribute('image', g.tabs[i].image);
 				}
-			}
+			} // redrawToolbarbuttons: function() {
 		}; // let tt = {
 
 		tree.addEventListener('dragstart', function(event) {
@@ -1338,4 +1341,4 @@ var windowListener = {
  * known bugs:
  * dropping links on native tabbar
  */
-// now doing - context menu for ordinary(not pinned) tabs
+// now doing - trying to improve tt.redrawToolbarbuttons()
