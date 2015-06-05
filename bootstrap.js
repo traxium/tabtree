@@ -1089,18 +1089,20 @@ var windowListener = {
 
 				g.tabContainer.addEventListener("TabPinned", function onTabPinned(event) {
 					g.tabContainer.removeEventListener("TabPinned", onTabPinned, false);
-					let toolbarbtn = aDOMWindow.document.createElement('toolbarbutton');
-					toolbarbtn.setAttribute('image', event.target.image);
-					toolbarbtn.setAttribute('tooltiptext', event.target.label);
-
-					let toolbar = aDOMWindow.document.querySelector('#tt-toolbar');
-
-					// there are sites with at least 32x32px images therefore buttons would have become huge
-					toolbarbtn.setAttribute('collapsed', 'true'); // we don't want to see the size of the toolbar changing every time a site with a big icon gets pinned
-					toolbar.appendChild(toolbarbtn); // anonymous nodes appear only after appendChild
-					let image = aDOMWindow.document.getAnonymousNodes(toolbarbtn)[0];
-					image.setAttribute('height', '16px'); // we reduce such big images
-					toolbarbtn.removeAttribute('collapsed'); // and finally show it after image size became normal
+					
+					tt.redrawToolbarbuttons();
+					//let toolbarbtn = aDOMWindow.document.createElement('toolbarbutton'); // to delete
+					//toolbarbtn.setAttribute('image', event.target.image);
+					//toolbarbtn.setAttribute('tooltiptext', event.target.label);
+                    //
+					//let toolbar = aDOMWindow.document.querySelector('#tt-toolbar');
+                    //
+					//// there are sites with at least 32x32px images therefore buttons would have become huge
+					//toolbarbtn.setAttribute('collapsed', 'true'); // we don't want to see the size of the toolbar changing every time a site with a big icon gets pinned
+					//toolbar.appendChild(toolbarbtn); // anonymous nodes appear only after appendChild
+					//let image = aDOMWindow.document.getAnonymousNodes(toolbarbtn)[0];
+					//image.setAttribute('height', '16px'); // we reduce such big images
+					//toolbarbtn.removeAttribute('collapsed'); // and finally show it after image size became normal
 				}, false);
 
 				let row = tPos-tt.nPinned; // remember the row because after target.apply the number of pinned tabs will change(+1) and result would be different
@@ -1263,16 +1265,34 @@ var windowListener = {
 		aDOMWindow.TabContextMenu.updateContextMenu = new Proxy(aDOMWindow.TabContextMenu.updateContextMenu, {
 			apply: function(target, thisArg, argumentsList) {
 				let aPopupMenu = argumentsList[0];
-				if (aPopupMenu.triggerNode.localName == 'toolbarbutton') {
+				
+				if (aPopupMenu.triggerNode.localName == 'treechildren') {
+					let tPos = tree.currentIndex + tt.nPinned;
+					// we use 'Object.defineProperty' because aPopupMenu.triggerNode is not a writable property, plain 'aPopupMenu.triggerNode = blaBlaBla' doesn't work
+					// and furthermore it's an inherited getter property:
+					Object.defineProperty(aPopupMenu, 'triggerNode', {
+						configurable: true,
+						enumerable: true,
+						writable: false,
+						value: g.tabs[tPos]
+					});
+					target.apply(thisArg, argumentsList); // returns nothing
+					delete aPopupMenu.triggerNode; // because it was an inherited property we can delete it to restore default value
+				} else if (aPopupMenu.triggerNode.localName == 'toolbarbutton') {
 					let tPos = Array.prototype.indexOf.call(aPopupMenu.triggerNode.parentNode.childNodes, aPopupMenu.triggerNode) - 1; // -1 for the arrow hbox
 					// we use 'Object.defineProperty' because aPopupMenu.triggerNode is not a writable property, plain 'aPopupMenu.triggerNode = blaBlaBla' doesn't work
 					// and furthermore it's an inherited getter property:
-					Object.defineProperty(aPopupMenu, 'triggerNode', {configurable: true, enumerable: true, writable: false, value: g.tabs[tPos]});
+					Object.defineProperty(aPopupMenu, 'triggerNode', {
+						configurable: true,
+						enumerable: true,
+						writable: false,
+						value: g.tabs[tPos]
+					});
 					target.apply(thisArg, argumentsList); // returns nothing
 					delete aPopupMenu.triggerNode; // because it was an inherited property we can delete it to restore default value
-					return;
+				} else {
+					target.apply(thisArg, argumentsList); // returns nothing
 				}
-				target.apply(thisArg, argumentsList); // returns nothing
 			}
 		});
 		
@@ -1318,4 +1338,4 @@ var windowListener = {
  * known bugs:
  * dropping links on native tabbar
  */
-// now doing - context menu for pinned tabs
+// now doing - context menu for ordinary(not pinned) tabs
