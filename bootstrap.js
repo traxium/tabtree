@@ -1335,6 +1335,24 @@ var windowListener = {
 			}
 		};
 		
+		// I'm just disabling all unnecessary functions:
+		g.moveTabForward = new Proxy(g.moveTabForward, {
+			apply: function(target, thisArg, argumentsList) {
+			}
+		});
+		g.moveTabBackward = new Proxy(g.moveTabBackward, {
+			apply: function(target, thisArg, argumentsList) {
+			}
+		});
+		g.moveTabToStart = new Proxy(g.moveTabToStart, {
+			apply: function(target, thisArg, argumentsList) {
+			}
+		});
+		g.moveTabToEnd = new Proxy(g.moveTabToEnd, {
+			apply: function(target, thisArg, argumentsList) {
+			}
+		});
+		
 		g.tabContainer.addEventListener("TabSelect", function(event) {
 			let tab = event.target;
 			tab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(tab._tPos - tt.nPinned);
@@ -1378,4 +1396,4 @@ var windowListener = {
  * dropping links on native tabbar
  * while there is no internet connection no icon for the initially selected tree row is displayed
  */
-// now doing - prettifying quick search box
+// now doing - ctrl+shift+PgUp/PgDown behaviour
