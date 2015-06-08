@@ -462,19 +462,15 @@ var windowListener = {
 		sidebar.appendChild(btn6);
 		//////////////////// END BUTTON 6 COLLAPSED /////////////////////////////////////////////////////////////////
 		
-		//////////////////// SEARCH BOX ////////////////////////////////////////////////////////////////////////
+		//////////////////// QUICK SEARCH BOX ////////////////////////////////////////////////////////////////////////
 		let quickSearchBox = aDOMWindow.document.createElement('textbox');
 		propsToSet = {
 			id: 'tt-quicksearchbox',
-			oncommand: 'searchboxCommandHandler(event);'
+			placeholder: 'Quick search for tabs...'
 		};
 		Object.keys(propsToSet).forEach( (p)=>{quickSearchBox.setAttribute(p, propsToSet[p]);} );
-		//aDOMWindow.searchboxCommandHandler = function f(event) {
-		//	aDOMWindow.document.querySelector('#tt-searchbox').value = 'tt-searchbox #' + ('counter' in f ? ++f.counter : (f.counter = 1));
-		//	
-		//};
 		sidebar.appendChild(quickSearchBox);
-		//////////////////// END SEARCH BOX /////////////////////////////////////////////////////////////////
+		//////////////////// END QUICK SEARCH BOX /////////////////////////////////////////////////////////////////
 
 		//noinspection JSUnusedGlobalSymbols
 		Object.defineProperty(aDOMWindow, 't', { get: () => aDOMWindow.gBrowser.mCurrentTab, configurable: true}); // for debug
@@ -1382,4 +1378,4 @@ var windowListener = {
  * dropping links on native tabbar
  * while there is no internet connection no icon for the initially selected tree row is displayed
  */
-// now doing - quick search esc-key behaviour
+// now doing - prettifying quick search box
