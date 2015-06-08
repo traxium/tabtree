@@ -264,6 +264,10 @@ var windowListener = {
 			oncommand: 'btn2CommandHandler(event);'
 		};
 		Object.keys(propsToSet).forEach( (p)=>{btn2.setAttribute(p, propsToSet[p]);} );
+		aDOMWindow.btn2CommandHandler = function f(event) { // to delete
+			aDOMWindow.document.querySelector('#tt-button2').label = 'tt-button2 #' + ('counter' in f ? ++f.counter : (f.counter = 1));
+			
+		};
 		sidebar.appendChild(btn2);
 		//////////////////// END BUTTON 2 //////////////////////////////////////////////////////////////////
 		//////////////////// BUTTON 3 ////////////////////////////////////////////////////////////////////////
@@ -1084,13 +1088,6 @@ var windowListener = {
 			} // drop(row, orientation, dataTransfer)
 		}; // tree.view = {
 
-		aDOMWindow.btn2CommandHandler = function f(event) {
-			aDOMWindow.document.querySelector('#tt-button2').label = 'tt-button2 #' + ('counter' in f ? ++f.counter : (f.counter = 1));
-			//treeFeedback.treeBoxObject.view = treeFeedbackView;
-		};
-
-		//treeFeedback.treeBoxObject.view = treeFeedbackView;
-
 		g.pinTab = new Proxy(g.pinTab, {
 			apply: function(target, thisArg, argumentsList) {
 				let tab = argumentsList[0];
@@ -1335,7 +1332,7 @@ var windowListener = {
 			}
 		};
 		
-		// I'm just disabling all unnecessary functions:
+		// I'm just disabling all unnecessary tab movement functions:
 		g.moveTabForward = new Proxy(g.moveTabForward, {
 			apply: function(target, thisArg, argumentsList) {
 			}
@@ -1352,6 +1349,38 @@ var windowListener = {
 			apply: function(target, thisArg, argumentsList) {
 			}
 		});
+		
+		// we can't use 'select' event because it fires too many times(when dragging and dropping for example)
+		// and therefore it invokes unknown error while selecting pinned tab("TelemetryStopwatch:52:0")
+		// instead we using 'click' and 'keyup' events:
+		tree.addEventListener('click', function f(event) {
+			let idx = tree.treeBoxObject.getRowAt(event.clientX, event.clientY);
+			if (idx != -1) {
+				let tPos = idx + tt.nPinned;
+				g.selectTabAtIndex(tPos);
+			}
+		}, false);
+		
+		tree.addEventListener('keyup', function f(event) {
+			label2.value = 'keyup';
+			if (event.key=='ArrowUp' || event.key=='ArrowDown') {
+				let tPos = tree.currentIndex + tt.nPinned;
+				g.selectTabAtIndex(tPos);
+			}
+		}, false);
+        
+		g.tabContainer.addEventListener("TabMove", function(event) {
+			let tab = event.target;
+			tab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(tab._tPos - tt.nPinned);
+			tt.redrawToolbarbuttons();
+		}, false);
+		
+		toolbar.addEventListener('command', function f(event) {
+			if (event.originalTarget.localName == 'toolbarbutton') {
+				let tPos = Array.prototype.indexOf.call(toolbar.childNodes, event.originalTarget) - 1; // -1 for the arrow hbox
+				g.selectTabAtIndex(tPos);
+			}
+		}, false);
 		
 		g.tabContainer.addEventListener("TabSelect", function(event) {
 			let tab = event.target;
@@ -1379,14 +1408,14 @@ var windowListener = {
  * + move pinned tabs(toolbarbuttons)
  * use gBrowser._numPinnedTabs or gBrowser.tabContainer._lastNumPinned
  * + context menu for pinned tabs(toolbarbuttons)
- * ctrl+shift+PgUp/PgDown behaviour
+ * + ctrl+shift+PgUp/PgDown behaviour
  * duplicate tab drop
  * + add comment about dragging type from firefox source
  * edit comments about Obsolete tree.view methods
  * check scroll bar handling
- * search box
+ * + search box
  * + delete anonid attr
- * make negative margin relative instead of absolute in arrow
+ * - make negative margin relative instead of absolute in arrow
  * let draggedTab = event.dataTransfer.mozGetDataAt(TAB_DROP_TYPE, 0);
  * full screen mode
  * check for about:config relatedToCurrent option. Will my addon still work?
@@ -1396,4 +1425,4 @@ var windowListener = {
  * dropping links on native tabbar
  * while there is no internet connection no icon for the initially selected tree row is displayed
  */
-// now doing - ctrl+shift+PgUp/PgDown behaviour
+// now doing - tab selection through tree and toolbarbuttons
