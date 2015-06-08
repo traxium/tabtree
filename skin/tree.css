@@ -1,16 +1,22 @@
-tree#tt>treechildren::-moz-tree-row(dropOn),
-tree#tt>treechildren::-moz-tree-row(dropBefore),
-tree#tt>treechildren::-moz-tree-row(dropAfter) {
+#tt-treechildren:-moz-tree-row(dropOn),
+#tt-treechildren:-moz-tree-row(dropBefore),
+#tt-treechildren:-moz-tree-row(dropAfter) {
   border: #F0F 1px dashed;
 }
 
-tree#tt>treechildren::-moz-tree-image {
+#tt-treechildren:-moz-tree-image {
+  /*noinspection CssUnknownTarget*/
   list-style-image: url("chrome://mozapps/skin/places/defaultFavicon.png");
   width: 16px; /* there are websites with at least 32x32px icons, they look ugly in our tree */
 }
 
-panel#tt-panel {
+#tt-panel {
   border: none;
+}
+
+#tt-treechildren:-moz-tree-row(quickSearch)
+{
+  background-color: lightblue;
 }
 
 /*tree#tt-tree-feedback {*/

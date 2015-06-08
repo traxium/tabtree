@@ -368,7 +368,7 @@ var windowListener = {
 					<treecols>
 						 <treecol id="namecol" label="Name" primary="true" flex="1"/>
 					</treecols>
-					<treechildren/>
+					<treechildren id="tt-treechildren"/>
 			</tree>
 		*/
 		let t = aDOMWindow.document.createElement('tree'); // <tree>
@@ -392,7 +392,8 @@ var windowListener = {
 			hideheader: 'true'
 		};
 		Object.keys(propsToSet).forEach( (p)=>{treecol.setAttribute(p, propsToSet[p]);} );
-		let treechildren = aDOMWindow.document.createElement('treechildren'); // <treechildren>
+		let treechildren = aDOMWindow.document.createElement('treechildren'); // <treechildren id="tt-treechildren">
+		treechildren.setAttribute('id', 'tt-treechildren');
 		treecols.appendChild(treecol);
 		t.appendChild(treecols);
 		t.appendChild(treechildren);
@@ -460,6 +461,20 @@ var windowListener = {
 		};
 		sidebar.appendChild(btn6);
 		//////////////////// END BUTTON 6 COLLAPSED /////////////////////////////////////////////////////////////////
+		
+		//////////////////// SEARCH BOX ////////////////////////////////////////////////////////////////////////
+		let quickSearchBox = aDOMWindow.document.createElement('textbox');
+		propsToSet = {
+			id: 'tt-quicksearchbox',
+			oncommand: 'searchboxCommandHandler(event);'
+		};
+		Object.keys(propsToSet).forEach( (p)=>{quickSearchBox.setAttribute(p, propsToSet[p]);} );
+		//aDOMWindow.searchboxCommandHandler = function f(event) {
+		//	aDOMWindow.document.querySelector('#tt-searchbox').value = 'tt-searchbox #' + ('counter' in f ? ++f.counter : (f.counter = 1));
+		//	
+		//};
+		sidebar.appendChild(quickSearchBox);
+		//////////////////// END SEARCH BOX /////////////////////////////////////////////////////////////////
 
 		//noinspection JSUnusedGlobalSymbols
 		Object.defineProperty(aDOMWindow, 't', { get: () => aDOMWindow.gBrowser.mCurrentTab, configurable: true}); // for debug
@@ -475,6 +490,7 @@ var windowListener = {
 		let label6 = aDOMWindow.document.querySelector('#tt-label6');
 		let toolbar = aDOMWindow.document.querySelector('#tt-toolbar');
 		let ind = aDOMWindow.document.querySelector('#tt-drop-indicator');
+		let quickSearchBox = aDOMWindow.document.querySelector('#tt-quicksearchbox');
 
 		let tt = {
 			DROP_BEFORE: -1,
@@ -734,7 +750,13 @@ var windowListener = {
 					image.setAttribute('height', '16px'); // we reduce such big images
 					toolbarbtn.setAttribute('image', g.tabs[i].image);
 				}
-			} // redrawToolbarbuttons: function() {
+			}, // redrawToolbarbuttons: function() {
+			
+			quickSearch: function(aText, tPos) {
+				if (aText && g.tabs[tPos].label.toLowerCase().indexOf(aText.toLowerCase()) != -1) {
+					return true;
+				}
+			}
 		}; // let tt = {
 
 		tree.addEventListener('dragstart', function(event) {
@@ -981,7 +1003,12 @@ var windowListener = {
 			isSeparator: function(row) { return false; },
 			isSorted: function() { return false; },
 			isEditable: function(row, column) { return false; },
-			//getRowProperties: function(row,props){}, // Obsolete since Gecko 22
+			getRowProperties: function(row) {
+				let tPos = row+tt.nPinned;
+				if ( tt.quickSearch(quickSearchBox.value, tPos) ) {
+					return 'quickSearch';
+				}
+			},
 			//getCellProperties: function(row,col,props){}, // Obsolete since Gecko 22
 			//getColumnProperties: function(colid,col,props){} // Obsolete since Gecko 22
 			getParentIndex: function(row) {
@@ -1299,6 +1326,19 @@ var windowListener = {
 			}
 		});
 		
+		quickSearchBox.oninput = function f(event) {
+			label2.value = 'quickSearchBox.oninput #' + ('c' in f ? ++f.c : (f.c=0));
+			
+			tree.treeBoxObject.invalidate();
+		};
+
+		tree.onkeydown = quickSearchBox.onkeydown = function f(keyboardEvent) {
+			if (keyboardEvent.key=='Escape') {
+				quickSearchBox.value = '';
+				tree.treeBoxObject.invalidate();
+			}
+		};
+		
 		g.tabContainer.addEventListener("TabSelect", function(event) {
 			let tab = event.target;
 			tab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(tab._tPos - tt.nPinned);
@@ -1324,7 +1364,7 @@ var windowListener = {
  * and of course selection including pinned tabs
  * + move pinned tabs(toolbarbuttons)
  * use gBrowser._numPinnedTabs or gBrowser.tabContainer._lastNumPinned
- * context menu for pinned tabs(toolbarbuttons)
+ * + context menu for pinned tabs(toolbarbuttons)
  * ctrl+shift+PgUp/PgDown behaviour
  * duplicate tab drop
  * + add comment about dragging type from firefox source
@@ -1340,5 +1380,6 @@ var windowListener = {
 /*
  * known bugs:
  * dropping links on native tabbar
+ * while there is no internet connection no icon for the initially selected tree row is displayed
  */
-// now doing - trying to improve tt.redrawToolbarbuttons()
+// now doing - quick search esc-key behaviour
