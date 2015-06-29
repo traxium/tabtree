@@ -9,6 +9,7 @@ const Cu = Components.utils;
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource:///modules/sessionstore/SessionStore.jsm");
 const ss = Cc["@mozilla.org/browser/sessionstore;1"].getService(Ci.nsISessionStore);
+const sss = Cc["@mozilla.org/content/style-sheet-service;1"].getService(Ci.nsIStyleSheetService);
 //Cu.import("resource://gre/modules/AddonManager.jsm");
 
 //noinspection JSUnusedGlobalSymbols
@@ -16,11 +17,10 @@ function startup(data, reason)
 {
 	console.log("Extension " + data.id + "(ver " + data.version + ") has been srarted up!");
 
-	let sss = Cc["@mozilla.org/content/style-sheet-service;1"].getService(Ci.nsIStyleSheetService);
 	let uri = Services.io.newURI("chrome://tabstree/skin/tree.css", null, null);
 	sss.loadAndRegisterSheet(uri, sss.AUTHOR_SHEET);
 	if( sss.sheetRegistered(uri, sss.AUTHOR_SHEET) ) {
-		console.log("Style sheet has been loaded!");
+		console.log("Style sheet has been registered!");
 	}
 
 	windowListener.register();
@@ -31,6 +31,13 @@ function shutdown(aData, aReason)
 {
 	if (aReason == APP_SHUTDOWN) return;
 	windowListener.unregister();
+
+	let uri = Services.io.newURI("chrome://tabstree/skin/tree.css", null, null);
+	if( sss.sheetRegistered(uri, sss.AUTHOR_SHEET) ) {
+		console.log("Style sheet has been unregistered!");
+		sss.unregisterSheet(uri, sss.AUTHOR_SHEET);
+	}
+	
 	console.log("Addon has been shut down!");
 }
 
@@ -41,7 +48,8 @@ function uninstall(aData, aReason) { }
 
 //noinspection JSUnusedGlobalSymbols
 var windowListener = {
-	
+	originals: {gBrowser: {}, TabContextMenu: {}},
+	eventListeners: {},
 	onOpenWindow: function (aXULWindow) {
 		// Wait for the window to finish loading
 		let aDOMWindow = aXULWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowInternal || Ci.nsIDOMWindow);
@@ -68,7 +76,7 @@ var windowListener = {
 					target.apply(thisArg, argumentsList); // returns nothing
 					SessionStore._internal.onLoad = old;
 					Services.prefs.setBoolPref("browser.sessionstore.debug", oldPref);
-					aDOMWindow.document.querySelector('#tt-label1').value = 'entry: after _internal.onLoad()';
+					aDOMWindow.document.querySelector('#tt-label1').value = 'entry: after _internal.onLoad()'; // to delete
 					windowListener.loadIntoWindowPart2(aDOMWindow); // Part2
 				}
 			});
@@ -87,12 +95,13 @@ var windowListener = {
 			let aXULWindow = XULWindows.getNext();
 			let aDOMWindow = aXULWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowInternal || Ci.nsIDOMWindow);
 			windowListener.loadIntoWindowPart1(aDOMWindow, aXULWindow);
-			aDOMWindow.document.querySelector('#tt-label1').value = 'entry: register';
+			aDOMWindow.document.querySelector('#tt-label1').value = 'entry: register'; // to delete
 			windowListener.loadIntoWindowPart2(aDOMWindow);
 		}
 		// Listen to new windows
 		Services.wm.addListener(windowListener);
 	},
+	
 	unregister: function () {
 		// Unload from any existing windows
 		let XULWindows = Services.wm.getXULWindowEnumerator(null);
@@ -121,13 +130,18 @@ var windowListener = {
 			return;
 		}
 
-		let splitter = aDOMWindow.document.querySelector('#tt_splitter');
-	
+		let splitter = aDOMWindow.document.querySelector('#tt-splitter');
 		if (splitter) {
-			let sidebar = aDOMWindow.document.querySelector('#tt_sidebar');
+			let sidebar = aDOMWindow.document.querySelector('#tt-sidebar');
 			splitter.parentNode.removeChild(splitter);
 			sidebar.parentNode.removeChild(sidebar);
 		}
+		
+		Object.keys(windowListener.originals.gBrowser).forEach( (x)=>{aDOMWindow.gBrowser[x] = windowListener.originals.gBrowser[x];} );
+		Object.keys(windowListener.originals.TabContextMenu).forEach( (x)=>{aDOMWindow.TabContextMenu[x] = windowListener.originals.TabContextMenu[x];} );
+		aDOMWindow.gBrowser.tabContainer.removeEventListener("TabMove", windowListener.eventListeners.onTabMove, false);
+		aDOMWindow.gBrowser.tabContainer.removeEventListener("TabSelect", windowListener.eventListeners.onTabSelect, false);
+		
 	}, // unloadFromWindow: function (aDOMWindow, aXULWindow) {
 	
 	loadIntoWindowPart1: function(aDOMWindow) { // here we can load something before all tabs have been loaded and restored by SS
@@ -297,7 +311,7 @@ var windowListener = {
 			aDOMWindow.document.querySelector('#tt-button4').label = 'tt-button4 #' + ('counter' in f ? ++f.counter : (f.counter = 1));
 
 		};
-		btn4.addEventListener('dragstart', function dragWithCustomImage(event) {
+		btn4.addEventListener('dragstart', function dragWithCustomImage(event) { // to delete
 		  var canvas = aDOMWindow.document.createElementNS("http://www.w3.org/1999/xhtml","canvas");
 		  canvas.width = canvas.height = 50;
 		
@@ -404,7 +418,7 @@ var windowListener = {
 		sidebar.appendChild(t);
 
 
-//			aDOMWindow.document.querySelector('#tt').addEventListener('select', function(event) {
+//			aDOMWindow.document.querySelector('#tt').addEventListener('select', function(event) { // to delete
 //				aDOMWindow.gBrowser.selectTabAtIndex(event.currentTarget.currentIndex);
 //			}, false);
 		//////////////////// END TREE /////////////////////////////////////////////////////////////////
@@ -849,7 +863,7 @@ var windowListener = {
 				event.dataTransfer.setDragImage(panel, event.clientX-(tree.boxObject.x-borderLeftWidth-marginLeft)+1, -20); // I don't know why "+1"
 			}
 			event.stopPropagation();
-		}, false);
+		}, false); // tree.addEventListener('dragstart', function(event) {
 
 		for (let i=0; i<g.tabs.length; ++i) {
 			if ( ss.getTabValue(g.tabs[i], 'ttLevel') === '' ) {
@@ -857,6 +871,7 @@ var windowListener = {
 			}
 		}
 
+		windowListener.originals.gBrowser.addTab = g.addTab;
 		g.addTab = new Proxy(g.addTab, {
 			apply: function(target, thisArg, argumentsList) {
 				if (argumentsList.length>=2 && argumentsList[1].referrerURI) { // undo close tab hasn't got argumentsList[1]
@@ -926,6 +941,7 @@ var windowListener = {
 			}
 		}); // g.addTab = new Proxy(g.addTab, {
 
+		windowListener.originals.gBrowser._endRemoveTab = g._endRemoveTab;
 		g._endRemoveTab = new Proxy(g._endRemoveTab, {
 			apply: function(target, thisArg, argumentsList) {
 				let tPos = argumentsList[0]._tPos;
@@ -1088,6 +1104,7 @@ var windowListener = {
 			} // drop(row, orientation, dataTransfer)
 		}; // tree.view = {
 
+		windowListener.originals.gBrowser.pinTab = g.pinTab;
 		g.pinTab = new Proxy(g.pinTab, {
 			apply: function(target, thisArg, argumentsList) {
 				let tab = argumentsList[0];
@@ -1134,7 +1151,7 @@ var windowListener = {
 			}
 		}); // g.pinTab = new Proxy(g.pinTab, {
 
-
+		windowListener.originals.gBrowser.unpinTab = g.unpinTab;
 		g.unpinTab = new Proxy(g.unpinTab, {
 			apply: function(target, thisArg, argumentsList) {
 				if (argumentsList.length>0 && argumentsList[0] && argumentsList[0].pinned) { // It seems SS invokes gBrowser.unpinTab for every tab(pinned and not pinned)
@@ -1269,6 +1286,7 @@ var windowListener = {
 			}
 		};
 
+		windowListener.originals.gBrowser.removeTab = g.removeTab;
 		g.removeTab =  new Proxy(g.removeTab, { // only for FLST after closing tab
 			apply: function(target, thisArg, argumentsList) {
 				let tab = argumentsList[0];
@@ -1280,11 +1298,12 @@ var windowListener = {
 			}
 		}); // g.removeTab =  new Proxy(g._endRemoveTab, {
 
-		aDOMWindow.btn5CommandHandler = function f(event) {
+		aDOMWindow.btn5CommandHandler = function f(event) { // to delete
 			aDOMWindow.document.querySelector('#tt-button5').label = 'Faviconed #' + ('counter' in f ? ++f.counter : (f.counter = 1));
 			tt.redrawToolbarbuttons();
 		};
-		
+
+		windowListener.originals.TabContextMenu.updateContextMenu = aDOMWindow.TabContextMenu.updateContextMenu;
 		aDOMWindow.TabContextMenu.updateContextMenu = new Proxy(aDOMWindow.TabContextMenu.updateContextMenu, {
 			apply: function(target, thisArg, argumentsList) {
 				let aPopupMenu = argumentsList[0];
@@ -1333,18 +1352,22 @@ var windowListener = {
 		};
 		
 		// I'm just disabling all unnecessary tab movement functions:
+		windowListener.originals.gBrowser.moveTabForward = g.moveTabForward;
 		g.moveTabForward = new Proxy(g.moveTabForward, {
 			apply: function(target, thisArg, argumentsList) {
 			}
 		});
+		windowListener.originals.gBrowser.moveTabBackward = g.moveTabBackward;
 		g.moveTabBackward = new Proxy(g.moveTabBackward, {
 			apply: function(target, thisArg, argumentsList) {
 			}
 		});
+		windowListener.originals.gBrowser.moveTabToStart = g.moveTabToStart;
 		g.moveTabToStart = new Proxy(g.moveTabToStart, {
 			apply: function(target, thisArg, argumentsList) {
 			}
 		});
+		windowListener.originals.gBrowser.moveTabToEnd = g.moveTabToEnd;
 		g.moveTabToEnd = new Proxy(g.moveTabToEnd, {
 			apply: function(target, thisArg, argumentsList) {
 			}
@@ -1369,11 +1392,12 @@ var windowListener = {
 			}
 		}, false);
         
-		g.tabContainer.addEventListener("TabMove", function(event) {
+		windowListener.eventListeners.onTabMove = function(event) { // to be removed upon shutdown
 			let tab = event.target;
 			tab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(tab._tPos - tt.nPinned);
 			tt.redrawToolbarbuttons();
-		}, false);
+		};
+		g.tabContainer.addEventListener("TabMove", windowListener.eventListeners.onTabMove, false);
 		
 		toolbar.addEventListener('command', function f(event) {
 			if (event.originalTarget.localName == 'toolbarbutton') {
@@ -1381,16 +1405,17 @@ var windowListener = {
 				g.selectTabAtIndex(tPos);
 			}
 		}, false);
-		
-		g.tabContainer.addEventListener("TabSelect", function(event) {
+
+		windowListener.eventListeners.onTabSelect = function(event) {  // to be removed upon shutdown
 			let tab = event.target;
 			tab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(tab._tPos - tt.nPinned);
 			tt.redrawToolbarbuttons();
-		}, false);
+		};
+		g.tabContainer.addEventListener("TabSelect", windowListener.eventListeners.onTabSelect, false);
 	} // loadIntoWindowPart2: function(aDOMWindow) {
 	
-};
-/*end - windowlistener*/
+}; // var windowListener = {
+
 /*
  * + write comment about aDOMWindow loading and SS
  * + dragstart doesn't work
@@ -1404,7 +1429,7 @@ var windowListener = {
  * + focus LST after closing tab
  * tab flipping
  * pref to enable lines alongside tree
- * and of course selection including pinned tabs
+ * + and of course selection including pinned tabs
  * + move pinned tabs(toolbarbuttons)
  * use gBrowser._numPinnedTabs or gBrowser.tabContainer._lastNumPinned
  * + context menu for pinned tabs(toolbarbuttons)
@@ -1425,4 +1450,4 @@ var windowListener = {
  * dropping links on native tabbar
  * while there is no internet connection no icon for the initially selected tree row is displayed
  */
-// now doing - tab selection through tree and toolbarbuttons
+// now doing - shutdown
