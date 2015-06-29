@@ -879,9 +879,9 @@ var windowListener = {
 						g.tabContainer.removeEventListener('TabOpen', onPreAddTabWithRef, true);
 						let tab = event.target;
 						let oldTab = g.selectedTab;
-						ss.setTabValue(tab, "ttLevel", (parseInt(ss.getTabValue(oldTab, 'ttLevel'))+1).toString() );
-						ss.setTabValue(tab, 'ttEmpty', 'true');
-						ss.setTabValue(oldTab, 'ttEmpty', 'false');
+						ss.setTabValue(tab, 'ttLevel', (parseInt(ss.getTabValue(oldTab, 'ttLevel'))+1).toString() );
+						//ss.setTabValue(tab, 'ttEmpty', 'true'); // to delete
+						//ss.setTabValue(oldTab, 'ttEmpty', 'false'); // to delete
 						let i;
 						for (i = oldTab._tPos + 1; i < g.tabs.length - 1; ++i) { // the last is our new tab
 							if ( parseInt(ss.getTabValue(g.tabs[i], 'ttLevel')) <= parseInt(ss.getTabValue(oldTab, 'ttLevel')) ) {
@@ -890,7 +890,11 @@ var windowListener = {
 							}
 						}
 						tree.treeBoxObject.rowCountChanged(i-tt.nPinned, 1);
-						tree.treeBoxObject.invalidateRow(oldTab._tPos-tt.nPinned); // redraw twisty on the parent
+						// now we need to do something with a selected tree row(it has moved due to a newly added tab, it is not obvious why)
+						// it only needed if we opened a new tab in background and not from pinned tab:
+						oldTab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(oldTab._tPos - tt.nPinned); // the first condition is unnecessary
+						
+						tree.treeBoxObject.invalidateRow(oldTab._tPos-tt.nPinned); // redraw twisty on the parent // ????
 					}, true);
 				} else if (argumentsList.length>=2 && !argumentsList[1].referrerURI) { // new tab button or dropping links on the native tabbar
 					g.tabContainer.addEventListener('TabOpen', function onPreAddTabWithoutRef(event) {
@@ -1005,7 +1009,7 @@ var windowListener = {
 			isContainerOpen: function(row) { return true; },
 			isContainerEmpty: function(row) {
 				let tPos = row+tt.nPinned;
-				//if ( ss.getTabValue(g.tabs[tPos], "ttEmpty") == 'true' ) {
+				//if ( ss.getTabValue(g.tabs[tPos], "ttEmpty") == 'true' ) { // to delete
 				//	return true;
 				//} else {
 				//	return false;
@@ -1450,4 +1454,4 @@ var windowListener = {
  * dropping links on native tabbar
  * while there is no internet connection no icon for the initially selected tree row is displayed
  */
-// now doing - shutdown
+// now doing - fixing bugs with selection
