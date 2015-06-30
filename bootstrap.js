@@ -1,3 +1,4 @@
+'use strict';
 /* jshint moz:true */
 /* global Components, Services, SessionStore, APP_SHUTDOWN */
 
@@ -53,8 +54,8 @@ var windowListener = {
 	onOpenWindow: function (aXULWindow) {
 		// Wait for the window to finish loading
 		let aDOMWindow = aXULWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowInternal || Ci.nsIDOMWindow);
-		aDOMWindow.addEventListener("load", function() {
-			aDOMWindow.removeEventListener("load", arguments.callee, false);
+		aDOMWindow.addEventListener("load", function onLoad() {
+			aDOMWindow.removeEventListener("load", onLoad, false);
 			
 			windowListener.loadIntoWindowPart1(aDOMWindow, aXULWindow);
 			
@@ -110,7 +111,7 @@ var windowListener = {
 			let aDOMWindow = aXULWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowInternal || Ci.nsIDOMWindow);
 			windowListener.unloadFromWindow(aDOMWindow, aXULWindow);
 		}
-		//Stop listening so future added windows dont get this attached
+		//Stop listening so future added windows don't get this attached
 		Services.wm.removeListener(windowListener);
 	},
 	
@@ -137,10 +138,10 @@ var windowListener = {
 			sidebar.parentNode.removeChild(sidebar);
 		}
 		
-		Object.keys(windowListener.originals.gBrowser).forEach( (x)=>{aDOMWindow.gBrowser[x] = windowListener.originals.gBrowser[x];} );
-		Object.keys(windowListener.originals.TabContextMenu).forEach( (x)=>{aDOMWindow.TabContextMenu[x] = windowListener.originals.TabContextMenu[x];} );
-		aDOMWindow.gBrowser.tabContainer.removeEventListener("TabMove", windowListener.eventListeners.onTabMove, false);
-		aDOMWindow.gBrowser.tabContainer.removeEventListener("TabSelect", windowListener.eventListeners.onTabSelect, false);
+		//Object.keys(windowListener.originals.gBrowser).forEach( (x)=>{aDOMWindow.gBrowser[x] = windowListener.originals.gBrowser[x];} );
+		//Object.keys(windowListener.originals.TabContextMenu).forEach( (x)=>{aDOMWindow.TabContextMenu[x] = windowListener.originals.TabContextMenu[x];} );
+		//aDOMWindow.gBrowser.tabContainer.removeEventListener("TabMove", windowListener.eventListeners.onTabMove, false);
+		//aDOMWindow.gBrowser.tabContainer.removeEventListener("TabSelect", windowListener.eventListeners.onTabSelect, false);
 		
 	}, // unloadFromWindow: function (aDOMWindow, aXULWindow) {
 	
@@ -1454,4 +1455,4 @@ var windowListener = {
  * dropping links on native tabbar
  * while there is no internet connection no icon for the initially selected tree row is displayed
  */
-// now doing - fixing bugs with selection
+// now doing - checking any bugs with the addon shutdown
