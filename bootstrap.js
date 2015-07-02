@@ -8,7 +8,8 @@ const Ci = Components.interfaces;
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource:///modules/sessionstore/SessionStore.jsm");
+var ssHack = Cu.import("resource:///modules/sessionstore/SessionStore.jsm");
+var ssOrig;
 const ss = Cc["@mozilla.org/browser/sessionstore;1"].getService(Ci.nsISessionStore);
 const sss = Cc["@mozilla.org/content/style-sheet-service;1"].getService(Ci.nsIStyleSheetService);
 //Cu.import("resource://gre/modules/AddonManager.jsm");
@@ -24,6 +25,26 @@ function startup(data, reason)
 		console.log("Style sheet has been registered!");
 	}
 
+	//	// Why do we use Proxy here? Let's see the chain how SS works:
+	//	// <window onload="gBrowserInit.onLoad()" /> ->
+	//	// -> Services.obs.notifyObservers(window, "browser-window-before-show", ""); ->
+	//	// -> SessionStore.jsm ->
+	//	// -> OBSERVING.forEach(function(aTopic) { Services.obs.addObserver(this, aTopic, true); }, this); ->
+	//	// -> case "browser-window-before-show": this.onBeforeBrowserWindowShown(aSubject); ->
+	//	// -> SessionStoreInternal.onLoad(aWindow); ->
+	//	// (1) -> Services.obs.notifyObservers(null, NOTIFY_WINDOWS_RESTORED, "");
+	//	// (2) -> or just end
+	//  // Here we dispatch our new event 'tt-TabsLoad'
+	ssOrig = ssHack.SessionStoreInternal.onLoad;
+	ssHack.SessionStoreInternal.onLoad = new Proxy(ssHack.SessionStoreInternal.onLoad, {
+		apply: function(target, thisArg, argumentsList) {
+			target.apply(thisArg, argumentsList); // returns nothing
+			let aWindow = argumentsList[0];
+			let event = new Event('tt-TabsLoad'); // we just added our event after this function is executed
+			aWindow.dispatchEvent(event);
+		}
+	});
+	
 	windowListener.register();
 }
 
@@ -38,6 +59,8 @@ function shutdown(aData, aReason)
 		console.log("Style sheet has been unregistered!");
 		sss.unregisterSheet(uri, sss.AUTHOR_SHEET);
 	}
+
+	ssHack.SessionStoreInternal.onLoad = ssOrig;
 	
 	console.log("Addon has been shut down!");
 }
@@ -54,35 +77,34 @@ var windowListener = {
 	onOpenWindow: function (aXULWindow) {
 		// Wait for the window to finish loading
 		let aDOMWindow = aXULWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowInternal || Ci.nsIDOMWindow);
-		aDOMWindow.addEventListener("load", function onLoad() {
-			aDOMWindow.removeEventListener("load", onLoad, false);
+		//aDOMWindow.addEventListener("load", function onLoad() { // to delete
+		//	aDOMWindow.removeEventListener("load", onLoad, false);
+		//	
+		//	//windowListener.loadIntoWindowPart1(aDOMWindow, aXULWindow); // to delete
+		//	
+
+		//	
+		//	let oldPref = Services.prefs.getBoolPref("browser.sessionstore.debug"); // to delete
+		//	Services.prefs.setBoolPref("browser.sessionstore.debug", true);
+		//	let old = SessionStore._internal.onLoad;
+		//	SessionStore._internal.onLoad = new Proxy(SessionStore._internal.onLoad, {
+		//		apply: function(target, thisArg, argumentsList) {
+		//			target.apply(thisArg, argumentsList); // returns nothing
+		//			//SessionStore._internal.onLoad = old;
+		//			//Services.prefs.setBoolPref("browser.sessionstore.debug", oldPref);
+		//			windowListener.loadIntoWindow(aDOMWindow); // Part 1 & 2
+		//			aDOMWindow.document.querySelector('#tt-label1').value = 'entry: after _internal.onLoad()'; // to delete
+		//		}
+		//	});
+		//	
+		//}, false);
+		
+		aDOMWindow.addEventListener('tt-TabsLoad', function onTabsLoad(event) {
+			aDOMWindow.removeEventListener('tt-TabsLoad', onTabsLoad, false);
 			
-			windowListener.loadIntoWindowPart1(aDOMWindow, aXULWindow);
-			
-			// Why do we use Proxy here? Let's see the chain how SS works:
-			// <window onload="gBrowserInit.onLoad()" /> ->
-			// -> Services.obs.notifyObservers(window, "browser-window-before-show", ""); ->
-			// -> SessionStore.jsm ->
-			// -> OBSERVING.forEach(function(aTopic) { Services.obs.addObserver(this, aTopic, true); }, this); ->
-			// -> case "browser-window-before-show": this.onBeforeBrowserWindowShown(aSubject); ->
-			// -> SessionStoreInternal.onLoad(aWindow); ->
-			// (1) -> Services.obs.notifyObservers(null, NOTIFY_WINDOWS_RESTORED, "");
-			// (2) -> or just end
-			
-			let oldPref = Services.prefs.getBoolPref("browser.sessionstore.debug");
-			Services.prefs.setBoolPref("browser.sessionstore.debug", true);
-			let old = SessionStore._internal.onLoad;
-			SessionStore._internal.onLoad = new Proxy(SessionStore._internal.onLoad, {
-				apply: function(target, thisArg, argumentsList) {
-					target.apply(thisArg, argumentsList); // returns nothing
-					SessionStore._internal.onLoad = old;
-					Services.prefs.setBoolPref("browser.sessionstore.debug", oldPref);
-					aDOMWindow.document.querySelector('#tt-label1').value = 'entry: after _internal.onLoad()'; // to delete
-					windowListener.loadIntoWindowPart2(aDOMWindow); // Part2
-				}
-			});
-			
+			windowListener.loadIntoWindow(aDOMWindow);
 		}, false);
+		
 	},
 	
 	onCloseWindow: function (aXULWindow) {},
@@ -95,9 +117,9 @@ var windowListener = {
 		while (XULWindows.hasMoreElements()) {
 			let aXULWindow = XULWindows.getNext();
 			let aDOMWindow = aXULWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowInternal || Ci.nsIDOMWindow);
-			windowListener.loadIntoWindowPart1(aDOMWindow, aXULWindow);
+			//windowListener.loadIntoWindowPart1(aDOMWindow, aXULWindow); // to delete
+			windowListener.loadIntoWindow(aDOMWindow); // Part 1 & 2
 			aDOMWindow.document.querySelector('#tt-label1').value = 'entry: register'; // to delete
-			windowListener.loadIntoWindowPart2(aDOMWindow);
 		}
 		// Listen to new windows
 		Services.wm.addListener(windowListener);
@@ -115,16 +137,16 @@ var windowListener = {
 		Services.wm.removeListener(windowListener);
 	},
 	
-	loadIntoWindow: function (aDOMWindow, aXULWindow) {
-		if (!aDOMWindow) {
-			return;
-		}
-		
-		var browser = aDOMWindow.document.querySelector('#browser');
-		if (browser) {
-			
-		} // END if (browser) {
-	}, // loadIntoWindow: function (aDOMWindow, aXULWindow) {
+	//loadIntoWindow: function (aDOMWindow, aXULWindow) {
+	//	if (!aDOMWindow) {
+	//		return;
+	//	}
+	//	
+	//	var browser = aDOMWindow.document.querySelector('#browser');
+	//	if (browser) {
+	//		
+	//	} // END if (browser) {
+	//}, // loadIntoWindow: function (aDOMWindow, aXULWindow) {
 	
 	unloadFromWindow: function (aDOMWindow, aXULWindow) {
 		if (!aDOMWindow) {
@@ -138,14 +160,14 @@ var windowListener = {
 			sidebar.parentNode.removeChild(sidebar);
 		}
 		
-		//Object.keys(windowListener.originals.gBrowser).forEach( (x)=>{aDOMWindow.gBrowser[x] = windowListener.originals.gBrowser[x];} );
-		//Object.keys(windowListener.originals.TabContextMenu).forEach( (x)=>{aDOMWindow.TabContextMenu[x] = windowListener.originals.TabContextMenu[x];} );
-		//aDOMWindow.gBrowser.tabContainer.removeEventListener("TabMove", windowListener.eventListeners.onTabMove, false);
-		//aDOMWindow.gBrowser.tabContainer.removeEventListener("TabSelect", windowListener.eventListeners.onTabSelect, false);
+		Object.keys(windowListener.originals.gBrowser).forEach( (x)=>{aDOMWindow.gBrowser[x] = windowListener.originals.gBrowser[x];} );
+		Object.keys(windowListener.originals.TabContextMenu).forEach( (x)=>{aDOMWindow.TabContextMenu[x] = windowListener.originals.TabContextMenu[x];} );
+		aDOMWindow.gBrowser.tabContainer.removeEventListener("TabMove", windowListener.eventListeners.onTabMove, false);
+		aDOMWindow.gBrowser.tabContainer.removeEventListener("TabSelect", windowListener.eventListeners.onTabSelect, false);
 		
 	}, // unloadFromWindow: function (aDOMWindow, aXULWindow) {
 	
-	loadIntoWindowPart1: function(aDOMWindow) { // here we can load something before all tabs have been loaded and restored by SS
+	loadIntoWindow: function(aDOMWindow) {
 		if (!aDOMWindow) {
 			return;
 		}
@@ -153,7 +175,7 @@ var windowListener = {
 		if (!browser) {
 			return;
 		}
-		let g = aDOMWindow.gBrowser; // to delete maybe
+		let g = aDOMWindow.gBrowser;
 
 		let propsToSet;
 		//////////////////// SPLITTER ///////////////////////////////////////////////////////////////////////
@@ -304,7 +326,6 @@ var windowListener = {
 		propsToSet = {
 			id: 'tt-button4',
 			label: 'tt-button4',
-			type: 'panel',
 			oncommand: 'btn4CommandHandler(event);'
 		};
 		Object.keys(propsToSet).forEach( (p)=>{btn4.setAttribute(p, propsToSet[p]);} );
@@ -312,22 +333,6 @@ var windowListener = {
 			aDOMWindow.document.querySelector('#tt-button4').label = 'tt-button4 #' + ('counter' in f ? ++f.counter : (f.counter = 1));
 
 		};
-		btn4.addEventListener('dragstart', function dragWithCustomImage(event) { // to delete
-		  var canvas = aDOMWindow.document.createElementNS("http://www.w3.org/1999/xhtml","canvas");
-		  canvas.width = canvas.height = 50;
-		
-		  var ctx = canvas.getContext("2d");
-		  ctx.lineWidth = 4;
-		  ctx.moveTo(0, 0);
-		  ctx.lineTo(50, 50);
-		  ctx.moveTo(0, 50);
-		  ctx.lineTo(50, 0);
-		  ctx.stroke();
-		
-		  var dt = event.dataTransfer;
-		  dt.setData('text/plain', 'Data to Drag');
-		  dt.setDragImage(canvas, 25, 25);
-		}, false);
 		sidebar.appendChild(btn4);
 		//////////////////// END BUTTON 4 /////////////////////////////////////////////////////////////////
 		//////////////////// BUTTON 5 ////////////////////////////////////////////////////////////////////////
@@ -345,17 +350,11 @@ var windowListener = {
 		ind.removeAttribute('anonid');
 		ind.id = 'tt-drop-indicator';
 		ind.collapsed = true;
-		// ind.style.transform = 'scaleY(-1)'; // flip // to delete
 		ind.style.marginTop = '-8px'; // needed for flipped arrow
 		let hboxForDropIndicator = aDOMWindow.document.createElement('hbox');
 		hboxForDropIndicator.align = 'start'; // just copying what mozilla does, but 'start' instead of 'end'
 		hboxForDropIndicator.appendChild(ind);
 		//////////////////// END DROP INDICATOR /////////////////////////////////////////////////////////////////
-		//////////////////// TOOLBARSEPARATOR //////////////////////////////////////////////////////////////////////// // to delete
-		//let toolbarseparator = aDOMWindow.document.createElement('toolbarseparator');
-		//toolbarseparator.id = 'tt-toolbarseparator';
-		//toolbarseparator.collapsed = true;
-		//////////////////// END TOOLBARSEPARATOR /////////////////////////////////////////////////////////////////
 		//////////////////// TOOLBOX /////////////////////////////////////////////////////////////////
 		/*
 		<toolbox>
@@ -376,7 +375,6 @@ var windowListener = {
 		let toolbar = aDOMWindow.document.createElement('toolbar');
 		toolbar.setAttribute('id', 'tt-toolbar');
 		toolbar.appendChild(hboxForDropIndicator);
-		//toolbar.appendChild(toolbarseparator); // to delete
 		toolbox.appendChild(toolbar);
 		sidebar.appendChild(toolbox);
 		//////////////////// END TOOLBOX /////////////////////////////////////////////////////////////////
@@ -390,18 +388,18 @@ var windowListener = {
 					<treechildren id="tt-treechildren"/>
 			</tree>
 		*/
-		let t = aDOMWindow.document.createElement('tree'); // <tree>
+		let tree = aDOMWindow.document.createElement('tree'); // <tree>
 		propsToSet = {
 			id: 'tt',
 			flex: '1',
 			seltype: 'single',
 			context: 'tabContextMenu',
 			treelines: 'true',
-			hidecolumnpicker: "true"
+			hidecolumnpicker: 'true'
 			//onmousemove: "document.querySelector('#ttLabel2').value = this.treeBoxObject.getRowAt(event.clientX, event.clientY); document.querySelector('#ttLabel3').value = this.currentIndex;", // for debug
 			//onmousemove: "document.querySelector('#tt-label2').value = event.clientX - this.boxObject.x;" // for debug
 		};
-		Object.keys(propsToSet).forEach( (p)=>{t.setAttribute(p, propsToSet[p]);} );
+		Object.keys(propsToSet).forEach( (p)=>{tree.setAttribute(p, propsToSet[p]);} );
 		let treecols = aDOMWindow.document.createElement('treecols'); // <treecols>
 		let treecol = aDOMWindow.document.createElement('treecol'); // <treecol>
 		propsToSet = {
@@ -414,9 +412,9 @@ var windowListener = {
 		let treechildren = aDOMWindow.document.createElement('treechildren'); // <treechildren id="tt-treechildren">
 		treechildren.setAttribute('id', 'tt-treechildren');
 		treecols.appendChild(treecol);
-		t.appendChild(treecols);
-		t.appendChild(treechildren);
-		sidebar.appendChild(t);
+		tree.appendChild(treecols);
+		tree.appendChild(treechildren);
+		sidebar.appendChild(tree);
 
 
 //			aDOMWindow.document.querySelector('#tt').addEventListener('select', function(event) { // to delete
@@ -428,10 +426,6 @@ var windowListener = {
 		let panel = aDOMWindow.document.createElement('panel');
 		panel.setAttribute('id', 'tt-panel');
 		panel.setAttribute('style', 'opacity: 0.8');
-
-		//let stupidLabel = aDOMWindow.document.createElement('label'); // to delete
-		//stupidLabel.setAttribute('value', 'stupid label');
-		//panel.appendChild(stupidLabel);
 
 		aDOMWindow.document.querySelector('#mainPopupSet').appendChild(panel);
 		//////////////////// END PANEL /////////////////////////////////////////////////////////////////
@@ -463,23 +457,6 @@ var windowListener = {
 
 		panel.appendChild(treeFeedback);
 		//////////////////// END FEEDBACK TREE /////////////////////////////////////////////////////////////////
-
-		//////////////////// BUTTON 6 COLLAPSED ////////////////////////////////////////////////////////////////////////
-		let btn6 = aDOMWindow.document.createElement('button'); // for debugging purposes
-		propsToSet = {
-			id: 'tt-button6',
-			label: 'collapsed panel button',
-			oncommand: 'btn6CommandHandler(event);',
-			type: 'panel'
-			//collapsed: 'true'
-		};
-		Object.keys(propsToSet).forEach( (p)=>{btn6.setAttribute(p, propsToSet[p]);} );
-		aDOMWindow.btn6CommandHandler = function f(event) {
-			aDOMWindow.document.querySelector('#tt-button6').label = 'tt-button6 #' + ('counter' in f ? ++f.counter : (f.counter = 1));
-
-		};
-		sidebar.appendChild(btn6);
-		//////////////////// END BUTTON 6 COLLAPSED /////////////////////////////////////////////////////////////////
 		
 		//////////////////// QUICK SEARCH BOX ////////////////////////////////////////////////////////////////////////
 		let quickSearchBox = aDOMWindow.document.createElement('textbox');
@@ -491,21 +468,7 @@ var windowListener = {
 		sidebar.appendChild(quickSearchBox);
 		//////////////////// END QUICK SEARCH BOX /////////////////////////////////////////////////////////////////
 
-		//noinspection JSUnusedGlobalSymbols
-		Object.defineProperty(aDOMWindow, 't', { get: () => aDOMWindow.gBrowser.mCurrentTab, configurable: true}); // for debug
-	}, // loadIntoWindowPart1: function(aDOMWindow) {
-	
-	loadIntoWindowPart2: function(aDOMWindow) {
-		let g = aDOMWindow.gBrowser;
-		let tree = aDOMWindow.document.querySelector('#tt');
-		let panel = aDOMWindow.document.querySelector('#tt-panel');
-		let treeFeedback = aDOMWindow.document.querySelector('#tt-tree-feedback');
-		let label2 = aDOMWindow.document.querySelector('#tt-label2');
-		let label4 = aDOMWindow.document.querySelector('#tt-label4');
-		let label6 = aDOMWindow.document.querySelector('#tt-label6');
-		let toolbar = aDOMWindow.document.querySelector('#tt-toolbar');
-		let ind = aDOMWindow.document.querySelector('#tt-drop-indicator');
-		let quickSearchBox = aDOMWindow.document.querySelector('#tt-quicksearchbox');
+//////////////////////////////// here we could load something before all tabs have been loaded and restored by SS ////////////////////////////////
 
 		let tt = {
 			DROP_BEFORE: -1,
@@ -717,24 +680,18 @@ var windowListener = {
 			},
 
 			movePinnedToPlus: function(aTab, tPosTo, mode) {
-				//let tbbtnSource = toolbar.childNodes[aTab._tPos+1]; // +1 for the arrow correction // to delete
-				//let tbbtnTo = toolbar.childNodes[tPosTo+1]; // +1 for the arrow correction // to delete
 				if (mode === this.DROP_BEFORE) {
 					if (aTab._tPos > tPosTo) {
 						g.moveTabTo(aTab, tPosTo);
 					} else if (aTab._tPos < tPosTo) {
 						g.moveTabTo(aTab, tPosTo-1);
 					}
-					//toolbar.insertBefore(tbbtnSource, tbbtnTo); // to delete
 				} else if (mode === this.DROP_AFTER) {
 					if (aTab._tPos > tPosTo) {
 						g.moveTabTo(aTab, tPosTo+1);
 					} else if (aTab._tPos < tPosTo) {
 						g.moveTabTo(aTab, tPosTo);
 					}
-					//toolbar.appendChild(tbbtnSource); // to delete
-				} else {
-					console.log('error!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'); // to delete
 				}
 				this.redrawToolbarbuttons();
 			},
@@ -786,7 +743,6 @@ var windowListener = {
 				panel.addEventListener('popupshown', function onPopupShown() {
 					panel.removeEventListener('popupshown', onPopupShown);
 
-					aDOMWindow.document.querySelector('#tt-label4').value = 'popupshown'; // to delete
 					//noinspection JSUnusedGlobalSymbols
 					treeFeedback.treeBoxObject.view = {
 						numStart: tab._tPos,
@@ -1084,7 +1040,6 @@ var windowListener = {
 				return false;
 			},
 			drop: function(row, orientation, dataTransfer) {
-				//label2.value = 'drop'; // to delete
 				let tPosTo = row + tt.nPinned;
 				let dt = dataTransfer;
 				
@@ -1136,18 +1091,6 @@ var windowListener = {
 					g.tabContainer.removeEventListener("TabPinned", onTabPinned, false);
 					
 					tt.redrawToolbarbuttons();
-					//let toolbarbtn = aDOMWindow.document.createElement('toolbarbutton'); // to delete
-					//toolbarbtn.setAttribute('image', event.target.image);
-					//toolbarbtn.setAttribute('tooltiptext', event.target.label);
-                    //
-					//let toolbar = aDOMWindow.document.querySelector('#tt-toolbar');
-                    //
-					//// there are sites with at least 32x32px images therefore buttons would have become huge
-					//toolbarbtn.setAttribute('collapsed', 'true'); // we don't want to see the size of the toolbar changing every time a site with a big icon gets pinned
-					//toolbar.appendChild(toolbarbtn); // anonymous nodes appear only after appendChild
-					//let image = aDOMWindow.document.getAnonymousNodes(toolbarbtn)[0];
-					//image.setAttribute('height', '16px'); // we reduce such big images
-					//toolbarbtn.removeAttribute('collapsed'); // and finally show it after image size became normal
 				}, false);
 
 				let row = tPos-tt.nPinned; // remember the row because after target.apply the number of pinned tabs will change(+1) and result would be different
@@ -1189,7 +1132,6 @@ var windowListener = {
 		};
 
 		toolbar.ondragover = function f(event) {
-			//label4.value = 'toolbar drag OVER #' + ('c' in f ? ++f.c : (f.c=1)); // to delete
 			let dt = event.dataTransfer;
 			
 			//if ( !(tab && tab.tagName == 'tab') && !dt.mozTypesAt(0).contains('text/uri-list') ) { // to delete
@@ -1229,11 +1171,9 @@ var windowListener = {
 			event.stopPropagation();
 
 			ind.collapsed = true;
-			//label5.value = 'toolbar drag LEAVE #' + ('c' in f ? ++f.c : (f.c=1)) + ' ' + event.originalTarget.tagName; // to delete
 		};
 
 		toolbar.ondrop = function f(event) {
-			//label6.value = 'toolbar.drop'; // to delete
 			let dt = event.dataTransfer;
 			
 			if ( dt.mozTypesAt(0).contains('application/x-moz-node') && dt.mozGetDataAt('application/x-moz-node', 0).tagName=='toolbarbutton'
@@ -1286,8 +1226,6 @@ var windowListener = {
 					}
 					ind.collapsed = true;
 				}
-			} else {
-				console.log('error!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'); // to delete
 			}
 		};
 
@@ -1344,8 +1282,6 @@ var windowListener = {
 		});
 		
 		quickSearchBox.oninput = function f(event) {
-			label2.value = 'quickSearchBox.oninput #' + ('c' in f ? ++f.c : (f.c=0));
-			
 			tree.treeBoxObject.invalidate();
 		};
 
@@ -1390,7 +1326,6 @@ var windowListener = {
 		}, false);
 		
 		tree.addEventListener('keyup', function f(event) {
-			label2.value = 'keyup';
 			if (event.key=='ArrowUp' || event.key=='ArrowDown') {
 				let tPos = tree.currentIndex + tt.nPinned;
 				g.selectTabAtIndex(tPos);
