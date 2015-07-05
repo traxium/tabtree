@@ -74,6 +74,8 @@ function uninstall(aData, aReason) { }
 var windowListener = {
 	originals: {gBrowser: {}, TabContextMenu: {}},
 	eventListeners: {},
+	observer: null,
+	
 	onOpenWindow: function (aXULWindow) {
 		// Wait for the window to finish loading
 		let aDOMWindow = aXULWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowInternal || Ci.nsIDOMWindow);
@@ -164,7 +166,8 @@ var windowListener = {
 		Object.keys(windowListener.originals.TabContextMenu).forEach( (x)=>{aDOMWindow.TabContextMenu[x] = windowListener.originals.TabContextMenu[x];} );
 		aDOMWindow.gBrowser.tabContainer.removeEventListener("TabMove", windowListener.eventListeners.onTabMove, false);
 		aDOMWindow.gBrowser.tabContainer.removeEventListener("TabSelect", windowListener.eventListeners.onTabSelect, false);
-		
+		aDOMWindow.gBrowser.tabContainer.removeEventListener("TabAttrModified", windowListener.eventListeners.onTabAttrModified, false);
+		Services.obs.removeObserver(windowListener.observer, 'document-element-inserted');
 	}, // unloadFromWindow: function (aDOMWindow, aXULWindow) {
 	
 	loadIntoWindow: function(aDOMWindow) {
@@ -960,6 +963,11 @@ var windowListener = {
 			},
 			getImageSrc: function(row, column) {
 				let tPos = row+tt.nPinned;
+				if (g.tabs[tPos].hasAttribute('progress')) {
+					return "chrome://browser/skin/tabbrowser/loading.png";
+				} else if (g.tabs[tPos].hasAttribute('busy')) {
+					return "chrome://browser/skin/tabbrowser/connecting.png";
+				}
 				return g.tabs[tPos].image;
 			}, // or null to hide icons or /g.getIcon(g.tabs[row])/
 			isContainer: function(row) { return true; }, // drop can be performed only on containers
@@ -1346,6 +1354,31 @@ var windowListener = {
 			}
 		}, false);
 
+		// "This event should be dispatched when any of these attributes change:
+		// label, crop, busy, image, selected"
+		windowListener.eventListeners.onTabAttrModified = function(event) {
+			let tab = event.target;
+			tab.pinned ? tt.redrawToolbarbuttons() : tree.treeBoxObject.invalidateRow(tab._tPos - tt.nPinned);
+		};
+		g.tabContainer.addEventListener("TabAttrModified", windowListener.eventListeners.onTabAttrModified, false); // don't forget to remove later
+		
+		// This is needed for initial firefox load, otherwise favicons on the tree wouldn't be loaded:
+		if (windowListener.observer) { // at first delete old observer
+			Services.obs.removeObserver(windowListener.observer, 'document-element-inserted');
+		}
+		//noinspection JSUnusedGlobalSymbols
+		windowListener.observer = {
+			observe: function f(aSubject, aTopic, aData) {
+				label4.value = 'c' in f ? ++f.c : (f.c = 1); // to delete
+				tree.treeBoxObject.invalidate();
+			}
+		};
+		Services.obs.addObserver(windowListener.observer, 'document-element-inserted', false); // don't forget to remove later
+
+		aDOMWindow.tbo = tree.treeBoxObject; // for debug
+		//noinspection JSUnusedGlobalSymbols
+		Object.defineProperty(aDOMWindow, 't', {get: function() {return g.mCurrentTab;}, configurable: true}); // for debug
+		
 		windowListener.eventListeners.onTabSelect = function(event) {  // to be removed upon shutdown
 			let tab = event.target;
 			tab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(tab._tPos - tt.nPinned);
@@ -1390,4 +1423,4 @@ var windowListener = {
  * dropping links on native tabbar
  * while there is no internet connection no icon for the initially selected tree row is displayed
  */
-// now doing - checking any bugs with the addon shutdown
+// now doing - progress listeners
