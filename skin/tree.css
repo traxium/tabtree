@@ -6,7 +6,7 @@
 
 #tt-treechildren:-moz-tree-image {
   /*noinspection CssUnknownTarget*/
-  list-style-image: url("chrome://mozapps/skin/places/defaultFavicon.png");
+  list-style-image: url(chrome://mozapps/skin/places/defaultFavicon.png);
   width: 16px; /* there are websites with at least 32x32px icons, they look ugly in our tree */
 }
 
@@ -14,19 +14,19 @@
   border: none;
 }
 
-#tt-treechildren:-moz-tree-row(quickSearch)
-{
+#tt-treechildren:-moz-tree-row(quickSearch) {
   background-color: lightblue;
 }
 
-/*tree#tt-tree-feedback {*/
-  /*margin: 0px;*/
-/*}*/
+#tt-treechildren:-moz-tree-row(selected) {
+  background-color: rgb(198, 206, 230);
+  color: red;
+}
 
-/*tree#tt-tree-feedback>treechildren {*/
-  /*border: none;*/
+#tt-treechildren:-moz-tree-cell-text(selected) {
+  color: black;
+}
+
+/*#tt-treechildren:-moz-tree-twisty {*/
+  /*list-style-image: url();*/
 /*}*/
-/*
-tree#tt>treechildren::-moz-tree-twisty {
-  list-style-image: url("");
-}*/

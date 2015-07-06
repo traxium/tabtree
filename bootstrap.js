@@ -1379,8 +1379,13 @@ var windowListener = {
 		
 		tt.redrawToolbarbuttons(); // needed when addon is enabled from about:addons (not when firefox is being loaded)
 		tree.treeBoxObject.invalidate(); // just in case
+		// highlighting a current tree row/toolbarbutton at startup:
+		g.mCurrentTab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(g.mCurrentTab._tPos - tt.nPinned);
+		tt.redrawToolbarbuttons();
 
 		aDOMWindow.tbo = tree.treeBoxObject; // for debug
+		aDOMWindow.tree = tree; // for debug
+		aDOMWindow.tch = aDOMWindow.document.querySelector('#tt-treechildren'); // for debug
 		//noinspection JSUnusedGlobalSymbols
 		Object.defineProperty(aDOMWindow, 't', {get: function() {return g.mCurrentTab;}, configurable: true}); // for debug
 	} // loadIntoWindowPart2: function(aDOMWindow) {
@@ -1388,37 +1393,24 @@ var windowListener = {
 }; // var windowListener = {
 
 /*
- * + write comment about aDOMWindow loading and SS
- * + dragstart doesn't work
- * + clean code
- * + solve problem with big pictures
- * + add dragging branches
- * + proper feedback image while dragging
- * + move everything to the left
- * + add dropping links on the tree
- * + add dropping links on the toolbar(pinned tabs bar)
- * + focus LST after closing tab
- * tab flipping
- * pref to enable lines alongside tree
- * + and of course selection including pinned tabs
- * + move pinned tabs(toolbarbuttons)
- * use gBrowser._numPinnedTabs or gBrowser.tabContainer._lastNumPinned
- * + context menu for pinned tabs(toolbarbuttons)
- * + ctrl+shift+PgUp/PgDown behaviour
- * duplicate tab drop
- * + add comment about dragging type from firefox source
  * edit comments about Obsolete tree.view methods
  * check scroll bar handling
- * + search box
- * + delete anonid attr
- * - make negative margin relative instead of absolute in arrow
- * let draggedTab = event.dataTransfer.mozGetDataAt(TAB_DROP_TYPE, 0);
  * full screen mode
  * check for about:config relatedToCurrent option. Will my addon still work?
+ * select something on startup
+ * css for tree for the selected tab
 */
+/*
+ * later:
+ * tab flipping
+ * pref to enable lines alongside tree
+ * duplicate tab for drag and drop
+ * use let draggedTab = event.dataTransfer.mozGetDataAt(TAB_DROP_TYPE, 0);
+ * use gBrowser._numPinnedTabs or gBrowser.tabContainer._lastNumPinned
+ * dotted border around previously selected tab
+ */
 /*
  * known bugs:
  * dropping links on native tabbar
- * while there is no internet connection no icon for the initially selected tree row is displayed
  */
-// now doing - tiding
+// now doing - css for three for selected tab
