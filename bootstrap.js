@@ -845,22 +845,23 @@ var windowListener = {
 						g.tabContainer.removeEventListener('TabOpen', onPreAddTabWithRef, true);
 						let tab = event.target;
 						let oldTab = g.selectedTab;
-						ss.setTabValue(tab, 'ttLevel', (parseInt(ss.getTabValue(oldTab, 'ttLevel'))+1).toString() );
-						//ss.setTabValue(tab, 'ttEmpty', 'true'); // to delete
-						//ss.setTabValue(oldTab, 'ttEmpty', 'false'); // to delete
-						let i;
-						for (i = oldTab._tPos + 1; i < g.tabs.length - 1; ++i) { // the last is our new tab
-							if ( parseInt(ss.getTabValue(g.tabs[i], 'ttLevel')) <= parseInt(ss.getTabValue(oldTab, 'ttLevel')) ) {
-								g.moveTabTo(tab, i);
-								break;
+						if (oldTab.pinned) {
+							tree.treeBoxObject.rowCountChanged(g.tabs.length-1 - tt.nPinned, 1); // our new tab is at index g.tabs.length-1
+						} else {
+							ss.setTabValue(tab, 'ttLevel', (parseInt(ss.getTabValue(oldTab, 'ttLevel')) + 1).toString());
+							let i;
+							for (i = oldTab._tPos + 1; i < g.tabs.length - 1; ++i) { // the last is our new tab
+								if (parseInt(ss.getTabValue(g.tabs[i], 'ttLevel')) <= parseInt(ss.getTabValue(oldTab, 'ttLevel'))) {
+									g.moveTabTo(tab, i);
+									break;
+								}
 							}
+							tree.treeBoxObject.rowCountChanged(i - tt.nPinned, 1);
+							// now we need to do something with a selected tree row(it has moved due to a newly added tab, it is not obvious why)
+							// it only needed if we opened a new tab in background and not from pinned tab:
+							tree.view.selection.select(oldTab._tPos - tt.nPinned);
 						}
-						tree.treeBoxObject.rowCountChanged(i-tt.nPinned, 1);
-						// now we need to do something with a selected tree row(it has moved due to a newly added tab, it is not obvious why)
-						// it only needed if we opened a new tab in background and not from pinned tab:
-						oldTab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(oldTab._tPos - tt.nPinned); // the first condition is unnecessary
-						
-						tree.treeBoxObject.invalidateRow(oldTab._tPos-tt.nPinned); // redraw twisty on the parent // ????
+						//tree.treeBoxObject.invalidateRow(oldTab._tPos-tt.nPinned); // redraw twisty on the parent // ????
 					}, true);
 				} else if (argumentsList.length>=2 && !argumentsList[1].referrerURI) { // new tab button or dropping links on the native tabbar
 					g.tabContainer.addEventListener('TabOpen', function onPreAddTabWithoutRef(event) {
@@ -1420,4 +1421,4 @@ var windowListener = {
  * known bugs:
  * dropping links on native tabbar
  */
-// now doing - checking scroll bar handling
+// now doing - opening new tabs from pinned tabs
