@@ -790,9 +790,9 @@ var windowListener = {
 						isEditable: function (row, column) {
 							return false;
 						},
-						//getRowProperties: function(row,props){}, // Obsolete since Gecko 22
-						//getCellProperties: function(row,col,props){}, // Obsolete since Gecko 22
-						//getColumnProperties: function(colid,col,props){} // Obsolete since Gecko 22
+						//getRowProperties: function(row,props){}, // props parameter is obsolete since Gecko 22
+						//getCellProperties: function(row,col,props){}, // props parameter is obsolete since Gecko 22
+						//getColumnProperties: function(colid,col,props){} // props parameter is obsolete since Gecko 22
 						getParentIndex: function (row) {
 							if (this.getLevel(row) == 0) return -1;
 							for (let t = row - 1; t >= 0; --t) {
@@ -995,8 +995,8 @@ var windowListener = {
 					return 'quickSearch';
 				}
 			},
-			//getCellProperties: function(row,col,props){}, // Obsolete since Gecko 22
-			//getColumnProperties: function(colid,col,props){} // Obsolete since Gecko 22
+			//getCellProperties: function(row,col,props){}, // props parameter is obsolete since Gecko 22
+			//getColumnProperties: function(colid,col,props){} // props parameter is obsolete since Gecko 22
 			getParentIndex: function(row) {
 				if (this.getLevel(row)==0) return -1;
 				for (let t = row - 1; t >= 0; --t) {
@@ -1375,6 +1375,7 @@ var windowListener = {
 			let tab = event.target;
 			tab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(tab._tPos - tt.nPinned);
 			tt.redrawToolbarbuttons();
+			tree.treeBoxObject.ensureRowIsVisible(tab._tPos - tt.nPinned);
 		}), false); // don't forget to remove
 		
 		tt.redrawToolbarbuttons(); // needed when addon is enabled from about:addons (not when firefox is being loaded)
@@ -1393,12 +1394,12 @@ var windowListener = {
 }; // var windowListener = {
 
 /*
- * edit comments about Obsolete tree.view methods
- * check scroll bar handling
+ * +edit comments about Obsolete tree.view methods
+ * +check scroll bar handling
  * full screen mode
  * check for about:config relatedToCurrent option. Will my addon still work?
- * select something on startup
- * css for tree for the selected tab
+ * +select something on startup
+ * +css for tree for the selected tab
 */
 /*
  * later:
@@ -1413,4 +1414,4 @@ var windowListener = {
  * known bugs:
  * dropping links on native tabbar
  */
-// now doing - css for three for selected tab
+// now doing - checking scroll bar handling

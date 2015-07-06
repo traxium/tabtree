@@ -27,6 +27,6 @@
   color: black;
 }
 
-/*#tt-treechildren:-moz-tree-twisty {*/
-  /*list-style-image: url();*/
-/*}*/
+#tt-treechildren:-moz-tree-twisty {
+  list-style-image: none;
+}
