@@ -72,44 +72,35 @@ function uninstall(aData, aReason) { }
 
 //noinspection JSUnusedGlobalSymbols
 var windowListener = {
-	originals: {gBrowser: {}, TabContextMenu: {}},
-	eventListeners: {},
-	observer: null,
 	
 	onOpenWindow: function (aXULWindow) {
-		// Wait for the window to finish loading
 		let aDOMWindow = aXULWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowInternal || Ci.nsIDOMWindow);
-		//aDOMWindow.addEventListener("load", function onLoad() { // to delete
-		//	aDOMWindow.removeEventListener("load", onLoad, false);
-		//	
-		//	//windowListener.loadIntoWindowPart1(aDOMWindow, aXULWindow); // to delete
-		//	
-
-		//	
-		//	let oldPref = Services.prefs.getBoolPref("browser.sessionstore.debug"); // to delete
-		//	Services.prefs.setBoolPref("browser.sessionstore.debug", true);
-		//	let old = SessionStore._internal.onLoad;
-		//	SessionStore._internal.onLoad = new Proxy(SessionStore._internal.onLoad, {
-		//		apply: function(target, thisArg, argumentsList) {
-		//			target.apply(thisArg, argumentsList); // returns nothing
-		//			//SessionStore._internal.onLoad = old;
-		//			//Services.prefs.setBoolPref("browser.sessionstore.debug", oldPref);
-		//			windowListener.loadIntoWindow(aDOMWindow); // Part 1 & 2
-		//			aDOMWindow.document.querySelector('#tt-label1').value = 'entry: after _internal.onLoad()'; // to delete
-		//		}
-		//	});
-		//	
-		//}, false);
-		
 		aDOMWindow.addEventListener('tt-TabsLoad', function onTabsLoad(event) {
 			aDOMWindow.removeEventListener('tt-TabsLoad', onTabsLoad, false);
 			
 			windowListener.loadIntoWindow(aDOMWindow);
 		}, false);
-		
 	},
 	
-	onCloseWindow: function (aXULWindow) {},
+	onCloseWindow: function (aXULWindow) {
+		// In Gecko 7.0 nsIDOMWindow2 has been merged into nsIDOMWindow interface.
+		// In Gecko 8.0 nsIDOMStorageWindow and nsIDOMWindowInternal have been merged into nsIDOMWindow interface.
+		let aDOMWindow = aXULWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowInternal || Ci.nsIDOMWindow);
+		//Or:
+		//if (aXULWindow.docShell instanceof Ci.nsIInterfaceRequestor) {
+		//	aDOMWindow = aXULWindow.docShell.getInterface(Ci.nsIDOMWindow);
+		//}
+		if (!aDOMWindow) {
+			return;
+		}
+		let browser = aDOMWindow.document.querySelector('#browser');
+		if (!browser) {
+			return;
+		}
+		if (aDOMWindow.tt && aDOMWindow.tt.toRemove && aDOMWindow.tt.toRemove.observer) { // condition is needed because we also remove the observer in 'unloadFromWindow'
+			Services.obs.removeObserver(aDOMWindow.tt.toRemove.observer, 'document-element-inserted');
+		}
+	},
 	
 	onWindowTitleChange: function (aXULWindow, aNewTitle) {},
 	
@@ -154,7 +145,10 @@ var windowListener = {
 		if (!aDOMWindow) {
 			return;
 		}
-
+		let browser = aDOMWindow.document.querySelector('#browser');
+		if (!browser) {
+			return;
+		}
 		let splitter = aDOMWindow.document.querySelector('#tt-splitter');
 		if (splitter) {
 			let sidebar = aDOMWindow.document.querySelector('#tt-sidebar');
@@ -162,13 +156,16 @@ var windowListener = {
 			sidebar.parentNode.removeChild(sidebar);
 		}
 		
-		Object.keys(windowListener.originals.gBrowser).forEach( (x)=>{aDOMWindow.gBrowser[x] = windowListener.originals.gBrowser[x];} );
-		Object.keys(windowListener.originals.TabContextMenu).forEach( (x)=>{aDOMWindow.TabContextMenu[x] = windowListener.originals.TabContextMenu[x];} );
-		aDOMWindow.gBrowser.tabContainer.removeEventListener("TabMove", windowListener.eventListeners.onTabMove, false);
-		aDOMWindow.gBrowser.tabContainer.removeEventListener("TabSelect", windowListener.eventListeners.onTabSelect, false);
-		aDOMWindow.gBrowser.tabContainer.removeEventListener("TabAttrModified", windowListener.eventListeners.onTabAttrModified, false);
-		Services.obs.removeObserver(windowListener.observer, 'document-element-inserted');
-	}, // unloadFromWindow: function (aDOMWindow, aXULWindow) {
+		Object.keys(aDOMWindow.tt.toRestore.g).forEach( (x)=>{aDOMWindow.gBrowser[x] = aDOMWindow.tt.toRestore.g[x];} );
+		Object.keys(aDOMWindow.tt.toRestore.TabContextMenu).forEach( (x)=>{aDOMWindow.TabContextMenu[x] = aDOMWindow.tt.toRestore.TabContextMenu[x];} ); // only 1 at the moment - 'updateContextMenu'
+		aDOMWindow.gBrowser.tabContainer.removeEventListener("TabMove", aDOMWindow.tt.toRemove.eventListeners.onTabMove, false);
+		aDOMWindow.gBrowser.tabContainer.removeEventListener("TabSelect", aDOMWindow.tt.toRemove.eventListeners.onTabSelect, false);
+		aDOMWindow.gBrowser.tabContainer.removeEventListener("TabAttrModified", aDOMWindow.tt.toRemove.eventListeners.onTabAttrModified, false);
+		if (aDOMWindow.tt && aDOMWindow.tt.toRemove && aDOMWindow.tt.toRemove.observer) { // maybe this conditions are unnecessary
+			Services.obs.removeObserver(aDOMWindow.tt.toRemove.observer, 'document-element-inserted');
+		}
+		delete aDOMWindow.tt;
+	},
 	
 	loadIntoWindow: function(aDOMWindow) {
 		if (!aDOMWindow) {
@@ -179,6 +176,10 @@ var windowListener = {
 			return;
 		}
 		let g = aDOMWindow.gBrowser;
+		aDOMWindow.tt = {
+			toRemove: {eventListeners: {}},
+			toRestore: {g: {}, TabContextMenu: {}}
+		};
 
 		let propsToSet;
 		//////////////////// SPLITTER ///////////////////////////////////////////////////////////////////////
@@ -831,8 +832,9 @@ var windowListener = {
 			}
 		}
 
-		windowListener.originals.gBrowser.addTab = g.addTab;
-		g.addTab = new Proxy(g.addTab, {
+		//windowListener.originals.gBrowser.addTab = g.addTab; // to delete
+		aDOMWindow.tt.toRestore.g.addTab = g.addTab;
+		g.addTab = new Proxy(g.addTab, { // don't forget to restore
 			apply: function(target, thisArg, argumentsList) {
 				if (argumentsList.length>=2 && argumentsList[1].referrerURI) { // undo close tab hasn't got argumentsList[1]
 					g.tabContainer.addEventListener('TabOpen', function onPreAddTabWithRef(event) {
@@ -905,8 +907,9 @@ var windowListener = {
 			}
 		}); // g.addTab = new Proxy(g.addTab, {
 
-		windowListener.originals.gBrowser._endRemoveTab = g._endRemoveTab;
-		g._endRemoveTab = new Proxy(g._endRemoveTab, {
+		//windowListener.originals.gBrowser._endRemoveTab = g._endRemoveTab; // to delete
+		aDOMWindow.tt.toRestore.g._endRemoveTab = g._endRemoveTab;
+		g._endRemoveTab = new Proxy(g._endRemoveTab, { // don't forget to restore
 			apply: function(target, thisArg, argumentsList) {
 				let tPos = argumentsList[0]._tPos;
 				let tab = argumentsList[0];
@@ -1072,8 +1075,9 @@ var windowListener = {
 			} // drop(row, orientation, dataTransfer)
 		}; // tree.view = {
 
-		windowListener.originals.gBrowser.pinTab = g.pinTab;
-		g.pinTab = new Proxy(g.pinTab, {
+		//windowListener.originals.gBrowser.pinTab = g.pinTab; // to delete
+		aDOMWindow.tt.toRestore.g.pinTab = g.pinTab;
+		g.pinTab = new Proxy(g.pinTab, { // don't forget to restore
 			apply: function(target, thisArg, argumentsList) {
 				let tab = argumentsList[0];
 				if (ss.getTabValue(tab, 'ttLevel') == '') { // if there is no information about 'ttLevel' then it means SS is calling gBrowser.pinTab(newlyCreatedEmptyTab)
@@ -1107,8 +1111,9 @@ var windowListener = {
 			}
 		}); // g.pinTab = new Proxy(g.pinTab, {
 
-		windowListener.originals.gBrowser.unpinTab = g.unpinTab;
-		g.unpinTab = new Proxy(g.unpinTab, {
+		//windowListener.originals.gBrowser.unpinTab = g.unpinTab; // to delete
+		aDOMWindow.tt.toRestore.g.unpinTab = g.unpinTab;
+		g.unpinTab = new Proxy(g.unpinTab, { // don't forget to restore
 			apply: function(target, thisArg, argumentsList) {
 				if (argumentsList.length>0 && argumentsList[0] && argumentsList[0].pinned) { // It seems SS invokes gBrowser.unpinTab for every tab(pinned and not pinned)
 					let tab = argumentsList[0];
@@ -1237,8 +1242,9 @@ var windowListener = {
 			}
 		};
 
-		windowListener.originals.gBrowser.removeTab = g.removeTab;
-		g.removeTab =  new Proxy(g.removeTab, { // only for FLST after closing tab
+		//windowListener.originals.gBrowser.removeTab = g.removeTab; // to delete
+		aDOMWindow.tt.toRestore.g.removeTab = g.removeTab;
+		g.removeTab =  new Proxy(g.removeTab, { // only for FLST after closing tab // don't forget to restore
 			apply: function(target, thisArg, argumentsList) {
 				let tab = argumentsList[0];
 				if (g.mCurrentTab === tab) {
@@ -1254,7 +1260,8 @@ var windowListener = {
 			tt.redrawToolbarbuttons();
 		};
 
-		windowListener.originals.TabContextMenu.updateContextMenu = aDOMWindow.TabContextMenu.updateContextMenu;
+		//windowListener.originals.TabContextMenu.updateContextMenu = aDOMWindow.TabContextMenu.updateContextMenu;
+		aDOMWindow.tt.toRestore.TabContextMenu.updateContextMenu = aDOMWindow.TabContextMenu.updateContextMenu;
 		aDOMWindow.TabContextMenu.updateContextMenu = new Proxy(aDOMWindow.TabContextMenu.updateContextMenu, {
 			apply: function(target, thisArg, argumentsList) {
 				let aPopupMenu = argumentsList[0];
@@ -1301,23 +1308,27 @@ var windowListener = {
 		};
 		
 		// I'm just disabling all unnecessary tab movement functions:
-		windowListener.originals.gBrowser.moveTabForward = g.moveTabForward;
-		g.moveTabForward = new Proxy(g.moveTabForward, {
+		//windowListener.originals.gBrowser.moveTabForward = g.moveTabForward; // to delete
+		aDOMWindow.tt.toRestore.g.moveTabForward = g.moveTabForward;
+		g.moveTabForward = new Proxy(g.moveTabForward, { // don't forget to restore
 			apply: function(target, thisArg, argumentsList) {
 			}
 		});
-		windowListener.originals.gBrowser.moveTabBackward = g.moveTabBackward;
-		g.moveTabBackward = new Proxy(g.moveTabBackward, {
+		//windowListener.originals.gBrowser.moveTabBackward = g.moveTabBackward; // to delete
+		aDOMWindow.tt.toRestore.g.moveTabBackward = g.moveTabBackward;
+		g.moveTabBackward = new Proxy(g.moveTabBackward, { // don't forget to restore
 			apply: function(target, thisArg, argumentsList) {
 			}
 		});
-		windowListener.originals.gBrowser.moveTabToStart = g.moveTabToStart;
-		g.moveTabToStart = new Proxy(g.moveTabToStart, {
+		//windowListener.originals.gBrowser.moveTabToStart = g.moveTabToStart; // to delete
+		aDOMWindow.tt.toRestore.g.moveTabToStart = g.moveTabToStart;
+		g.moveTabToStart = new Proxy(g.moveTabToStart, { // don't forget to restore
 			apply: function(target, thisArg, argumentsList) {
 			}
 		});
-		windowListener.originals.gBrowser.moveTabToEnd = g.moveTabToEnd;
-		g.moveTabToEnd = new Proxy(g.moveTabToEnd, {
+		//windowListener.originals.gBrowser.moveTabToEnd = g.moveTabToEnd; // to delete
+		aDOMWindow.tt.toRestore.g.moveTabToEnd = g.moveTabToEnd;
+		g.moveTabToEnd = new Proxy(g.moveTabToEnd, { // don't forget to restore
 			apply: function(target, thisArg, argumentsList) {
 			}
 		});
@@ -1340,12 +1351,13 @@ var windowListener = {
 			}
 		}, false);
         
-		windowListener.eventListeners.onTabMove = function(event) { // to be removed upon shutdown
+		aDOMWindow.tt.toRemove.eventListeners.onTabMove = function(event) {
+		//windowListener.eventListeners.onTabMove = function(event) { // to be removed upon shutdown // to delete
 			let tab = event.target;
 			tab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(tab._tPos - tt.nPinned);
 			tt.redrawToolbarbuttons();
 		};
-		g.tabContainer.addEventListener("TabMove", windowListener.eventListeners.onTabMove, false);
+		g.tabContainer.addEventListener("TabMove", aDOMWindow.tt.toRemove.eventListeners.onTabMove, false); // don't forget to remove
 		
 		toolbar.addEventListener('command', function f(event) {
 			if (event.originalTarget.localName == 'toolbarbutton') {
@@ -1356,35 +1368,38 @@ var windowListener = {
 
 		// "This event should be dispatched when any of these attributes change:
 		// label, crop, busy, image, selected"
-		windowListener.eventListeners.onTabAttrModified = function(event) {
+		aDOMWindow.tt.toRemove.eventListeners.onTabAttrModified = function(event) {
+		//windowListener.eventListeners.onTabAttrModified = function(event) { // to delete
 			let tab = event.target;
 			tab.pinned ? tt.redrawToolbarbuttons() : tree.treeBoxObject.invalidateRow(tab._tPos - tt.nPinned);
 		};
-		g.tabContainer.addEventListener("TabAttrModified", windowListener.eventListeners.onTabAttrModified, false); // don't forget to remove later
+		g.tabContainer.addEventListener("TabAttrModified", aDOMWindow.tt.toRemove.eventListeners.onTabAttrModified, false); // don't forget to remove
 		
-		// This is needed for initial firefox load, otherwise favicons on the tree wouldn't be loaded:
-		if (windowListener.observer) { // at first delete old observer
-			Services.obs.removeObserver(windowListener.observer, 'document-element-inserted');
-		}
+		// This is needed for initial firefox load, otherwise favicons on the tree wouldn't be loaded
+		// But it probably better to find another way to do initial favicon loading:
 		//noinspection JSUnusedGlobalSymbols
-		windowListener.observer = {
+		aDOMWindow.tt.toRemove.observer = {
 			observe: function f(aSubject, aTopic, aData) {
 				label4.value = 'c' in f ? ++f.c : (f.c = 1); // to delete
 				tree.treeBoxObject.invalidate();
 			}
 		};
-		Services.obs.addObserver(windowListener.observer, 'document-element-inserted', false); // don't forget to remove later
+		Services.obs.addObserver(aDOMWindow.tt.toRemove.observer, 'document-element-inserted', false); // don't forget to remove later
 
 		aDOMWindow.tbo = tree.treeBoxObject; // for debug
 		//noinspection JSUnusedGlobalSymbols
 		Object.defineProperty(aDOMWindow, 't', {get: function() {return g.mCurrentTab;}, configurable: true}); // for debug
 		
-		windowListener.eventListeners.onTabSelect = function(event) {  // to be removed upon shutdown
+		aDOMWindow.tt.toRemove.eventListeners.onTabSelect = function(event) {
+		//windowListener.eventListeners.onTabSelect = function(event) {  // to be removed upon shutdown // to delete
 			let tab = event.target;
 			tab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(tab._tPos - tt.nPinned);
 			tt.redrawToolbarbuttons();
 		};
-		g.tabContainer.addEventListener("TabSelect", windowListener.eventListeners.onTabSelect, false);
+		g.tabContainer.addEventListener("TabSelect", aDOMWindow.tt.toRemove.eventListeners.onTabSelect, false);
+		
+		tt.redrawToolbarbuttons(); // needed when addon is enabled from about:addons (not when firefox is being loaded)
+		tree.treeBoxObject.invalidate(); // just in case
 	} // loadIntoWindowPart2: function(aDOMWindow) {
 	
 }; // var windowListener = {
@@ -1423,4 +1438,4 @@ var windowListener = {
  * dropping links on native tabbar
  * while there is no internet connection no icon for the initially selected tree row is displayed
  */
-// now doing - progress listeners
+// now doing - fixing bug with multiple windows handling
