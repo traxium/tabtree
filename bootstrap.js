@@ -835,6 +835,11 @@ var windowListener = {
 		aDOMWindow.tt.toRestore.g.addTab = g.addTab;
 		g.addTab = new Proxy(g.addTab, {
 			apply: function(target, thisArg, argumentsList) {
+				// altering params.relatedToCurrent argument in order to ignore about:config insertRelatedAfterCurrent option:
+				if (argumentsList.length == 2 && typeof argumentsList[1] == "object" && !(argumentsList[1] instanceof Ci.nsIURI)) {
+					argumentsList[1].relatedToCurrent = false;
+				}
+				
 				if (argumentsList.length>=2 && argumentsList[1].referrerURI) { // undo close tab hasn't got argumentsList[1]
 					g.tabContainer.addEventListener('TabOpen', function onPreAddTabWithRef(event) {
 						g.tabContainer.removeEventListener('TabOpen', onPreAddTabWithRef, true);
@@ -1400,6 +1405,7 @@ var windowListener = {
  * check for about:config relatedToCurrent option. Will my addon still work?
  * +select something on startup
  * +css for tree for the selected tab
+ * check windowed mode
 */
 /*
  * later:
