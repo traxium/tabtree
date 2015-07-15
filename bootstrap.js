@@ -308,6 +308,18 @@ var windowListener = {
 		aDOMWindow.btn2CommandHandler = function f(event) { // to delete
 			aDOMWindow.document.querySelector('#tt-button2').label = 'tt-button2 #' + ('counter' in f ? ++f.counter : (f.counter = 1));
 			
+			let titlebarContent = aDOMWindow.document.querySelector('#titlebar-content');
+			let titlebarSpacer = aDOMWindow.document.querySelector('#titlebar-spacer');
+			let tabbrowserTabs = aDOMWindow.document.querySelector('#tabbrowser-tabs');
+			let navBar = aDOMWindow.document.querySelector('#nav-bar');
+			let titlebar = aDOMWindow.document.querySelector('#titlebar');
+			let titlebarButtonboxContainer = aDOMWindow.document.querySelector('#titlebar-buttonbox-container');
+			//titlebarContent.removeChild(titlebarSpacer);
+			//titlebarContent.insertBefore(navBar, titlebarContent.firstChild);
+			tabbrowserTabs.style.visibility = 'collapse';
+			//titlebar.style.visibility = 'collapse';
+			//titlebar.style.display = 'none';
+			navBar.appendChild(titlebarButtonboxContainer);
 		};
 		sidebar.appendChild(btn2);
 		//////////////////// END BUTTON 2 //////////////////////////////////////////////////////////////////
@@ -1403,10 +1415,12 @@ var windowListener = {
  * +edit comments about Obsolete tree.view methods
  * +check scroll bar handling
  * full screen mode
- * check for about:config relatedToCurrent option. Will my addon still work?
+ * +check for about:config relatedToCurrent option. Will my addon still work?
  * +select something on startup
  * +css for tree for the selected tab
  * check windowed mode
+ * full screen hiding
+ * middle click
 */
 /*
  * later:
@@ -1420,5 +1434,6 @@ var windowListener = {
 /*
  * known bugs:
  * dropping links on native tabbar
+ * sometimes a loading throbber remains on the row after the page has been loaded
  */
-// now doing - opening new tabs from pinned tabs
+// now doing - begin to remove native tabbar
