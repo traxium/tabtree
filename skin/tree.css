@@ -32,7 +32,7 @@
 }
 
 #tabbrowser-tabs {
-  /*visibility: collapse;*/
+  visibility: collapse;
 }
 
 #nav-bar .toolbarbutton-1:not([type=menu-button]),
@@ -87,4 +87,8 @@ window:not([chromehidden~="toolbar"]) #urlbar-wrapper > .toolbarbutton-1:-moz-an
 
 #main-window[sizemode="maximized"] > #titlebar {
   visibility: collapse;
+}
+
+#titlebar-buttonbox {
+  -moz-appearance: none;
 }

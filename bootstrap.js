@@ -52,7 +52,6 @@ function startup(data, reason)
 function shutdown(aData, aReason)
 {
 	if (aReason == APP_SHUTDOWN) return;
-	windowListener.unregister();
 
 	let uri = Services.io.newURI("chrome://tabstree/skin/tree.css", null, null);
 	if( sss.sheetRegistered(uri, sss.AUTHOR_SHEET) ) {
@@ -61,6 +60,8 @@ function shutdown(aData, aReason)
 	}
 
 	ssHack.SessionStoreInternal.onLoad = ssOrig;
+	
+	windowListener.unregister();
 	
 	console.log("Addon has been shut down!");
 }
@@ -111,7 +112,7 @@ var windowListener = {
 			let aXULWindow = XULWindows.getNext();
 			let aDOMWindow = aXULWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowInternal || Ci.nsIDOMWindow);
 			//windowListener.loadIntoWindowPart1(aDOMWindow, aXULWindow); // to delete
-			windowListener.loadIntoWindow(aDOMWindow); // Part 1 & 2
+			windowListener.loadIntoWindow(aDOMWindow);
 			aDOMWindow.document.querySelector('#tt-label1').value = 'entry: register'; // to delete
 		}
 		// Listen to new windows
@@ -161,9 +162,16 @@ var windowListener = {
 		aDOMWindow.gBrowser.tabContainer.removeEventListener("TabMove", aDOMWindow.tt.toRemove.eventListeners.onTabMove, false);
 		aDOMWindow.gBrowser.tabContainer.removeEventListener("TabSelect", aDOMWindow.tt.toRemove.eventListeners.onTabSelect, false);
 		aDOMWindow.gBrowser.tabContainer.removeEventListener("TabAttrModified", aDOMWindow.tt.toRemove.eventListeners.onTabAttrModified, false);
+		aDOMWindow.removeEventListener("sizemodechange", aDOMWindow.tt.toRemove.eventListeners.onSizemodechange, false);
 		if (aDOMWindow.tt && aDOMWindow.tt.toRemove && aDOMWindow.tt.toRemove.observer) { // maybe this conditions are unnecessary
 			Services.obs.removeObserver(aDOMWindow.tt.toRemove.observer, 'document-element-inserted');
 		}
+		// Restore default title bar buttons position (Minimize, Restore/Maximize, Close):
+		let titlebarButtonboxContainer = aDOMWindow.document.querySelector('#titlebar-buttonbox-container');
+		let titlebarContent = aDOMWindow.document.querySelector('#titlebar-content');
+		titlebarContent.appendChild(titlebarButtonboxContainer);
+		aDOMWindow.TabsInTitlebar._update(true); // It is needed to recalculate negative 'margin-bottom' for 'titlebar'
+		
 		delete aDOMWindow.tt;
 	},
 	
@@ -181,6 +189,21 @@ var windowListener = {
 			toRestore: {g: {}, TabContextMenu: {}}
 		};
 
+		//////////////////// TITLE BAR STANDARD BUTTONS (Minimize, Restore/Maximize, Close) ////////////////////////////
+		// We can't use 'window.load' event here, because it always shows windowState==='STATE_NORMAL' even when the actual state is 'STATE_MAXIMIZED'
+		let navBar = aDOMWindow.document.querySelector('#nav-bar');
+		let titlebarButtonboxContainer = aDOMWindow.document.querySelector('#titlebar-buttonbox-container');
+		let titlebarContent = aDOMWindow.document.querySelector('#titlebar-content');
+		switch (aDOMWindow.windowState) {
+			case aDOMWindow.STATE_MAXIMIZED:
+				navBar.appendChild(titlebarButtonboxContainer);
+				break;
+			case aDOMWindow.STATE_NORMAL:
+				titlebarContent.appendChild(titlebarButtonboxContainer);
+				break;
+		}
+		//////////////////// END TITLE BAR STANDARD BUTTONS (Minimize, Restore/Maximize, Close) ////////////////////////
+		
 		let propsToSet;
 		//////////////////// SPLITTER ///////////////////////////////////////////////////////////////////////
 		let splitter = aDOMWindow.document.createElement('splitter');
@@ -1396,6 +1419,22 @@ var windowListener = {
 			tree.treeBoxObject.ensureRowIsVisible(tab._tPos - tt.nPinned);
 		}), false); // don't forget to remove
 		
+		aDOMWindow.addEventListener('sizemodechange', (aDOMWindow.tt.toRemove.eventListeners.onSizemodechange = function(event) {
+			let window = event.target;
+			let navBar = aDOMWindow.document.querySelector('#nav-bar');
+			let titlebarButtonboxContainer = aDOMWindow.document.querySelector('#titlebar-buttonbox-container');
+			let titlebarContent = aDOMWindow.document.querySelector('#titlebar-content');
+
+			switch (window.windowState) {
+				case window.STATE_MAXIMIZED:
+					navBar.appendChild(titlebarButtonboxContainer);
+					break;
+				case window.STATE_NORMAL:
+					titlebarContent.appendChild(titlebarButtonboxContainer);
+					break
+			}
+		}), false); // don't forget to remove
+
 		tt.redrawToolbarbuttons(); // needed when addon is enabled from about:addons (not when firefox is being loaded)
 		tree.treeBoxObject.invalidate(); // just in case
 		// highlighting a current tree row/toolbarbutton at startup:
@@ -1436,4 +1475,4 @@ var windowListener = {
  * dropping links on native tabbar
  * sometimes a loading throbber remains on the row after the page has been loaded
  */
-// now doing - begin to remove native tabbar
+// now doing - sizemodechange event
