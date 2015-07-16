@@ -199,7 +199,7 @@ var windowListener = {
 		// We can't use 'window.load' event here, because it always shows windowState==='STATE_NORMAL' even when the actual state is 'STATE_MAXIMIZED'
 		let navBar = aDOMWindow.document.querySelector('#nav-bar');
 		let titlebarButtonboxContainer = aDOMWindow.document.querySelector('#titlebar-buttonbox-container');
-		let titlebarContent = aDOMWindow.document.querySelector('#titlebar-content');
+		//let titlebarContent = aDOMWindow.document.querySelector('#titlebar-content'); // to delete
 		switch (aDOMWindow.windowState) {
 			case aDOMWindow.STATE_MAXIMIZED:
 				navBar.appendChild(titlebarButtonboxContainer);
@@ -1465,6 +1465,17 @@ var windowListener = {
 			}
 		}), false); // don't forget to remove
 
+		// Middle click to close a tab
+		tree.addEventListener('click', function onMiddleClick(event) {
+			if (event.button === 1) { // middle click
+				let idx = tree.treeBoxObject.getRowAt(event.clientX, event.clientY);
+				if (idx != -1) {
+					let tPos = idx + tt.nPinned;
+					g.removeTab(g.tabs[tPos]);
+				}
+			}
+		}, false);
+
 		tt.redrawToolbarbuttons(); // needed when addon is enabled from about:addons (not when firefox is being loaded)
 		tree.treeBoxObject.invalidate(); // just in case
 		// highlighting a current tree row/toolbarbutton at startup:
@@ -1487,7 +1498,7 @@ var windowListener = {
  * +check for about:config relatedToCurrent option. Will my addon still work?
  * +select something on startup
  * +css for tree for the selected tab
- * check windowed mode
+ * +check windowed mode
  * full screen hiding
  * middle click
  * chromemargin
@@ -1507,4 +1518,4 @@ var windowListener = {
  * dropping links on native tabbar
  * sometimes a loading throbber remains on the row after the page has been loaded
  */
-// now doing - back-button refinind
+// now doing - middle click
