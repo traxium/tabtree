@@ -1,0 +1,273 @@
+/* Collapsing */
+
+#tabbrowser-tabs {
+	visibility: collapse;
+}
+
+#main-window[sizemode="maximized"] > #titlebar {
+	visibility: collapse;
+}
+
+/* Menubar */
+
+#main-window[sizemode="maximized"] #toolbar-menubar {
+	/*-moz-appearance: -moz-window-titlebar-maximized;*/
+	color: inherit !important;
+}
+
+#main-window[sizemode="maximized"] #toolbar-menubar[_moz-menuactive="true"] {
+	/*-moz-appearance: -moz-window-titlebar-maximized;*/
+	color: inherit !important;
+}
+
+#main-window[tabsintitlebar]:not([inFullscreen]) #toolbar-menubar:not(:-moz-lwtheme) {
+	color: white;
+}
+
+/* Shrinking */
+
+#nav-bar .toolbarbutton-1:not([type=menu-button]),
+#nav-bar .toolbarbutton-1 > .toolbarbutton-menubutton-button,
+#nav-bar .toolbarbutton-1 > .toolbarbutton-menubutton-dropmarker {
+	padding: 0;
+	-moz-box-pack: center;
+}
+
+#main-window[sizemode="maximized"] #TabsToolbar:not([collapsed="true"]) + #nav-bar {
+	margin-top: 2px;
+}
+
+#TabsToolbar {
+	margin-bottom: 0;
+	min-height: 0;
+	padding: 0;
+}
+
+.findbar-button > .toolbarbutton-text,
+#nav-bar .toolbarbutton-1 > .toolbarbutton-icon,
+#nav-bar .toolbarbutton-1 > .toolbarbutton-text,
+#nav-bar .toolbarbutton-1 > .toolbarbutton-badge-container,
+#nav-bar .toolbarbutton-1 > .toolbarbutton-menubutton-button > .toolbarbutton-icon,
+#nav-bar .toolbarbutton-1 > .toolbarbutton-menubutton-dropmarker > .dropmarker-icon,
+window:not([chromehidden~="toolbar"]) #urlbar-wrapper > .toolbarbutton-1:-moz-any([disabled],
+:not([open]):not([disabled]):not(:active)) > .toolbarbutton-icon {
+	border: none;
+	padding-bottom: 0;
+	padding-top: 0;
+}
+
+#urlbar,
+.searchbar-textbox {
+	border-image: none;
+	border-style: solid;
+	border-width: 2px;
+	-moz-border-top-colors: #ACA899 #716F64;
+	-moz-border-right-colors: #FFF #F1EFE2;
+	-moz-border-bottom-colors: #FFF #F1EFE2;
+	-moz-border-left-colors: #ACA899 #716F64;
+}
+
+#titlebar-buttonbox {
+	-moz-appearance: none;
+}
+
+/*#nav-bar .toolbarbutton-1 > .toolbarbutton-icon,*/
+/*window:not([chromehidden~="toolbar"]) #urlbar-wrapper > .toolbarbutton-1:-moz-any([disabled],*/
+/*:not([open]):not([disabled]):not(:active)) > .toolbarbutton-icon {*/
+/*padding: 2px 6px !important;*/
+/*border: 1px solid transparent !important;*/
+/*}*/
+
+/*window:not([chromehidden~="toolbar"]) #urlbar-wrapper > .toolbarbutton-1:-moz-any([disabled],*/
+/*:not([open]):not([disabled]):not(:active)) > .toolbarbutton-icon {*/
+/*border-color: rgba(24, 25, 26, 0.1);*/
+/*}*/
+
+
+
+/*#forward-button > .toolbarbutton-icon {*/
+/*background-clip: padding-box !important;*/
+/*background-color: transparent !important;*/
+/*background-origin: padding-box;*/
+/*border-bottom-color: rgba(24, 25, 26, 0.1);*/
+/*border-bottom-style: solid;*/
+/*border-bottom-width: 1px;*/
+/*border-image-outset: 0 0 0 0;*/
+/*border-image-repeat: stretch stretch;*/
+/*border-image-slice: 100% 100% 100% 100%;*/
+/*border-image-source: none;*/
+/*border-image-width: 1 1 1 1;*/
+/*border-left-color: rgba(24, 25, 26, 0.1);*/
+/*border-left-width: 0px;*/
+/*border-right-color: rgba(24, 25, 26, 0.1);*/
+/*border-right-style: solid;*/
+/*border-right-width: 1px;*/
+/*border-top-color: rgba(24, 25, 26, 0.1);*/
+/*border-top-style: solid;*/
+/*border-top-width: 1px;*/
+/**/
+/*border-left-style: none !important;*/
+/*border-radius: 0 !important;*/
+/*padding-left: 9px !important;*/
+/*padding-right: 3px !important;*/
+/*}*/
+
+/*#TabsToolbar { margin-top: 0px !important; }*/
+/* Back & forward buttons */
+
+#back-button {
+	height: 24px !important;
+	padding-bottom: 0 !important;
+	padding-top: 0 !important;
+}
+
+#nav-bar #forward-button > .toolbarbutton-icon {
+	padding: 2px 6px !important;
+	border: 2px solid rgba(24, 25, 26, 0.1) !important;
+	border-left-style: none !important;
+	background-color: rgba(231, 237, 242, 0) !important;
+	background-origin: padding-box !important;
+	box-shadow: 0 1px rgba(255, 255, 255, 0) inset, 0 1px rgba(23, 51, 78, 0), 0 0 2px rgba(23, 51, 78, 0) !important;
+	background-clip: padding-box !important;
+		border-radius: 0 !important;
+	padding-left: 9px !important;
+	padding-right: 3px !important;
+	-moz-margin-end: 0px !important;
+	/*border-image: none !important;*/
+	/*border-style: solid !important;*/
+	/*border-width: 2px !important;*/
+	/*-moz-border-top-colors: #ACA899 #716F64 !important;*/
+	/*-moz-border-right-colors: #FFF #F1EFE2 !important;*/
+	/*-moz-border-bottom-colors: #FFF #F1EFE2 !important;*/
+	/*-moz-border-left-colors: #ACA899 #716F64 !important;*/
+}
+
+#nav-bar #forward-button {
+	-moz-appearance: none !important;
+	border: medium none !important;
+	-moz-box-pack: center !important;
+	-moz-box-align: stretch !important;
+	/*padding: 2px 2px !important;*/
+}
+
+/*#nav-bar #forward-button {*/
+	/*background-attachment: scroll;*/
+	/*background-clip: border-box;*/
+	/*background-color: transparent;*/
+	/*background-image: none;*/
+	/*background-origin: padding-box;*/
+	/*background-position: 0% 0%;*/
+	/*background-repeat: repeat;*/
+	/*background-size: auto auto;*/
+	/*border-bottom-color: #000;*/
+	/*border-bottom-style: none;*/
+	/*border-bottom-width: 0px;*/
+	/*border-image-outset: 0 0 0 0;*/
+	/*border-image-repeat: stretch stretch;*/
+	/*border-image-slice: 100% 100% 100% 100%;*/
+	/*border-image-source: none;*/
+	/*border-image-width: 1 1 1 1;*/
+	/*border-left-color: #000;*/
+	/*border-left-style: none;*/
+	/*border-left-width: 0px;*/
+	/*border-right-color: #000;*/
+	/*border-right-style: none;*/
+	/*border-right-width: 0px;*/
+	/*border-top-color: #000;*/
+	/*border-top-style: none;*/
+	/*border-top-width: 0px;*/
+	/*color: #000;*/
+	/*font-family: Tahoma;*/
+	/*font-feature-settings: normal;*/
+	/*font-kerning: auto;*/
+	/*font-language-override: normal;*/
+	/*font-size: 11px;*/
+	/*font-size-adjust: none;*/
+	/*font-stretch: normal;*/
+	/*font-style: normal;*/
+	/*font-synthesis: weight style;*/
+	/*font-variant: normal;*/
+	/*font-variant-alternates: normal;*/
+	/*font-variant-caps: normal;*/
+	/*font-variant-east-asian: normal;*/
+	/*font-variant-ligatures: normal;*/
+	/*font-variant-numeric: normal;*/
+	/*font-variant-position: normal;*/
+	/*font-weight: 400;*/
+	/*line-height: 13px;*/
+	/*list-style-image: url("chrome://browser/skin/Toolbar.png");*/
+	/*padding-bottom: 0px;*/
+	/*padding-left: 0px;*/
+	/*padding-right: 0px;*/
+	/*padding-top: 0px;*/
+	/*transition-delay: 0s;*/
+	/*transition-duration: 0.15s;*/
+	/*transition-propertymargin-lefttransition-timing-function: cubic-bezier(0, 0, 0.58, 1);*/
+	/*-moz-appearance: none;*/
+	/*-moz-border-bottom-colors: none;*/
+	/*-moz-border-left-colors: none;*/
+	/*-moz-border-right-colors: none;*/
+	/*-moz-border-top-colors: none;*/
+	/*-moz-box-align: stretch;*/
+	/*-moz-box-pack: center;*/
+	/*-moz-image-region: rect(0px, 72px, 18px, 54px);*/
+/*}*/
+
+/*#nav-bar #forward-button > .toolbarbutton-icon {*/
+	/*background-clip: padding-box;*/
+	/*background-color: transparent;*/
+	/*background-origin: padding-box;*/
+	/*border-bottom-color: rgba(24, 25, 26, 0.1);*/
+	/*border-bottom-left-radius: 0px;*/
+	/*border-bottom-right-radius: 0px;*/
+	/*border-bottom-style: solid;*/
+	/*border-bottom-width: 1px;*/
+	/*border-image-outset: 0 0 0 0;*/
+	/*border-image-repeat: stretch stretch;*/
+	/*border-image-slice: 100% 100% 100% 100%;*/
+	/*border-image-source: none;*/
+	/*border-image-width: 1 1 1 1;*/
+	/*border-left-color: rgba(24, 25, 26, 0.1);*/
+	/*border-left-style: none;*/
+	/*border-left-width: 0px;*/
+	/*border-right-color: rgba(24, 25, 26, 0.1);*/
+	/*border-right-style: solid;*/
+	/*border-right-width: 1px;*/
+	/*border-top-color: rgba(24, 25, 26, 0.1);*/
+	/*border-top-left-radius: 0px;*/
+	/*border-top-right-radius: 0px;*/
+	/*border-top-style: solid;*/
+	/*border-top-width: 1px;*/
+	/*box-shadow: transparent 0px 1px 0px 0px inset, transparent 0px 1px 0px 0px, transparent 0px 0px 2px 0px;*/
+	/*color: #000;*/
+	/*font-family: Tahoma;*/
+	/*font-feature-settings: normal;*/
+	/*font-kerning: auto;*/
+	/*font-language-override: normal;*/
+	/*font-size: 11px;*/
+	/*font-size-adjust: none;*/
+	/*font-stretch: normal;*/
+	/*font-style: normal;*/
+	/*font-synthesis: weight style;*/
+	/*font-variant: normal;*/
+	/*font-variant-alternates: normal;*/
+	/*font-variant-caps: normal;*/
+	/*font-variant-east-asian: normal;*/
+	/*font-variant-ligatures: normal;*/
+	/*font-variant-numeric: normal;*/
+	/*font-variant-position: normal;*/
+	/*font-weight: 400;*/
+	/*line-height: 13px;*/
+	/*list-style-image: url("chrome://browser/skin/Toolbar.png");*/
+	/*padding-bottom: 2px;*/
+	/*padding-left: 9px;*/
+	/*padding-right: 3px;*/
+	/*padding-top: 2px;*/
+	/*transition-duration: 0.15s;*/
+	/*transition-property: background-color, border-color;*/
+	/*-moz-border-bottom-colors: none;*/
+	/*-moz-border-left-colors: none;*/
+	/*-moz-border-right-colors: none;*/
+	/*-moz-border-top-colors: none;*/
+	/*-moz-image-region: rect(0px, 72px, 18px, 54px);*/
+/*}*/

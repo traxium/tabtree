@@ -21,9 +21,11 @@ function startup(data, reason)
 
 	let uri = Services.io.newURI("chrome://tabstree/skin/tree.css", null, null);
 	sss.loadAndRegisterSheet(uri, sss.AUTHOR_SHEET);
-	if( sss.sheetRegistered(uri, sss.AUTHOR_SHEET) ) {
-		console.log("Style sheet has been registered!");
-	}
+	uri = Services.io.newURI("chrome://tabstree/skin/toolbox.css", null, null);
+	sss.loadAndRegisterSheet(uri, sss.AUTHOR_SHEET);
+	//if( sss.sheetRegistered(uri, sss.AUTHOR_SHEET) ) { // to delete
+	//	console.log("Style sheet has been registered!");
+	//}
 
 	//	// Why do we use Proxy here? Let's see the chain how SS works:
 	//	// <window onload="gBrowserInit.onLoad()" /> ->
@@ -55,7 +57,11 @@ function shutdown(aData, aReason)
 
 	let uri = Services.io.newURI("chrome://tabstree/skin/tree.css", null, null);
 	if( sss.sheetRegistered(uri, sss.AUTHOR_SHEET) ) {
-		console.log("Style sheet has been unregistered!");
+		//console.log("Style sheet has been unregistered!"); // to delete
+		sss.unregisterSheet(uri, sss.AUTHOR_SHEET);
+	}
+	uri = Services.io.newURI("chrome://tabstree/skin/toolbox.css", null, null);
+	if( sss.sheetRegistered(uri, sss.AUTHOR_SHEET) ) {
 		sss.unregisterSheet(uri, sss.AUTHOR_SHEET);
 	}
 
@@ -197,12 +203,34 @@ var windowListener = {
 		switch (aDOMWindow.windowState) {
 			case aDOMWindow.STATE_MAXIMIZED:
 				navBar.appendChild(titlebarButtonboxContainer);
+				Services.prefs.setBoolPref('browser.tabs.drawInTitlebar', true);
 				break;
 			case aDOMWindow.STATE_NORMAL:
-				titlebarContent.appendChild(titlebarButtonboxContainer);
+				Services.prefs.setBoolPref('browser.tabs.drawInTitlebar', false);
+				//titlebarContent.appendChild(titlebarButtonboxContainer); // to delete
 				break;
 		}
 		//////////////////// END TITLE BAR STANDARD BUTTONS (Minimize, Restore/Maximize, Close) ////////////////////////
+
+		////////////////////////////////////////////// MENU ////////////////////////////////////////////////////////////
+		let toolbarMenubar = aDOMWindow.document.querySelector('#toolbar-menubar');
+		if (toolbarMenubar.getAttribute('autohide')=='true' && toolbarMenubar.getAttribute('inactive')=='true') { // menubar is hidden
+			//console.log('menubar is hidden')
+			//Services.prefs.setBoolPref('browser.tabs.drawInTitlebar', true);
+		} else { // menubar is visible
+			
+		}
+		//aDOMWindow.tt.toRemove.menuObserver = new aDOMWindow.MutationObserver(function(aMutations) {
+		//	for (let mutation of aMutations) {
+		//		if (mutation.attributeName == "inactive" ||
+		//			mutation.attributeName == "autohide") {
+		//			TabsInTitlebar._update(true);
+		//			return;
+		//		}
+		//	}
+		//});
+		//if ()
+		////////////////////////////////////////// END MENU ////////////////////////////////////////////////////////////
 		
 		let propsToSet;
 		//////////////////// SPLITTER ///////////////////////////////////////////////////////////////////////
@@ -1427,9 +1455,11 @@ var windowListener = {
 
 			switch (window.windowState) {
 				case window.STATE_MAXIMIZED:
+					Services.prefs.setBoolPref('browser.tabs.drawInTitlebar', true);
 					navBar.appendChild(titlebarButtonboxContainer);
 					break;
 				case window.STATE_NORMAL:
+					Services.prefs.setBoolPref('browser.tabs.drawInTitlebar', false);
 					titlebarContent.appendChild(titlebarButtonboxContainer);
 					break
 			}
@@ -1460,6 +1490,8 @@ var windowListener = {
  * check windowed mode
  * full screen hiding
  * middle click
+ * chromemargin
+ * browser.tabs.drawInTitlebar
 */
 /*
  * later:
@@ -1475,4 +1507,4 @@ var windowListener = {
  * dropping links on native tabbar
  * sometimes a loading throbber remains on the row after the page has been loaded
  */
-// now doing - sizemodechange event
+// now doing - back-button refinind
