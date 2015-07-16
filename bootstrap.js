@@ -13,6 +13,7 @@ var ssOrig;
 const ss = Cc["@mozilla.org/browser/sessionstore;1"].getService(Ci.nsISessionStore);
 const sss = Cc["@mozilla.org/content/style-sheet-service;1"].getService(Ci.nsIStyleSheetService);
 //Cu.import("resource://gre/modules/AddonManager.jsm");
+var drawInTitlebarOrig;
 
 //noinspection JSUnusedGlobalSymbols
 function startup(data, reason)
@@ -46,6 +47,8 @@ function startup(data, reason)
 			aWindow.dispatchEvent(event);
 		}
 	});
+
+	drawInTitlebarOrig = Services.prefs.getBoolPref('browser.tabs.drawInTitlebar');
 	
 	windowListener.register();
 }
@@ -68,6 +71,8 @@ function shutdown(aData, aReason)
 	ssHack.SessionStoreInternal.onLoad = ssOrig;
 	
 	windowListener.unregister();
+
+	Services.prefs.setBoolPref('browser.tabs.drawInTitlebar', drawInTitlebarOrig);
 	
 	console.log("Addon has been shut down!");
 }
@@ -1500,9 +1505,9 @@ var windowListener = {
  * +css for tree for the selected tab
  * +check windowed mode
  * full screen hiding
- * middle click
+ * +middle click
  * chromemargin
- * browser.tabs.drawInTitlebar
+ * 
 */
 /*
  * later:
@@ -1518,4 +1523,4 @@ var windowListener = {
  * dropping links on native tabbar
  * sometimes a loading throbber remains on the row after the page has been loaded
  */
-// now doing - middle click
+// now doing - browser.tabs.drawInTitlebar restoring
