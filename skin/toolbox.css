@@ -11,17 +11,11 @@
 /* Menubar */
 
 #main-window[sizemode="maximized"] #toolbar-menubar {
-	/*-moz-appearance: -moz-window-titlebar-maximized;*/
 	color: inherit !important;
 }
 
-#main-window[sizemode="maximized"] #toolbar-menubar[_moz-menuactive="true"] {
-	/*-moz-appearance: -moz-window-titlebar-maximized;*/
-	color: inherit !important;
-}
-
-#main-window[tabsintitlebar]:not([inFullscreen]) #toolbar-menubar:not(:-moz-lwtheme) {
-	color: white;
+#main-window[sizemode="maximized"] #toolbar-menubar menu[_moz-menuactive="true"] {
+	color: white !important;
 }
 
 /* Shrinking */
