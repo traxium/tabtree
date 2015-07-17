@@ -173,6 +173,8 @@ var windowListener = {
 		let container = aDOMWindow.document.querySelector('#tt-container');
 		if (container) {
 			container.parentNode.removeChild(container);
+			let fullscrToggler = aDOMWindow.document.querySelector('#tt-fullscr-toggler');
+			fullscrToggler.parentNode.removeChild(fullscrToggler);
 		}
 		
 		Object.keys(aDOMWindow.tt.toRestore.g).forEach( (x)=>{aDOMWindow.gBrowser[x] = aDOMWindow.tt.toRestore.g[x];} );
@@ -251,29 +253,31 @@ var windowListener = {
 		////////////////////////////////////////// END MENU ////////////////////////////////////////////////////////////
 
 		let propsToSet;
-		////////////////////////////////////////////// CONTAINER ///////////////////////////////////////////////////////
+		
+		//<vbox id="tt-fullscr-toggler"></vbox>
 		//<hbox id="tt-container"> // needed to conveniently hide and show all my staff in fullscreen mode
-		//  <vbox id="tt-fullscr-toggler"></vbox>
 		//  <vbox id="tt-sidebar" width="200">
 		//    <toolbox></toolbox>
 		//    <tree id="tt" flex="1" seltype="single" context="tabContextMenu" treelines="true" hidecolumnpicker="true"></tree>
 		//  </vbox>
 		//  <splitter id="tt-splitter" />
 		//</hbox>
-		let container = aDOMWindow.document.createElement('hbox');
-		container.setAttribute('id', 'tt-container');
-		browser.insertBefore(container, aDOMWindow.document.querySelector('#appcontent')); // don't forget to remove
-		////////////////////////////////////////////// CONTAINER ///////////////////////////////////////////////////////
 		
 		////////////////////////////////////////////// tt-fullscr-toggler //////////////////////////////////////////////
 		// <vbox id="tt-fullscr-toggler"></vbox> // I am just copying what firefox does for its 'fullscr-toggler'
 		let fullscrToggler = aDOMWindow.document.createElement('vbox');
 		fullscrToggler.setAttribute('id', 'tt-fullscr-toggler');
 		//fullscrToggler.setAttribute('hidden', ''); // to delete
-		//browser.insertBefore(fullscrToggler, aDOMWindow.document.querySelector('#appcontent')); // don't forget to remove // to delete
-		container.appendChild(fullscrToggler);
+		browser.insertBefore(fullscrToggler, aDOMWindow.document.querySelector('#appcontent')); // don't forget to remove 
+		//container.appendChild(fullscrToggler); // to delete
 		//////////////////////////////////////////// END tt-fullscr-toggler ////////////////////////////////////////////
-
+		
+		////////////////////////////////////////////// CONTAINER ///////////////////////////////////////////////////////
+		let container = aDOMWindow.document.createElement('hbox');
+		container.setAttribute('id', 'tt-container');
+		browser.insertBefore(container, aDOMWindow.document.querySelector('#appcontent')); // don't forget to remove
+		////////////////////////////////////////////// CONTAINER ///////////////////////////////////////////////////////
+		
 		//////////////////// VBOX ///////////////////////////////////////////////////////////////////////
 		let sidebar = aDOMWindow.document.createElement('vbox');
 		propsToSet = {
@@ -1524,11 +1528,10 @@ var windowListener = {
 		}, false);
 		
 		// Show on hovering in full screen mode
-		let mouseoverToggle = function() {
-			//gNavToolbox.style.marginTop = aShow ? "" : -gNavToolbox.getBoundingClientRect().height + "px";
-		};
-		fullscrToggler.addEventListener('mouseover', mouseoverToggle, false);
-		fullscrToggler.addEventListener('dragenter', mouseoverToggle, false);
+		//let mouseoverToggle = function() { // not needed, CSS is more concise solution
+		//};
+		//fullscrToggler.addEventListener('mouseover', mouseoverToggle, false);
+		//fullscrToggler.addEventListener('dragenter', mouseoverToggle, false);
 
 		tt.redrawToolbarbuttons(); // needed when addon is enabled from about:addons (not when firefox is being loaded)
 		tree.treeBoxObject.invalidate(); // just in case
@@ -1559,6 +1562,7 @@ var windowListener = {
  * persist width of sidebar
  * hide toolbar with checkbox
  * bug with opening new windows
+ * browser.fullscreen.animateUp
 */
 /*
  * later:
@@ -1574,4 +1578,4 @@ var windowListener = {
  * dropping links on native tabbar
  * sometimes a loading throbber remains on the row after the page has been loaded
  */
-// now doing - container
+// now doing - hiding tree in full screen mode

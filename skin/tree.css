@@ -46,3 +46,11 @@
   display: none;
 }
 
+#main-window[inFullscreen] #tt-container {
+  visibility: collapse;
+}
+
+#main-window[inFullscreen] #tt-fullscr-toggler:hover + #tt-container,
+#main-window[inFullscreen] #tt-container:hover {
+  visibility: visible;
+}
