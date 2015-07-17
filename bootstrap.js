@@ -166,6 +166,9 @@ var windowListener = {
 			let sidebar = aDOMWindow.document.querySelector('#tt-sidebar');
 			splitter.parentNode.removeChild(splitter);
 			sidebar.parentNode.removeChild(sidebar);
+			// TODO(me): use container
+			//let fullscrToggler = aDOMWindow.document.querySelector('#tt-fullscr-toggler');
+			//fullscrToggler.parentNode.removeChild(fullscrToggler);
 		}
 		
 		Object.keys(aDOMWindow.tt.toRestore.g).forEach( (x)=>{aDOMWindow.gBrowser[x] = aDOMWindow.tt.toRestore.g[x];} );
@@ -205,6 +208,7 @@ var windowListener = {
 		let navBar = aDOMWindow.document.querySelector('#nav-bar');
 		let titlebarButtonboxContainer = aDOMWindow.document.querySelector('#titlebar-buttonbox-container');
 		//let titlebarContent = aDOMWindow.document.querySelector('#titlebar-content'); // to delete
+		let windowControls = aDOMWindow.document.querySelector('#window-controls');
 		switch (aDOMWindow.windowState) {
 			case aDOMWindow.STATE_MAXIMIZED:
 				navBar.appendChild(titlebarButtonboxContainer);
@@ -212,12 +216,17 @@ var windowListener = {
 				break;
 			case aDOMWindow.STATE_NORMAL:
 				Services.prefs.setBoolPref('browser.tabs.drawInTitlebar', false);
+				// TODO(me): check opening additional firefox windows
 				//titlebarContent.appendChild(titlebarButtonboxContainer); // to delete
+				break;
+			case aDOMWindow.STATE_FULLSCREEN:
+				Services.prefs.setBoolPref('browser.tabs.drawInTitlebar', true);
+				navBar.appendChild(windowControls);
 				break;
 		}
 		//////////////////// END TITLE BAR STANDARD BUTTONS (Minimize, Restore/Maximize, Close) ////////////////////////
 
-		////////////////////////////////////////////// MENU ////////////////////////////////////////////////////////////
+		////////////////////////////////////////////// MENU //////////////////////////////////////////////////////////// // to delete
 		let toolbarMenubar = aDOMWindow.document.querySelector('#toolbar-menubar');
 		if (toolbarMenubar.getAttribute('autohide')=='true' && toolbarMenubar.getAttribute('inactive')=='true') { // menubar is hidden
 			//console.log('menubar is hidden')
@@ -238,6 +247,22 @@ var windowListener = {
 		////////////////////////////////////////// END MENU ////////////////////////////////////////////////////////////
 		
 		let propsToSet;
+		////////////////////////////////////////////// CONTAINER ///////////////////////////////////////////////////////
+		// <vbox id="tt-container"></hbox> // needed to convenient hide and show all my staff in fullscreen mode
+		//let container = aDOMWindow.document.createElement('vbox');
+		//container.setAttribute('id', 'tt-container');
+		//browser.insertBefore( container, aDOMWindow.document.querySelector('#appcontent') ); // don't forget to remove
+		////////////////////////////////////////////// CONTAINER ///////////////////////////////////////////////////////
+		
+		////////////////////////////////////////////// tt-fullscr-toggler //////////////////////////////////////////////
+		// <vbox id="tt-fullscr-toggler" hidden=""></hbox> // I am just copying what firefox does for its 'fullscr-toggler'
+		//let fullscrToggler = aDOMWindow.document.createElement('vbox');
+		//fullscrToggler.setAttribute('id', 'tt-fullscr-toggler');
+		//fullscrToggler.setAttribute('hidden', '');
+		//browser.insertBefore( fullscrToggler, aDOMWindow.document.querySelector('#appcontent') ); // don't forget to remove // to delete
+		//container.appendChild( fullscrToggler);
+		//////////////////////////////////////////// END tt-fullscr-toggler ////////////////////////////////////////////
+		
 		//////////////////// SPLITTER ///////////////////////////////////////////////////////////////////////
 		let splitter = aDOMWindow.document.createElement('splitter');
 		propsToSet = {
@@ -364,18 +389,18 @@ var windowListener = {
 		aDOMWindow.btn2CommandHandler = function f(event) { // to delete
 			aDOMWindow.document.querySelector('#tt-button2').label = 'tt-button2 #' + ('counter' in f ? ++f.counter : (f.counter = 1));
 			
-			let titlebarContent = aDOMWindow.document.querySelector('#titlebar-content');
-			let titlebarSpacer = aDOMWindow.document.querySelector('#titlebar-spacer');
-			let tabbrowserTabs = aDOMWindow.document.querySelector('#tabbrowser-tabs');
-			let navBar = aDOMWindow.document.querySelector('#nav-bar');
-			let titlebar = aDOMWindow.document.querySelector('#titlebar');
-			let titlebarButtonboxContainer = aDOMWindow.document.querySelector('#titlebar-buttonbox-container');
-			//titlebarContent.removeChild(titlebarSpacer);
-			//titlebarContent.insertBefore(navBar, titlebarContent.firstChild);
-			tabbrowserTabs.style.visibility = 'collapse';
-			//titlebar.style.visibility = 'collapse';
-			//titlebar.style.display = 'none';
-			navBar.appendChild(titlebarButtonboxContainer);
+			//let titlebarContent = aDOMWindow.document.querySelector('#titlebar-content'); // to delete
+			//let titlebarSpacer = aDOMWindow.document.querySelector('#titlebar-spacer');
+			//let tabbrowserTabs = aDOMWindow.document.querySelector('#tabbrowser-tabs');
+			//let navBar = aDOMWindow.document.querySelector('#nav-bar');
+			//let titlebar = aDOMWindow.document.querySelector('#titlebar');
+			//let titlebarButtonboxContainer = aDOMWindow.document.querySelector('#titlebar-buttonbox-container');
+			////titlebarContent.removeChild(titlebarSpacer);
+			////titlebarContent.insertBefore(navBar, titlebarContent.firstChild);
+			//tabbrowserTabs.style.visibility = 'collapse';
+			////titlebar.style.visibility = 'collapse';
+			////titlebar.style.display = 'none';
+			//navBar.appendChild(titlebarButtonboxContainer);
 		};
 		sidebar.appendChild(btn2);
 		//////////////////// END BUTTON 2 //////////////////////////////////////////////////////////////////
@@ -1457,7 +1482,7 @@ var windowListener = {
 			let navBar = aDOMWindow.document.querySelector('#nav-bar');
 			let titlebarButtonboxContainer = aDOMWindow.document.querySelector('#titlebar-buttonbox-container');
 			let titlebarContent = aDOMWindow.document.querySelector('#titlebar-content');
-
+			let windowControls = aDOMWindow.document.querySelector('#window-controls');
 			switch (window.windowState) {
 				case window.STATE_MAXIMIZED:
 					Services.prefs.setBoolPref('browser.tabs.drawInTitlebar', true);
@@ -1466,6 +1491,11 @@ var windowListener = {
 				case window.STATE_NORMAL:
 					Services.prefs.setBoolPref('browser.tabs.drawInTitlebar', false);
 					titlebarContent.appendChild(titlebarButtonboxContainer);
+					break;
+				case window.STATE_FULLSCREEN:
+					Services.prefs.setBoolPref('browser.tabs.drawInTitlebar', true);
+					titlebarContent.appendChild(titlebarButtonboxContainer);
+					navBar.appendChild(windowControls);
 					break
 			}
 		}), false); // don't forget to remove
@@ -1480,6 +1510,13 @@ var windowListener = {
 				}
 			}
 		}, false);
+		
+		// Show on hovering in full screen mode
+		let mouseoverToggle = function() {
+			//gNavToolbox.style.marginTop = aShow ? "" : -gNavToolbox.getBoundingClientRect().height + "px";
+		};
+		fullscrToggler.addEventListener('mouseover', mouseoverToggle, false);
+		fullscrToggler.addEventListener('dragenter', mouseoverToggle, false);
 
 		tt.redrawToolbarbuttons(); // needed when addon is enabled from about:addons (not when firefox is being loaded)
 		tree.treeBoxObject.invalidate(); // just in case
@@ -1507,7 +1544,8 @@ var windowListener = {
  * full screen hiding
  * +middle click
  * chromemargin
- * 
+ * persist width of sidebar
+ * hide toolbar with checkbox
 */
 /*
  * later:
@@ -1523,4 +1561,4 @@ var windowListener = {
  * dropping links on native tabbar
  * sometimes a loading throbber remains on the row after the page has been loaded
  */
-// now doing - browser.tabs.drawInTitlebar restoring
+// now doing - fullscreen hovering

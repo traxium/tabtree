@@ -4,8 +4,15 @@
 	visibility: collapse;
 }
 
-#main-window[sizemode="maximized"] > #titlebar {
+#main-window[sizemode="maximized"] > #titlebar,
+#main-window[inFullscreen] > #titlebar{
 	visibility: collapse;
+}
+
+/* Fullscreen */
+
+#main-window[inFullscreen] #TabsToolbar:not([collapsed="true"]) + #nav-bar {
+	margin-top: -2px;
 }
 
 /* Menubar */

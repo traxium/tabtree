@@ -30,3 +30,14 @@
 #tt-treechildren:-moz-tree-twisty {
   list-style-image: none;
 }
+
+/* Full screen mode */
+
+#tt-toolbar[moz-collapsed="true"] { /* do not collapse in fullscreen mode*/
+  visibility: visible;
+}
+
+#tt-fullscr-toggler {
+  width: 1px;
+  background: none repeat scroll 0% 0% #000;
+}
