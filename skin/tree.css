@@ -19,7 +19,7 @@
 }
 
 #tt-treechildren:-moz-tree-row(selected) {
-  background-color: rgb(198, 206, 230);
+  background-color: rgb(218, 226, 250);
 }
 
 #tt-treechildren:-moz-tree-cell-text(selected) {

@@ -835,8 +835,9 @@ var windowListener = {
 					toolbarbtn.setAttribute('group', 'RadioGroup');
 					toolbarbtn.setAttribute('context', 'tabContextMenu');
 					toolbarbtn.checked = g.tabs[i].selected;
-					let image = aDOMWindow.document.getAnonymousNodes(toolbarbtn)[0]; // there are sites with at least 32x32px images therefore buttons would have become huge
+					let image = aDOMWindow.document.getAnonymousNodes(toolbarbtn)[0]; // there are sites with at least 32px*32px images therefore buttons would have become huge
 					image.setAttribute('height', '16px'); // we reduce such big images
+					image.setAttribute('width', '16px'); // also there are cases where the image is 60px*20px ('chrome://browser/skin/search-indicator.png' for example)
 					toolbarbtn.setAttribute('image', g.tabs[i].image);
 				}
 			}, // redrawToolbarbuttons: function() {
@@ -1232,16 +1233,17 @@ var windowListener = {
 			apply: function(target, thisArg, argumentsList) {
 				if (argumentsList.length>0 && argumentsList[0] && argumentsList[0].pinned) { // It seems SS invokes gBrowser.unpinTab for every tab(pinned and not pinned)
 					let tab = argumentsList[0];
-					let tPos = argumentsList[0]._tPos;
+					//let tPos = argumentsList[0]._tPos; // to delete
 
-					let toolbar = aDOMWindow.document.querySelector('#tt-toolbar');
-					toolbar.removeChild(toolbar.childNodes[tPos+1]); // +1 for the arrow hbox
+					//let toolbar = aDOMWindow.document.querySelector('#tt-toolbar'); // to delete
+					//toolbar.removeChild(toolbar.childNodes[tPos+1]); // +1 for the arrow hbox // to delete
 					ss.setTabValue(tab, 'ttLevel', '0');
 
 					g.tabContainer.addEventListener("TabUnpinned", function onTabUnpinned(event) {
 						g.tabContainer.removeEventListener("TabUnpinned", onTabUnpinned, false);
 
 						let tPos = event.target._tPos;
+						tt.redrawToolbarbuttons();
 						tree.treeBoxObject.rowCountChanged(tPos - tt.nPinned, 1); // the first argument is always 0
 					}, false);
 				}
@@ -1585,4 +1587,4 @@ var windowListener = {
  * dropping links on native tabbar
  * sometimes a loading throbber remains on the row after the page has been loaded
  */
-// now doing - persisting sidebar width
+// now doing - local string or bug with unpin
