@@ -107,6 +107,8 @@ var windowListener = {
 		if (aDOMWindow.tt && aDOMWindow.tt.toRemove && aDOMWindow.tt.toRemove.observer) { // condition is needed because we also remove the observer in 'unloadFromWindow'
 			Services.obs.removeObserver(aDOMWindow.tt.toRemove.observer, 'document-element-inserted');
 		}
+		let sidebar = aDOMWindow.document.querySelector('#tt-sidebar');
+		ss.setWindowValue(aDOMWindow, 'tt-width', sidebar.width); // Remember the width of 'tt-sidebar'
 	},
 	
 	onWindowTitleChange: function (aXULWindow, aNewTitle) {},
@@ -159,6 +161,7 @@ var windowListener = {
 		let splitter = aDOMWindow.document.querySelector('#tt-splitter');
 		if (splitter) {
 			let sidebar = aDOMWindow.document.querySelector('#tt-sidebar');
+			ss.deleteWindowValue(aDOMWindow, 'tt-width', sidebar.width); // Restore the width of 'tt-sidebar' to 200px
 			splitter.parentNode.removeChild(splitter);
 			sidebar.parentNode.removeChild(sidebar);
 			let fullscrToggler = aDOMWindow.document.querySelector('#tt-fullscr-toggler');
@@ -275,8 +278,8 @@ var windowListener = {
 		let sidebar = aDOMWindow.document.createElement('vbox');
 		propsToSet = {
 			id: 'tt-sidebar',
-			width: '200'
-			//persist: 'width' //mozilla uses persist width here, i dont know what it does and cant see it how makes a difference so i left it out
+			width: ss.getWindowValue(aDOMWindow, 'tt-width') || '200'
+			//persist: 'width' // It seems 'persist' attr doesn't work in bootstrap addons, I'll use SS instead
 		};
 		//browser.appendChild(sidebar); // to delete
 		Object.keys(propsToSet).forEach( (p)=>{sidebar.setAttribute(p, propsToSet[p])} );
@@ -1564,6 +1567,7 @@ var windowListener = {
  * persist width of sidebar
  * +bug with opening new windows
  * +delete browser.tabs.drawInTitlebar remembering and restoring
+ * bug with unpin
 */
 /*
  * later:
