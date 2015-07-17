@@ -13,7 +13,6 @@ var ssOrig;
 const ss = Cc["@mozilla.org/browser/sessionstore;1"].getService(Ci.nsISessionStore);
 const sss = Cc["@mozilla.org/content/style-sheet-service;1"].getService(Ci.nsIStyleSheetService);
 //Cu.import("resource://gre/modules/AddonManager.jsm");
-var drawInTitlebarOrig;
 
 //noinspection JSUnusedGlobalSymbols
 function startup(data, reason)
@@ -48,8 +47,6 @@ function startup(data, reason)
 		}
 	});
 
-	drawInTitlebarOrig = Services.prefs.getBoolPref('browser.tabs.drawInTitlebar');
-	
 	windowListener.register();
 }
 
@@ -72,8 +69,6 @@ function shutdown(aData, aReason)
 	
 	windowListener.unregister();
 
-	Services.prefs.setBoolPref('browser.tabs.drawInTitlebar', drawInTitlebarOrig);
-	
 	console.log("Addon has been shut down!");
 }
 
@@ -190,6 +185,11 @@ var windowListener = {
 		let titlebarButtonboxContainer = aDOMWindow.document.querySelector('#titlebar-buttonbox-container');
 		let titlebarContent = aDOMWindow.document.querySelector('#titlebar-content');
 		titlebarContent.appendChild(titlebarButtonboxContainer);
+		if (aDOMWindow.tt.toRestore.tabsintitlebar) { // restoring 'tabsintitlebar' attr
+			aDOMWindow.document.documentElement.setAttribute("tabsintitlebar", "true"); // hide native titlebar
+		} else {
+			aDOMWindow.document.documentElement.removeAttribute("tabsintitlebar"); // show native titlebar
+		}
 		aDOMWindow.TabsInTitlebar._update(true); // It is needed to recalculate negative 'margin-bottom' for 'titlebar'
 		
 		delete aDOMWindow.tt;
@@ -206,27 +206,30 @@ var windowListener = {
 		let g = aDOMWindow.gBrowser;
 		aDOMWindow.tt = {
 			toRemove: {eventListeners: {}},
-			toRestore: {g: {}, TabContextMenu: {}}
+			toRestore: {g: {}, TabContextMenu: {}, tabsintitlebar: true}
 		};
+		
+		// remember 'tabsintitlebar' attr // default is 'true'
+			aDOMWindow.tt.toRestore.tabsintitlebar = (aDOMWindow.document.documentElement.getAttribute('tabsintitlebar')=='true');
 
 		//////////////////// TITLE BAR STANDARD BUTTONS (Minimize, Restore/Maximize, Close) ////////////////////////////
 		// We can't use 'window.load' event here, because it always shows windowState==='STATE_NORMAL' even when the actual state is 'STATE_MAXIMIZED'
 		let navBar = aDOMWindow.document.querySelector('#nav-bar');
 		let titlebarButtonboxContainer = aDOMWindow.document.querySelector('#titlebar-buttonbox-container');
-		//let titlebarContent = aDOMWindow.document.querySelector('#titlebar-content'); // to delete
+		//let titlebarContent = aDOMWindow.document.querySelector('#titlebar-content'); // already here
 		let windowControls = aDOMWindow.document.querySelector('#window-controls');
 		switch (aDOMWindow.windowState) {
 			case aDOMWindow.STATE_MAXIMIZED:
 				navBar.appendChild(titlebarButtonboxContainer);
-				Services.prefs.setBoolPref('browser.tabs.drawInTitlebar', true);
+				aDOMWindow.document.documentElement.setAttribute("tabsintitlebar", "true"); // hide native titlebar
+				aDOMWindow.updateTitlebarDisplay();
 				break;
 			case aDOMWindow.STATE_NORMAL:
-				Services.prefs.setBoolPref('browser.tabs.drawInTitlebar', false);
-				// TODO(me): check opening additional firefox windows
-				//titlebarContent.appendChild(titlebarButtonboxContainer); // to delete
+				aDOMWindow.document.documentElement.removeAttribute("tabsintitlebar"); // show native titlebar
+				aDOMWindow.updateTitlebarDisplay();
+				//titlebarContent.appendChild(titlebarButtonboxContainer); // already here
 				break;
 			case aDOMWindow.STATE_FULLSCREEN:
-				Services.prefs.setBoolPref('browser.tabs.drawInTitlebar', true);
 				navBar.appendChild(windowControls);
 				break;
 		}
@@ -417,6 +420,15 @@ var windowListener = {
 			////titlebar.style.visibility = 'collapse';
 			////titlebar.style.display = 'none';
 			//navBar.appendChild(titlebarButtonboxContainer);
+
+			//document.documentElement.removeAttribute("tabsintitlebar");
+			//updateTitlebarDisplay();
+
+			// Reset the margins and padding that might have been modified:
+			//titlebarContent.style.marginTop = "";
+			//titlebarContent.style.marginBottom = "";
+			//titlebar.style.marginBottom = "";
+			//menubar.style.paddingBottom = "";
 		};
 		sidebar.appendChild(btn2);
 		//////////////////// END BUTTON 2 //////////////////////////////////////////////////////////////////
@@ -575,7 +587,7 @@ var windowListener = {
 		let quickSearchBox = aDOMWindow.document.createElement('textbox');
 		propsToSet = {
 			id: 'tt-quicksearchbox',
-			placeholder: 'Quick search for tabs...'
+			placeholder: 'Tabs quick search...' // TODO(me): use language specific string
 		};
 		Object.keys(propsToSet).forEach( (p)=>{quickSearchBox.setAttribute(p, propsToSet[p]);} );
 		sidebar.appendChild(quickSearchBox);
@@ -1501,18 +1513,19 @@ var windowListener = {
 			let windowControls = aDOMWindow.document.querySelector('#window-controls');
 			switch (window.windowState) {
 				case window.STATE_MAXIMIZED:
-					Services.prefs.setBoolPref('browser.tabs.drawInTitlebar', true);
 					navBar.appendChild(titlebarButtonboxContainer);
+					aDOMWindow.document.documentElement.setAttribute("tabsintitlebar", "true"); // hide native titlebar
+					aDOMWindow.updateTitlebarDisplay();
 					break;
 				case window.STATE_NORMAL:
-					Services.prefs.setBoolPref('browser.tabs.drawInTitlebar', false);
 					titlebarContent.appendChild(titlebarButtonboxContainer);
+					aDOMWindow.document.documentElement.removeAttribute("tabsintitlebar"); // show native toolbar
+					aDOMWindow.updateTitlebarDisplay();
 					break;
 				case window.STATE_FULLSCREEN:
-					Services.prefs.setBoolPref('browser.tabs.drawInTitlebar', true);
 					titlebarContent.appendChild(titlebarButtonboxContainer);
 					navBar.appendChild(windowControls);
-					break
+					break;
 			}
 		}), false); // don't forget to remove
 
@@ -1563,6 +1576,7 @@ var windowListener = {
  * hide toolbar with checkbox
  * bug with opening new windows
  * browser.fullscreen.animateUp
+ * delete browser.tabs.drawInTitlebar remembering and restoring
 */
 /*
  * later:
@@ -1578,4 +1592,4 @@ var windowListener = {
  * dropping links on native tabbar
  * sometimes a loading throbber remains on the row after the page has been loaded
  */
-// now doing - hiding tree in full screen mode
+// now doing - bug when opening new window with browser.tabs.drawInTitlebar pref
