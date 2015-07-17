@@ -20,7 +20,6 @@
 
 #tt-treechildren:-moz-tree-row(selected) {
   background-color: rgb(198, 206, 230);
-  color: red;
 }
 
 #tt-treechildren:-moz-tree-cell-text(selected) {
@@ -39,18 +38,19 @@
 
 #tt-fullscr-toggler {
   width: 1px;
-  background: none repeat scroll 0% 0% #000;
+  background: none repeat scroll 0 0 #000;
 }
 
 #main-window:not([inFullscreen]) #tt-fullscr-toggler {
   display: none;
 }
 
-#main-window[inFullscreen] #tt-container {
+#main-window[inFullscreen] #tt-sidebar,
+#main-window[inFullscreen] #tt-splitter {
   visibility: collapse;
 }
 
-#main-window[inFullscreen] #tt-fullscr-toggler:hover + #tt-container,
-#main-window[inFullscreen] #tt-container:hover {
+#main-window[inFullscreen] #tt-fullscr-toggler:hover + #tt-sidebar,
+#main-window[inFullscreen] #tt-sidebar:hover {
   visibility: visible;
 }

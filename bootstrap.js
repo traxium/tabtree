@@ -156,21 +156,21 @@ var windowListener = {
 		if (!browser) {
 			return;
 		}
-		//let splitter = aDOMWindow.document.querySelector('#tt-splitter'); // to delete
-		//if (splitter) {
-		//	let sidebar = aDOMWindow.document.querySelector('#tt-sidebar');
-		//	splitter.parentNode.removeChild(splitter);
-		//	sidebar.parentNode.removeChild(sidebar);
-		//	//let fullscrToggler = aDOMWindow.document.querySelector('#tt-fullscr-toggler');
-		//	//fullscrToggler.parentNode.removeChild(fullscrToggler);
-		//}
-		
-		let container = aDOMWindow.document.querySelector('#tt-container');
-		if (container) {
-			container.parentNode.removeChild(container);
+		let splitter = aDOMWindow.document.querySelector('#tt-splitter');
+		if (splitter) {
+			let sidebar = aDOMWindow.document.querySelector('#tt-sidebar');
+			splitter.parentNode.removeChild(splitter);
+			sidebar.parentNode.removeChild(sidebar);
 			let fullscrToggler = aDOMWindow.document.querySelector('#tt-fullscr-toggler');
 			fullscrToggler.parentNode.removeChild(fullscrToggler);
 		}
+		
+		//let container = aDOMWindow.document.querySelector('#tt-container'); // to delete
+		//if (container) {
+		//	container.parentNode.removeChild(container);
+		//	let fullscrToggler = aDOMWindow.document.querySelector('#tt-fullscr-toggler');
+		//	fullscrToggler.parentNode.removeChild(fullscrToggler);
+		//}
 		
 		Object.keys(aDOMWindow.tt.toRestore.g).forEach( (x)=>{aDOMWindow.gBrowser[x] = aDOMWindow.tt.toRestore.g[x];} );
 		Object.keys(aDOMWindow.tt.toRestore.TabContextMenu).forEach( (x)=>{aDOMWindow.TabContextMenu[x] = aDOMWindow.tt.toRestore.TabContextMenu[x];} ); // only 1 at the moment - 'updateContextMenu'
@@ -257,29 +257,19 @@ var windowListener = {
 
 		let propsToSet;
 		
-		//<vbox id="tt-fullscr-toggler"></vbox>
-		//<hbox id="tt-container"> // needed to conveniently hide and show all my staff in fullscreen mode
+		//  <vbox id="tt-fullscr-toggler"></vbox>
 		//  <vbox id="tt-sidebar" width="200">
 		//    <toolbox></toolbox>
 		//    <tree id="tt" flex="1" seltype="single" context="tabContextMenu" treelines="true" hidecolumnpicker="true"></tree>
 		//  </vbox>
 		//  <splitter id="tt-splitter" />
-		//</hbox>
 		
-		////////////////////////////////////////////// tt-fullscr-toggler //////////////////////////////////////////////
+		////////////////////////////////////////// VBOX tt-fullscr-toggler /////////////////////////////////////////////
 		// <vbox id="tt-fullscr-toggler"></vbox> // I am just copying what firefox does for its 'fullscr-toggler'
 		let fullscrToggler = aDOMWindow.document.createElement('vbox');
 		fullscrToggler.setAttribute('id', 'tt-fullscr-toggler');
-		//fullscrToggler.setAttribute('hidden', ''); // to delete
 		browser.insertBefore(fullscrToggler, aDOMWindow.document.querySelector('#appcontent')); // don't forget to remove 
-		//container.appendChild(fullscrToggler); // to delete
-		//////////////////////////////////////////// END tt-fullscr-toggler ////////////////////////////////////////////
-		
-		////////////////////////////////////////////// CONTAINER ///////////////////////////////////////////////////////
-		let container = aDOMWindow.document.createElement('hbox');
-		container.setAttribute('id', 'tt-container');
-		browser.insertBefore(container, aDOMWindow.document.querySelector('#appcontent')); // don't forget to remove
-		////////////////////////////////////////////// CONTAINER ///////////////////////////////////////////////////////
+		//////////////////////////////////////// END VBOX tt-fullscr-toggler ///////////////////////////////////////////
 		
 		//////////////////// VBOX ///////////////////////////////////////////////////////////////////////
 		let sidebar = aDOMWindow.document.createElement('vbox');
@@ -291,7 +281,7 @@ var windowListener = {
 		//browser.appendChild(sidebar); // to delete
 		Object.keys(propsToSet).forEach( (p)=>{sidebar.setAttribute(p, propsToSet[p])} );
 		//browser.insertBefore(sidebar, splitter); // to delete
-		container.appendChild(sidebar);
+		browser.insertBefore(sidebar, aDOMWindow.document.querySelector('#appcontent')); // don't forget to remove 
 		//////////////////// END VBOX ///////////////////////////////////////////////////////////////////////
 		
 		//////////////////// SPLITTER ///////////////////////////////////////////////////////////////////////
@@ -302,8 +292,7 @@ var windowListener = {
 			//I left it out, but you can leave it in to see how you can style the splitter
 		};
 		Object.keys(propsToSet).forEach( (p)=>{splitter.setAttribute(p, propsToSet[p]);} );
-		container.appendChild(splitter);
-		//browser.insertBefore( splitter, aDOMWindow.document.querySelector('#appcontent') ); // to delete
+		browser.insertBefore(splitter, aDOMWindow.document.querySelector('#appcontent'));
 		//////////////////// END SPLITTER ///////////////////////////////////////////////////////////////////////
 
 		//////////////////// LABEL ///////////////////////////////////////////////////////////////////////
@@ -1564,19 +1553,17 @@ var windowListener = {
 /*
  * +edit comments about Obsolete tree.view methods
  * +check scroll bar handling
- * full screen mode
+ * +full screen mode
  * +check for about:config relatedToCurrent option. Will my addon still work?
  * +select something on startup
  * +css for tree for the selected tab
  * +check windowed mode
- * full screen hiding
+ * +full screen hiding
  * +middle click
- * chromemargin
+ * +chromemargin
  * persist width of sidebar
- * hide toolbar with checkbox
- * bug with opening new windows
- * browser.fullscreen.animateUp
- * delete browser.tabs.drawInTitlebar remembering and restoring
+ * +bug with opening new windows
+ * +delete browser.tabs.drawInTitlebar remembering and restoring
 */
 /*
  * later:
@@ -1586,10 +1573,12 @@ var windowListener = {
  * use let draggedTab = event.dataTransfer.mozGetDataAt(TAB_DROP_TYPE, 0);
  * use gBrowser._numPinnedTabs or gBrowser.tabContainer._lastNumPinned
  * dotted border around previously selected tab
+ * browser.fullscreen.animateUp
+ * hide/show tt-container with checkbox in full screen mode
  */
 /*
  * known bugs:
  * dropping links on native tabbar
  * sometimes a loading throbber remains on the row after the page has been loaded
  */
-// now doing - bug when opening new window with browser.tabs.drawInTitlebar pref
+// now doing - persisting sidebar width
