@@ -5,7 +5,7 @@
 }
 
 #main-window[sizemode="maximized"] > #titlebar,
-#main-window[inFullscreen] > #titlebar{
+#main-window[inFullscreen] > #titlebar{ /* ???? */
 	visibility: collapse;
 }
 

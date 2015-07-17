@@ -161,14 +161,18 @@ var windowListener = {
 		if (!browser) {
 			return;
 		}
-		let splitter = aDOMWindow.document.querySelector('#tt-splitter');
-		if (splitter) {
-			let sidebar = aDOMWindow.document.querySelector('#tt-sidebar');
-			splitter.parentNode.removeChild(splitter);
-			sidebar.parentNode.removeChild(sidebar);
-			// TODO(me): use container
-			//let fullscrToggler = aDOMWindow.document.querySelector('#tt-fullscr-toggler');
-			//fullscrToggler.parentNode.removeChild(fullscrToggler);
+		//let splitter = aDOMWindow.document.querySelector('#tt-splitter'); // to delete
+		//if (splitter) {
+		//	let sidebar = aDOMWindow.document.querySelector('#tt-sidebar');
+		//	splitter.parentNode.removeChild(splitter);
+		//	sidebar.parentNode.removeChild(sidebar);
+		//	//let fullscrToggler = aDOMWindow.document.querySelector('#tt-fullscr-toggler');
+		//	//fullscrToggler.parentNode.removeChild(fullscrToggler);
+		//}
+		
+		let container = aDOMWindow.document.querySelector('#tt-container');
+		if (container) {
+			container.parentNode.removeChild(container);
 		}
 		
 		Object.keys(aDOMWindow.tt.toRestore.g).forEach( (x)=>{aDOMWindow.gBrowser[x] = aDOMWindow.tt.toRestore.g[x];} );
@@ -245,35 +249,30 @@ var windowListener = {
 		//});
 		//if ()
 		////////////////////////////////////////// END MENU ////////////////////////////////////////////////////////////
-		
+
 		let propsToSet;
 		////////////////////////////////////////////// CONTAINER ///////////////////////////////////////////////////////
-		// <vbox id="tt-container"></hbox> // needed to convenient hide and show all my staff in fullscreen mode
-		//let container = aDOMWindow.document.createElement('vbox');
-		//container.setAttribute('id', 'tt-container');
-		//browser.insertBefore( container, aDOMWindow.document.querySelector('#appcontent') ); // don't forget to remove
+		//<hbox id="tt-container"> // needed to conveniently hide and show all my staff in fullscreen mode
+		//  <vbox id="tt-fullscr-toggler"></vbox>
+		//  <vbox id="tt-sidebar" width="200">
+		//    <toolbox></toolbox>
+		//    <tree id="tt" flex="1" seltype="single" context="tabContextMenu" treelines="true" hidecolumnpicker="true"></tree>
+		//  </vbox>
+		//  <splitter id="tt-splitter" />
+		//</hbox>
+		let container = aDOMWindow.document.createElement('hbox');
+		container.setAttribute('id', 'tt-container');
+		browser.insertBefore(container, aDOMWindow.document.querySelector('#appcontent')); // don't forget to remove
 		////////////////////////////////////////////// CONTAINER ///////////////////////////////////////////////////////
 		
 		////////////////////////////////////////////// tt-fullscr-toggler //////////////////////////////////////////////
-		// <vbox id="tt-fullscr-toggler" hidden=""></hbox> // I am just copying what firefox does for its 'fullscr-toggler'
-		//let fullscrToggler = aDOMWindow.document.createElement('vbox');
-		//fullscrToggler.setAttribute('id', 'tt-fullscr-toggler');
-		//fullscrToggler.setAttribute('hidden', '');
-		//browser.insertBefore( fullscrToggler, aDOMWindow.document.querySelector('#appcontent') ); // don't forget to remove // to delete
-		//container.appendChild( fullscrToggler);
+		// <vbox id="tt-fullscr-toggler"></vbox> // I am just copying what firefox does for its 'fullscr-toggler'
+		let fullscrToggler = aDOMWindow.document.createElement('vbox');
+		fullscrToggler.setAttribute('id', 'tt-fullscr-toggler');
+		//fullscrToggler.setAttribute('hidden', ''); // to delete
+		//browser.insertBefore(fullscrToggler, aDOMWindow.document.querySelector('#appcontent')); // don't forget to remove // to delete
+		container.appendChild(fullscrToggler);
 		//////////////////////////////////////////// END tt-fullscr-toggler ////////////////////////////////////////////
-		
-		//////////////////// SPLITTER ///////////////////////////////////////////////////////////////////////
-		let splitter = aDOMWindow.document.createElement('splitter');
-		propsToSet = {
-			id: 'tt-splitter'
-			//class: 'sidebar-splitter' //im just copying what mozilla does for their social sidebar splitter
-			//I left it out, but you can leave it in to see how you can style the splitter
-		};
-		Object.keys(propsToSet).forEach( (p)=>{splitter.setAttribute(p, propsToSet[p]);} );
-		//browser.appendChild(splitter);
-		browser.insertBefore( splitter, aDOMWindow.document.querySelector('#appcontent') );
-		//////////////////// END SPLITTER ///////////////////////////////////////////////////////////////////////
 
 		//////////////////// VBOX ///////////////////////////////////////////////////////////////////////
 		let sidebar = aDOMWindow.document.createElement('vbox');
@@ -284,9 +283,22 @@ var windowListener = {
 		};
 		//browser.appendChild(sidebar); // to delete
 		Object.keys(propsToSet).forEach( (p)=>{sidebar.setAttribute(p, propsToSet[p])} );
-		browser.insertBefore(sidebar, splitter);
+		//browser.insertBefore(sidebar, splitter); // to delete
+		container.appendChild(sidebar);
 		//////////////////// END VBOX ///////////////////////////////////////////////////////////////////////
-			
+		
+		//////////////////// SPLITTER ///////////////////////////////////////////////////////////////////////
+		let splitter = aDOMWindow.document.createElement('splitter');
+		propsToSet = {
+			id: 'tt-splitter'
+			//class: 'sidebar-splitter' //im just copying what mozilla does for their social sidebar splitter
+			//I left it out, but you can leave it in to see how you can style the splitter
+		};
+		Object.keys(propsToSet).forEach( (p)=>{splitter.setAttribute(p, propsToSet[p]);} );
+		container.appendChild(splitter);
+		//browser.insertBefore( splitter, aDOMWindow.document.querySelector('#appcontent') ); // to delete
+		//////////////////// END SPLITTER ///////////////////////////////////////////////////////////////////////
+
 		//////////////////// LABEL ///////////////////////////////////////////////////////////////////////
 		let label1 = aDOMWindow.document.createElement('label'); // for debugging purposes
 		propsToSet = {
@@ -478,7 +490,7 @@ var windowListener = {
 
 		//////////////////// TREE ///////////////////////////////////////////////////////////////////////
 		/*
-			<tree id="tt" flex="1" seltype="single" context="tabContextMenu" onselect="selectHandler(event);"> // approximately
+			<tree id="tt" flex="1" seltype="single" context="tabContextMenu" treelines="true" hidecolumnpicker="true"> // approximately
 					<treecols>
 						 <treecol id="namecol" label="Name" primary="true" flex="1"/>
 					</treecols>
@@ -1546,6 +1558,7 @@ var windowListener = {
  * chromemargin
  * persist width of sidebar
  * hide toolbar with checkbox
+ * bug with opening new windows
 */
 /*
  * later:
@@ -1561,4 +1574,4 @@ var windowListener = {
  * dropping links on native tabbar
  * sometimes a loading throbber remains on the row after the page has been loaded
  */
-// now doing - fullscreen hovering
+// now doing - container
