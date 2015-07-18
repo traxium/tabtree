@@ -1574,11 +1574,13 @@ var windowListener = {
  * +full screen hiding
  * +middle click
  * +chromemargin
- * persist width of sidebar
+ * +persist width of sidebar
  * +bug with opening new windows
  * +delete browser.tabs.drawInTitlebar remembering and restoring
- * bug with unpin
+ * +bug with unpin
  * check win7
+ * <em:maxVersion>38.*</em:maxVersion> update version
+ * think about my name
 */
 /*
  * later:
@@ -1596,4 +1598,4 @@ var windowListener = {
  * dropping links on native tabbar
  * sometimes a loading throbber remains on the row after the page has been loaded
  */
-// now doing - local string
+// now doing - localizing install.rdf

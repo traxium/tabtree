@@ -8,9 +8,9 @@
     <em:type>2</em:type>
     <em:targetApplication>
       <Description>
-      <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id> <!--Firefox-->
-      <em:minVersion>4.0</em:minVersion>
-      <em:maxVersion>38.*</em:maxVersion>
+        <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id> <!--Firefox-->
+        <em:minVersion>4.0</em:minVersion>
+        <em:maxVersion>38.*</em:maxVersion>
       </Description>
     </em:targetApplication>
     <em:name>Tabs Tree</em:name>
@@ -18,5 +18,22 @@
     <em:bootstrap>true</em:bootstrap>
     <em:description>Tabs how they must be</em:description>
     <em:creator>Traxium</em:creator>
+    <!-- start localizing -->
+    <em:localized>
+      <Description>
+        <em:locale>ru-RU</em:locale>
+        <em:name>Древовидные Вкладки</em:name>
+        <em:description>Делает вкладки такими, какими они и должны быть</em:description>
+        <em:creator>Зеленцов Сергей</em:creator>
+      </Description>
+    </em:localized>
+    <em:localized>
+      <Description>
+        <em:locale>en-US</em:locale>
+        <em:name>Tabs Tree</em:name>
+        <em:description>Tabs how they must be</em:description>
+        <em:creator>Traxium</em:creator>
+      </Description>
+    </em:localized>
   </Description>
 </RDF>
