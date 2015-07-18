@@ -418,6 +418,8 @@ var windowListener = {
 			//document.documentElement.removeAttribute("tabsintitlebar");
 			//updateTitlebarDisplay();
 
+			//let menubar = aDOMWindow.document.querySelector("#toolbar-menubar");
+			//aDOMWindow.updateTitlebarDisplay();
 			// Reset the margins and padding that might have been modified:
 			//titlebarContent.style.marginTop = "";
 			//titlebarContent.style.marginBottom = "";
@@ -1553,6 +1555,7 @@ var windowListener = {
 		// highlighting a current tree row/toolbarbutton at startup:
 		g.mCurrentTab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(g.mCurrentTab._tPos - tt.nPinned);
 		tt.redrawToolbarbuttons();
+		aDOMWindow.TabsInTitlebar._update(true);
 
 		aDOMWindow.tbo = tree.treeBoxObject; // for debug
 		aDOMWindow.tree = tree; // for debug
@@ -1581,6 +1584,7 @@ var windowListener = {
  * check win7
  * <em:maxVersion>38.*</em:maxVersion> update version
  * think about my name
+ * private window
 */
 /*
  * later:
