@@ -12,7 +12,7 @@ var ssHack = Cu.import("resource:///modules/sessionstore/SessionStore.jsm");
 var ssOrig;
 const ss = Cc["@mozilla.org/browser/sessionstore;1"].getService(Ci.nsISessionStore);
 const sss = Cc["@mozilla.org/content/style-sheet-service;1"].getService(Ci.nsIStyleSheetService);
-//Cu.import("resource://gre/modules/AddonManager.jsm");
+var stringBundle = Services.strings.createBundle('chrome://tabstree/locale/global.properties?' + Math.random()); // Randomize URI to work around bug 719376
 
 //noinspection JSUnusedGlobalSymbols
 function startup(data, reason)
@@ -166,6 +166,8 @@ var windowListener = {
 			sidebar.parentNode.removeChild(sidebar);
 			let fullscrToggler = aDOMWindow.document.querySelector('#tt-fullscr-toggler');
 			fullscrToggler.parentNode.removeChild(fullscrToggler);
+			let panel = aDOMWindow.document.querySelector('#tt-panel');
+			panel.parentNode.removeChild(panel);
 		}
 		
 		//let container = aDOMWindow.document.querySelector('#tt-container'); // to delete
@@ -543,8 +545,7 @@ var windowListener = {
 		let panel = aDOMWindow.document.createElement('panel');
 		panel.setAttribute('id', 'tt-panel');
 		panel.setAttribute('style', 'opacity: 0.8');
-
-		aDOMWindow.document.querySelector('#mainPopupSet').appendChild(panel);
+		aDOMWindow.document.querySelector('#mainPopupSet').appendChild(panel); // don't forget to delete
 		//////////////////// END PANEL /////////////////////////////////////////////////////////////////
 
 		//////////////////// FEEDBACK TREE /////////////////////////////////////////////////////////////////////
@@ -574,12 +575,19 @@ var windowListener = {
 
 		panel.appendChild(treeFeedback);
 		//////////////////// END FEEDBACK TREE /////////////////////////////////////////////////////////////////
+
+		//////////////////// STRING BUNDLE ///////////////////////////////////////////////////////////////////////////// // to delete
+		//let stringbundle = aDOMWindow.document.createElement('stringbundle');
+		//stringbundle.setAttribute('id', 'tt-stringbundle');
+		//stringbundle.setAttribute('src', 'chrome://tabstree/locale/strings.properties');
+		//aDOMWindow.document.querySelector('#stringbundleset').appendChild(stringbundle);
+		////////////////// END STRING BUNDLE ///////////////////////////////////////////////////////////////////////////
 		
 		//////////////////// QUICK SEARCH BOX ////////////////////////////////////////////////////////////////////////
 		let quickSearchBox = aDOMWindow.document.createElement('textbox');
 		propsToSet = {
 			id: 'tt-quicksearchbox',
-			placeholder: 'Tabs quick search...' // TODO(me): use language specific string
+			placeholder: stringBundle.GetStringFromName('tabs_quick_search') || 'Tabs quick search...' // the latter is just in case
 		};
 		Object.keys(propsToSet).forEach( (p)=>{quickSearchBox.setAttribute(p, propsToSet[p]);} );
 		sidebar.appendChild(quickSearchBox);
@@ -1570,6 +1578,7 @@ var windowListener = {
  * +bug with opening new windows
  * +delete browser.tabs.drawInTitlebar remembering and restoring
  * bug with unpin
+ * check win7
 */
 /*
  * later:
@@ -1587,4 +1596,4 @@ var windowListener = {
  * dropping links on native tabbar
  * sometimes a loading throbber remains on the row after the page has been loaded
  */
-// now doing - local string or bug with unpin
+// now doing - local string

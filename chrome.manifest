@@ -1,2 +1,4 @@
-content   tabstree 		content/
+# content   tabstree 		content/
 skin      tabstree classic/1.0	skin/
+locale    tabstree en-US locale/en-US/
+locale    tabstree ru-RU locale/ru-RU/
