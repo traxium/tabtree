@@ -797,6 +797,8 @@ var windowListener = {
 									}
 									ss.deleteTabValue(tab, 'ttSS');
 								}
+
+								tree.view.selection.select(tab._tPos - tt.nPinned); // after 'rowCountChanged' the selected row is moved 1 position ahead 
 							}
 						}, true);
 					}, true);
