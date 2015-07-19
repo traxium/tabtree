@@ -12,20 +12,16 @@ var ssHack = Cu.import("resource:///modules/sessionstore/SessionStore.jsm");
 var ssOrig;
 const ss = Cc["@mozilla.org/browser/sessionstore;1"].getService(Ci.nsISessionStore);
 const sss = Cc["@mozilla.org/content/style-sheet-service;1"].getService(Ci.nsIStyleSheetService);
+// from 'https://github.com/Noitidart/l10n':
 var stringBundle = Services.strings.createBundle('chrome://tabstree/locale/global.properties?' + Math.random()); // Randomize URI to work around bug 719376
 
 //noinspection JSUnusedGlobalSymbols
 function startup(data, reason)
 {
-	console.log("Extension " + data.id + "(ver " + data.version + ") has been srarted up!");
-
 	let uri = Services.io.newURI("chrome://tabstree/skin/tree.css", null, null);
 	sss.loadAndRegisterSheet(uri, sss.AUTHOR_SHEET);
 	uri = Services.io.newURI("chrome://tabstree/skin/toolbox.css", null, null);
 	sss.loadAndRegisterSheet(uri, sss.AUTHOR_SHEET);
-	//if( sss.sheetRegistered(uri, sss.AUTHOR_SHEET) ) { // to delete
-	//	console.log("Style sheet has been registered!");
-	//}
 
 	//	// Why do we use Proxy here? Let's see the chain how SS works:
 	//	// <window onload="gBrowserInit.onLoad()" /> ->
@@ -57,7 +53,6 @@ function shutdown(aData, aReason)
 
 	let uri = Services.io.newURI("chrome://tabstree/skin/tree.css", null, null);
 	if( sss.sheetRegistered(uri, sss.AUTHOR_SHEET) ) {
-		//console.log("Style sheet has been unregistered!"); // to delete
 		sss.unregisterSheet(uri, sss.AUTHOR_SHEET);
 	}
 	uri = Services.io.newURI("chrome://tabstree/skin/toolbox.css", null, null);
@@ -68,8 +63,6 @@ function shutdown(aData, aReason)
 	ssHack.SessionStoreInternal.onLoad = ssOrig;
 	
 	windowListener.unregister();
-
-	console.log("Addon has been shut down!");
 }
 
 //noinspection JSUnusedGlobalSymbols
@@ -77,10 +70,13 @@ function install(aData, aReason) { }
 //noinspection JSUnusedGlobalSymbols
 function uninstall(aData, aReason) { }
 
+// General idea about how to add a sidebar to all browsing windows is from 'https://gist.github.com/Noitidart/8728393':
 //noinspection JSUnusedGlobalSymbols
 var windowListener = {
 	
 	onOpenWindow: function (aXULWindow) {
+		// In Gecko 7.0 nsIDOMWindow2 has been merged into nsIDOMWindow interface.
+		// In Gecko 8.0 nsIDOMStorageWindow and nsIDOMWindowInternal have been merged into nsIDOMWindow interface.
 		let aDOMWindow = aXULWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowInternal || Ci.nsIDOMWindow);
 		aDOMWindow.addEventListener('tt-TabsLoad', function onTabsLoad(event) {
 			aDOMWindow.removeEventListener('tt-TabsLoad', onTabsLoad, false);
@@ -93,10 +89,6 @@ var windowListener = {
 		// In Gecko 7.0 nsIDOMWindow2 has been merged into nsIDOMWindow interface.
 		// In Gecko 8.0 nsIDOMStorageWindow and nsIDOMWindowInternal have been merged into nsIDOMWindow interface.
 		let aDOMWindow = aXULWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowInternal || Ci.nsIDOMWindow);
-		//Or:
-		//if (aXULWindow.docShell instanceof Ci.nsIInterfaceRequestor) {
-		//	aDOMWindow = aXULWindow.docShell.getInterface(Ci.nsIDOMWindow);
-		//}
 		if (!aDOMWindow) {
 			return;
 		}
@@ -119,9 +111,7 @@ var windowListener = {
 		while (XULWindows.hasMoreElements()) {
 			let aXULWindow = XULWindows.getNext();
 			let aDOMWindow = aXULWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowInternal || Ci.nsIDOMWindow);
-			//windowListener.loadIntoWindowPart1(aDOMWindow, aXULWindow); // to delete
 			windowListener.loadIntoWindow(aDOMWindow);
-			aDOMWindow.document.querySelector('#tt-label1').value = 'entry: register'; // to delete
 		}
 		// Listen to new windows
 		Services.wm.addListener(windowListener);
@@ -138,17 +128,6 @@ var windowListener = {
 		//Stop listening so future added windows don't get this attached
 		Services.wm.removeListener(windowListener);
 	},
-	
-	//loadIntoWindow: function (aDOMWindow, aXULWindow) {
-	//	if (!aDOMWindow) {
-	//		return;
-	//	}
-	//	
-	//	var browser = aDOMWindow.document.querySelector('#browser');
-	//	if (browser) {
-	//		
-	//	} // END if (browser) {
-	//}, // loadIntoWindow: function (aDOMWindow, aXULWindow) {
 	
 	unloadFromWindow: function (aDOMWindow, aXULWindow) {
 		if (!aDOMWindow) {
@@ -170,13 +149,6 @@ var windowListener = {
 			panel.parentNode.removeChild(panel);
 		}
 		
-		//let container = aDOMWindow.document.querySelector('#tt-container'); // to delete
-		//if (container) {
-		//	container.parentNode.removeChild(container);
-		//	let fullscrToggler = aDOMWindow.document.querySelector('#tt-fullscr-toggler');
-		//	fullscrToggler.parentNode.removeChild(fullscrToggler);
-		//}
-		
 		Object.keys(aDOMWindow.tt.toRestore.g).forEach( (x)=>{aDOMWindow.gBrowser[x] = aDOMWindow.tt.toRestore.g[x];} );
 		Object.keys(aDOMWindow.tt.toRestore.TabContextMenu).forEach( (x)=>{aDOMWindow.TabContextMenu[x] = aDOMWindow.tt.toRestore.TabContextMenu[x];} ); // only 1 at the moment - 'updateContextMenu'
 		aDOMWindow.gBrowser.tabContainer.removeEventListener("TabMove", aDOMWindow.tt.toRemove.eventListeners.onTabMove, false);
@@ -195,7 +167,7 @@ var windowListener = {
 		} else {
 			aDOMWindow.document.documentElement.removeAttribute("tabsintitlebar"); // show native titlebar
 		}
-		aDOMWindow.TabsInTitlebar._update(true); // It is needed to recalculate negative 'margin-bottom' for 'titlebar'
+		aDOMWindow.TabsInTitlebar._update(true); // It is needed to recalculate negative 'margin-bottom' for 'titlebar' and 'margin-bottom' for 'titlebarContainer'
 		
 		delete aDOMWindow.tt;
 	},
@@ -213,8 +185,8 @@ var windowListener = {
 			toRemove: {eventListeners: {}},
 			toRestore: {g: {}, TabContextMenu: {}, tabsintitlebar: true}
 		};
-		
-		// remember 'tabsintitlebar' attr // default is 'true'
+
+		// remember 'tabsintitlebar' attr before beginning to interact with it // default is 'true':
 			aDOMWindow.tt.toRestore.tabsintitlebar = (aDOMWindow.document.documentElement.getAttribute('tabsintitlebar')=='true');
 
 		//////////////////// TITLE BAR STANDARD BUTTONS (Minimize, Restore/Maximize, Close) ////////////////////////////
@@ -240,26 +212,6 @@ var windowListener = {
 		}
 		//////////////////// END TITLE BAR STANDARD BUTTONS (Minimize, Restore/Maximize, Close) ////////////////////////
 
-		////////////////////////////////////////////// MENU //////////////////////////////////////////////////////////// // to delete
-		let toolbarMenubar = aDOMWindow.document.querySelector('#toolbar-menubar');
-		if (toolbarMenubar.getAttribute('autohide')=='true' && toolbarMenubar.getAttribute('inactive')=='true') { // menubar is hidden
-			//console.log('menubar is hidden')
-			//Services.prefs.setBoolPref('browser.tabs.drawInTitlebar', true);
-		} else { // menubar is visible
-			
-		}
-		//aDOMWindow.tt.toRemove.menuObserver = new aDOMWindow.MutationObserver(function(aMutations) {
-		//	for (let mutation of aMutations) {
-		//		if (mutation.attributeName == "inactive" ||
-		//			mutation.attributeName == "autohide") {
-		//			TabsInTitlebar._update(true);
-		//			return;
-		//		}
-		//	}
-		//});
-		//if ()
-		////////////////////////////////////////// END MENU ////////////////////////////////////////////////////////////
-
 		let propsToSet;
 		
 		//  <vbox id="tt-fullscr-toggler"></vbox>
@@ -283,9 +235,7 @@ var windowListener = {
 			width: ss.getWindowValue(aDOMWindow, 'tt-width') || '200'
 			//persist: 'width' // It seems 'persist' attr doesn't work in bootstrap addons, I'll use SS instead
 		};
-		//browser.appendChild(sidebar); // to delete
 		Object.keys(propsToSet).forEach( (p)=>{sidebar.setAttribute(p, propsToSet[p])} );
-		//browser.insertBefore(sidebar, splitter); // to delete
 		browser.insertBefore(sidebar, aDOMWindow.document.querySelector('#appcontent')); // don't forget to remove 
 		//////////////////// END VBOX ///////////////////////////////////////////////////////////////////////
 		
@@ -293,179 +243,13 @@ var windowListener = {
 		let splitter = aDOMWindow.document.createElement('splitter');
 		propsToSet = {
 			id: 'tt-splitter'
-			//class: 'sidebar-splitter' //im just copying what mozilla does for their social sidebar splitter
-			//I left it out, but you can leave it in to see how you can style the splitter
+			//class: 'sidebar-splitter' // "I'm just copying what mozilla does for their social sidebar splitter"
+			// "I left it out, but you can leave it in to see how you can style the splitter"
 		};
 		Object.keys(propsToSet).forEach( (p)=>{splitter.setAttribute(p, propsToSet[p]);} );
 		browser.insertBefore(splitter, aDOMWindow.document.querySelector('#appcontent'));
 		//////////////////// END SPLITTER ///////////////////////////////////////////////////////////////////////
 
-		//////////////////// LABEL ///////////////////////////////////////////////////////////////////////
-		let label1 = aDOMWindow.document.createElement('label'); // for debugging purposes
-		propsToSet = {
-			id: 'tt-label1',
-			value: 'tt-label1'
-		};
-		Object.keys(propsToSet).forEach( (p)=>{label1.setAttribute(p, propsToSet[p]);} );
-		sidebar.appendChild(label1);
-		//////////////////// END LABEL ///////////////////////////////////////////////////////////////////
-		//////////////////// LABEL 2///////////////////////////////////////////////////////////////////////
-		let label2 = aDOMWindow.document.createElement('label'); // for debugging purposes
-		propsToSet = {
-			id: 'tt-label2',
-			value: 'tt-label2'
-		};
-		Object.keys(propsToSet).forEach( (p)=>{label2.setAttribute(p, propsToSet[p]);} );
-		sidebar.appendChild(label2);
-		//////////////////// END LABEL 2///////////////////////////////////////////////////////////////////
-		//////////////////// LABEL 3///////////////////////////////////////////////////////////////////////
-		let label3 = aDOMWindow.document.createElement('label'); // for debugging purposes
-		propsToSet = {
-			id: 'tt-label3',
-			value: 'tt-label3'
-		};
-		Object.keys(propsToSet).forEach( (p)=>{label3.setAttribute(p, propsToSet[p]);} );
-		sidebar.appendChild(label3);
-		//////////////////// END LABEL 3///////////////////////////////////////////////////////////////////
-		//////////////////// LABEL 4///////////////////////////////////////////////////////////////////////
-		let label4 = aDOMWindow.document.createElement('label'); // for debugging purposes
-		propsToSet = {
-			id: 'tt-label4',
-			value: 'tt-label4'
-		};
-		Object.keys(propsToSet).forEach( (p)=>{label4.setAttribute(p, propsToSet[p]);} );
-		sidebar.appendChild(label4);
-		//////////////////// END LABEL 4///////////////////////////////////////////////////////////////////
-		//////////////////// LABEL 5///////////////////////////////////////////////////////////////////////
-		let label5 = aDOMWindow.document.createElement('label'); // for debugging purposes
-		propsToSet = {
-			id: 'tt-label5',
-			value: 'tt-label5'
-		};
-		Object.keys(propsToSet).forEach( (p)=>{label5.setAttribute(p, propsToSet[p]);} );
-		sidebar.appendChild(label5);
-		//////////////////// END LABEL 5///////////////////////////////////////////////////////////////////
-		//////////////////// LABEL 6///////////////////////////////////////////////////////////////////////
-		let label6 = aDOMWindow.document.createElement('label'); // for debugging purposes
-		propsToSet = {
-			id: 'tt-label6',
-			value: 'tt-label6'
-		};
-		Object.keys(propsToSet).forEach( (p)=>{label6.setAttribute(p, propsToSet[p]);} );
-		sidebar.appendChild(label6);
-		//////////////////// END LABEL 6///////////////////////////////////////////////////////////////////
-		//////////////////// LABEL 7///////////////////////////////////////////////////////////////////////
-		let label7 = aDOMWindow.document.createElement('label'); // for debugging purposes
-		propsToSet = {
-			id: 'tt-label7',
-			value: 'tt-label7'
-		};
-		Object.keys(propsToSet).forEach( (p)=>{label7.setAttribute(p, propsToSet[p]);} );
-		sidebar.appendChild(label7);
-		//////////////////// END LABEL 7///////////////////////////////////////////////////////////////////
-		//////////////////// LABEL 8///////////////////////////////////////////////////////////////////////
-		let label8 = aDOMWindow.document.createElement('label'); // for debugging purposes
-		propsToSet = {
-			id: 'tt-label8',
-			value: 'tt-label8'
-		};
-		Object.keys(propsToSet).forEach( (p)=>{label8.setAttribute(p, propsToSet[p]);} );
-		sidebar.appendChild(label8);
-		//////////////////// END LABEL 8///////////////////////////////////////////////////////////////////
-
-		//////////////////// BUTTON 1 /////////////////////////////////////////////////////////////////////
-		let btn1 = aDOMWindow.document.createElement('button'); // for debugging purposes
-		propsToSet = {
-			id: 'tt-button1',
-			label: 'reboot',
-			oncommand: 'btn1CommandHandler(event);'
-		};
-		Object.keys(propsToSet).forEach( (p)=>{btn1.setAttribute(p, propsToSet[p]);} );
-		aDOMWindow.btn1CommandHandler = function f(event) {
-			aDOMWindow.document.querySelector('#tt-button1').label = 'rebooted #' + ('counter' in f ? ++f.counter : (f.counter = 1));
-			for (let i=0; i<g.tabs.length; ++i) {
-				ss.setTabValue(g.tabs[i], 'ttLevel', '0');
-				ss.deleteTabValue(g.tabs[i], 'ttSS');
-				//tree.treeBoxObject.invalidateRow(i);
-			}
-		};
-		sidebar.appendChild(btn1);
-		//////////////////// END BUTTON 1 /////////////////////////////////////////////////////////////////
-		//////////////////// BUTTON 2 //////////////////////////////////////////////////////////////////////
-		let btn2 = aDOMWindow.document.createElement('button'); // for debugging purposes
-		propsToSet = {
-			id: 'tt-button2',
-			label: 'tt-button2',
-			oncommand: 'btn2CommandHandler(event);'
-		};
-		Object.keys(propsToSet).forEach( (p)=>{btn2.setAttribute(p, propsToSet[p]);} );
-		aDOMWindow.btn2CommandHandler = function f(event) { // to delete
-			aDOMWindow.document.querySelector('#tt-button2').label = 'tt-button2 #' + ('counter' in f ? ++f.counter : (f.counter = 1));
-			
-			//let titlebarContent = aDOMWindow.document.querySelector('#titlebar-content'); // to delete
-			//let titlebarSpacer = aDOMWindow.document.querySelector('#titlebar-spacer');
-			//let tabbrowserTabs = aDOMWindow.document.querySelector('#tabbrowser-tabs');
-			//let navBar = aDOMWindow.document.querySelector('#nav-bar');
-			//let titlebar = aDOMWindow.document.querySelector('#titlebar');
-			//let titlebarButtonboxContainer = aDOMWindow.document.querySelector('#titlebar-buttonbox-container');
-			////titlebarContent.removeChild(titlebarSpacer);
-			////titlebarContent.insertBefore(navBar, titlebarContent.firstChild);
-			//tabbrowserTabs.style.visibility = 'collapse';
-			////titlebar.style.visibility = 'collapse';
-			////titlebar.style.display = 'none';
-			//navBar.appendChild(titlebarButtonboxContainer);
-
-			//document.documentElement.removeAttribute("tabsintitlebar");
-			//updateTitlebarDisplay();
-
-			//let menubar = aDOMWindow.document.querySelector("#toolbar-menubar");
-			//aDOMWindow.updateTitlebarDisplay();
-			// Reset the margins and padding that might have been modified:
-			//titlebarContent.style.marginTop = "";
-			//titlebarContent.style.marginBottom = "";
-			//titlebar.style.marginBottom = "";
-			//menubar.style.paddingBottom = "";
-		};
-		sidebar.appendChild(btn2);
-		//////////////////// END BUTTON 2 //////////////////////////////////////////////////////////////////
-		//////////////////// BUTTON 3 ////////////////////////////////////////////////////////////////////////
-		let btn3 = aDOMWindow.document.createElement('button'); // for debugging purposes
-		propsToSet = {
-			id: 'tt-button3',
-			label: 'tt-button3',
-			oncommand: 'btn3CommandHandler(event);'
-		};
-		Object.keys(propsToSet).forEach( (p)=>{btn3.setAttribute(p, propsToSet[p]);} );
-		aDOMWindow.btn3CommandHandler = function f(event) {
-			aDOMWindow.document.querySelector('#tt-button3').label = 'tt-button3 #' + ('counter' in f ? ++f.counter : (f.counter = 1));
-			
-		};
-		sidebar.appendChild(btn3);
-		//////////////////// END BUTTON 3 /////////////////////////////////////////////////////////////////
-		//////////////////// BUTTON 4 ////////////////////////////////////////////////////////////////////////
-		let btn4 = aDOMWindow.document.createElement('button'); // for debugging purposes
-		propsToSet = {
-			id: 'tt-button4',
-			label: 'tt-button4',
-			oncommand: 'btn4CommandHandler(event);'
-		};
-		Object.keys(propsToSet).forEach( (p)=>{btn4.setAttribute(p, propsToSet[p]);} );
-		aDOMWindow.btn4CommandHandler = function f(event) {
-			aDOMWindow.document.querySelector('#tt-button4').label = 'tt-button4 #' + ('counter' in f ? ++f.counter : (f.counter = 1));
-
-		};
-		sidebar.appendChild(btn4);
-		//////////////////// END BUTTON 4 /////////////////////////////////////////////////////////////////
-		//////////////////// BUTTON 5 ////////////////////////////////////////////////////////////////////////
-		let btn5 = aDOMWindow.document.createElement('button'); // for debugging purposes
-		propsToSet = {
-			id: 'tt-button5',
-			label: 'Favicon',
-			oncommand: 'btn5CommandHandler(event);'
-		};
-		Object.keys(propsToSet).forEach( (p)=>{btn5.setAttribute(p, propsToSet[p]);} );
-		sidebar.appendChild(btn5);
-		//////////////////// END BUTTON 5/////////////////////////////////////////////////////////////////
 		//////////////////// DROP INDICATOR ////////////////////////////////////////////////////////////////////////
 		let ind = aDOMWindow.document.getAnonymousElementByAttribute(aDOMWindow.gBrowser.tabContainer, 'anonid', 'tab-drop-indicator').cloneNode(true);
 		ind.removeAttribute('anonid');
@@ -476,6 +260,7 @@ var windowListener = {
 		hboxForDropIndicator.align = 'start'; // just copying what mozilla does, but 'start' instead of 'end'
 		hboxForDropIndicator.appendChild(ind);
 		//////////////////// END DROP INDICATOR /////////////////////////////////////////////////////////////////
+		
 		//////////////////// TOOLBOX /////////////////////////////////////////////////////////////////
 		/*
 		<toolbox>
@@ -483,7 +268,6 @@ var windowListener = {
 				<hbox align="start">
 					<img id="tt-drop-indicator" style="margin-top:-8px"/>
 				</hbox>
-				//<toolbarseparator />
 				<toolbarbutton />
 				<toolbarbutton />
 				<toolbarbutton />
@@ -517,14 +301,12 @@ var windowListener = {
 			context: 'tabContextMenu',
 			treelines: 'true',
 			hidecolumnpicker: 'true'
-			//onmousemove: "document.querySelector('#ttLabel2').value = this.treeBoxObject.getRowAt(event.clientX, event.clientY); document.querySelector('#ttLabel3').value = this.currentIndex;", // for debug
-			//onmousemove: "document.querySelector('#tt-label2').value = event.clientX - this.boxObject.x;" // for debug
 		};
 		Object.keys(propsToSet).forEach( (p)=>{tree.setAttribute(p, propsToSet[p]);} );
 		let treecols = aDOMWindow.document.createElement('treecols'); // <treecols>
 		let treecol = aDOMWindow.document.createElement('treecol'); // <treecol>
 		propsToSet = {
-			id: 'namecol', // to delete ??
+			id: 'tt-col',
 			flex: '1',
 			primary: 'true',
 			hideheader: 'true'
@@ -536,11 +318,6 @@ var windowListener = {
 		tree.appendChild(treecols);
 		tree.appendChild(treechildren);
 		sidebar.appendChild(tree);
-
-
-//			aDOMWindow.document.querySelector('#tt').addEventListener('select', function(event) { // to delete
-//				aDOMWindow.gBrowser.selectTabAtIndex(event.currentTarget.currentIndex);
-//			}, false);
 		//////////////////// END TREE /////////////////////////////////////////////////////////////////
 
 		//////////////////// PANEL /////////////////////////////////////////////////////////////////////
@@ -578,13 +355,6 @@ var windowListener = {
 		panel.appendChild(treeFeedback);
 		//////////////////// END FEEDBACK TREE /////////////////////////////////////////////////////////////////
 
-		//////////////////// STRING BUNDLE ///////////////////////////////////////////////////////////////////////////// // to delete
-		//let stringbundle = aDOMWindow.document.createElement('stringbundle');
-		//stringbundle.setAttribute('id', 'tt-stringbundle');
-		//stringbundle.setAttribute('src', 'chrome://tabstree/locale/strings.properties');
-		//aDOMWindow.document.querySelector('#stringbundleset').appendChild(stringbundle);
-		////////////////// END STRING BUNDLE ///////////////////////////////////////////////////////////////////////////
-		
 		//////////////////// QUICK SEARCH BOX ////////////////////////////////////////////////////////////////////////
 		let quickSearchBox = aDOMWindow.document.createElement('textbox');
 		propsToSet = {
@@ -611,18 +381,9 @@ var windowListener = {
 				return c;
 			},
 
-			//hasAnyChildren: function(tPos) {
-			//	let l = parseInt(ss.getTabValue(g.tabs[tPos], 'ttLevel'));
-			//	if ( g.tabs[tPos+1] && l+1 == parseInt(ss.getTabValue(g.tabs[tPos+1], 'ttLevel')) ) {
-			//		return true;
-			//	}
-			//	return false;
-			//}, // hasAnyChildren(tPos)
-
 			hasAnyChildren: function(tPos) {
 				let l = parseInt(ss.getTabValue(g.tabs[tPos], 'ttLevel'));
 				return !!( g.tabs[tPos + 1] && l + 1 == parseInt(ss.getTabValue(g.tabs[tPos + 1], 'ttLevel')) );
-
 			}, // hasAnyChildren(tPos)
 
 			hasAnySiblings: function(tPos) {
@@ -914,9 +675,6 @@ var windowListener = {
 						isEditable: function (row, column) {
 							return false;
 						},
-						//getRowProperties: function(row,props){}, // props parameter is obsolete since Gecko 22
-						//getCellProperties: function(row,col,props){}, // props parameter is obsolete since Gecko 22
-						//getColumnProperties: function(colid,col,props){} // props parameter is obsolete since Gecko 22
 						getParentIndex: function (row) {
 							if (this.getLevel(row) == 0) return -1;
 							for (let t = row - 1; t >= 0; --t) {
@@ -1105,11 +863,6 @@ var windowListener = {
 			isContainerOpen: function(row) { return true; },
 			isContainerEmpty: function(row) {
 				let tPos = row+tt.nPinned;
-				//if ( ss.getTabValue(g.tabs[tPos], "ttEmpty") == 'true' ) { // to delete
-				//	return true;
-				//} else {
-				//	return false;
-				//}
 				return !tt.hasAnyChildren(tPos);
 			},
 			getLevel: function(row) {
@@ -1243,10 +996,7 @@ var windowListener = {
 			apply: function(target, thisArg, argumentsList) {
 				if (argumentsList.length>0 && argumentsList[0] && argumentsList[0].pinned) { // It seems SS invokes gBrowser.unpinTab for every tab(pinned and not pinned)
 					let tab = argumentsList[0];
-					//let tPos = argumentsList[0]._tPos; // to delete
 
-					//let toolbar = aDOMWindow.document.querySelector('#tt-toolbar'); // to delete
-					//toolbar.removeChild(toolbar.childNodes[tPos+1]); // +1 for the arrow hbox // to delete
 					ss.setTabValue(tab, 'ttLevel', '0');
 
 					g.tabContainer.addEventListener("TabUnpinned", function onTabUnpinned(event) {
@@ -1266,17 +1016,13 @@ var windowListener = {
 			let tPos = Array.prototype.indexOf.call(toolbarbtn.parentNode.children, toolbarbtn);
 			let tab = g.tabs[tPos-1]; // the first child is the arrow hbox
 			event.dataTransfer.mozSetDataAt(aDOMWindow.TAB_DROP_TYPE, tab, 0);
-			event.dataTransfer.mozSetDataAt('application/x-moz-node', toolbarbtn, 0); // to delete ??
+			event.dataTransfer.mozSetDataAt('application/x-moz-node', toolbarbtn, 0);
 			event.dataTransfer.mozSetDataAt("text/x-moz-text-internal", tab.linkedBrowser.currentURI.spec, 0);
 			event.stopPropagation();
 		};
 
 		toolbar.ondragover = function f(event) {
 			let dt = event.dataTransfer;
-			
-			//if ( !(tab && tab.tagName == 'tab') && !dt.mozTypesAt(0).contains('text/uri-list') ) { // to delete
-			//	return;
-			//}
 
 			if ( (dt.mozTypesAt(0).contains('application/x-moz-node') && dt.mozGetDataAt('application/x-moz-node', 0).tagName=='toolbarbutton'
 				&& dt.mozTypesAt(0).contains(aDOMWindow.TAB_DROP_TYPE)) // rearranging pinned tabs
@@ -1380,11 +1126,6 @@ var windowListener = {
 				return target.apply(thisArg, argumentsList);
 			}
 		}); // don't forget to restore
-
-		aDOMWindow.btn5CommandHandler = function f(event) { // to delete
-			aDOMWindow.document.querySelector('#tt-button5').label = 'Faviconed #' + ('counter' in f ? ++f.counter : (f.counter = 1));
-			tt.redrawToolbarbuttons();
-		};
 
 		aDOMWindow.tt.toRestore.TabContextMenu.updateContextMenu = aDOMWindow.TabContextMenu.updateContextMenu;
 		aDOMWindow.TabContextMenu.updateContextMenu = new Proxy(aDOMWindow.TabContextMenu.updateContextMenu, {
@@ -1497,7 +1238,6 @@ var windowListener = {
 		//noinspection JSUnusedGlobalSymbols
 		Services.obs.addObserver((aDOMWindow.tt.toRemove.observer = {
 			observe: function f(aSubject, aTopic, aData) {
-				label4.value = 'c' in f ? ++f.c : (f.c = 1); // to delete
 				tree.treeBoxObject.invalidate();
 			}
 		}), 'document-element-inserted', false); // don't forget to remove later
