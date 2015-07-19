@@ -1,5 +1,5 @@
 #TabsToolbar {
-	margin-top: 27px; /* hack in order to TabsInTitlebar._update(true) to work (fires 'if (tabAndMenuHeight > titlebarContentHeight)') */
+	margin-top: 27px; /* hack in order to TabsInTitlebar._update(true) to work properly (fires 'if (tabAndMenuHeight > titlebarContentHeight)') */
 	visibility: collapse;
 }
 
@@ -26,4 +26,14 @@
 
 #nav-bar #forward-button {
 	padding: 2px 0 !important;
+}
+
+/* Private browsing */
+
+#private-browsing-indicator-titlebar {
+	position: static; /* absolute by default - overlaps with Minimize, Restore, Close buttons */
+}
+
+#private-browsing-indicator-titlebar > .private-browsing-indicator {
+	height: 26px; /* 28px by default - breaks our 26px navbar */
 }
