@@ -2,7 +2,7 @@
 /* jshint moz:true */
 /* global Components, Services, SessionStore, APP_SHUTDOWN */
 
-//const {classes: Cc, interfaces: Ci, utils: Cu} = Components; // stupid WebStorm inspector doesn't understand destructuring assignment
+//const {classes: Cc, interfaces: Ci, utils: Cu} = Components; // WebStorm inspector doesn't understand destructuring assignment
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
@@ -250,6 +250,16 @@ var windowListener = {
 		browser.insertBefore(splitter, aDOMWindow.document.querySelector('#appcontent'));
 		//////////////////// END SPLITTER ///////////////////////////////////////////////////////////////////////
 
+		//////////////////// QUICK SEARCH BOX ////////////////////////////////////////////////////////////////////////
+		let quickSearchBox = aDOMWindow.document.createElement('textbox');
+		propsToSet = {
+			id: 'tt-quicksearchbox',
+			placeholder: stringBundle.GetStringFromName('tabs_quick_search') || 'Tabs quick search...' // the latter is just in case
+		};
+		Object.keys(propsToSet).forEach( (p)=>{quickSearchBox.setAttribute(p, propsToSet[p]);} );
+		sidebar.appendChild(quickSearchBox);
+		//////////////////// END QUICK SEARCH BOX /////////////////////////////////////////////////////////////////
+		
 		//////////////////// DROP INDICATOR ////////////////////////////////////////////////////////////////////////
 		let ind = aDOMWindow.document.getAnonymousElementByAttribute(aDOMWindow.gBrowser.tabContainer, 'anonid', 'tab-drop-indicator').cloneNode(true);
 		ind.removeAttribute('anonid');
@@ -354,16 +364,6 @@ var windowListener = {
 
 		panel.appendChild(treeFeedback);
 		//////////////////// END FEEDBACK TREE /////////////////////////////////////////////////////////////////
-
-		//////////////////// QUICK SEARCH BOX ////////////////////////////////////////////////////////////////////////
-		let quickSearchBox = aDOMWindow.document.createElement('textbox');
-		propsToSet = {
-			id: 'tt-quicksearchbox',
-			placeholder: stringBundle.GetStringFromName('tabs_quick_search') || 'Tabs quick search...' // the latter is just in case
-		};
-		Object.keys(propsToSet).forEach( (p)=>{quickSearchBox.setAttribute(p, propsToSet[p]);} );
-		sidebar.appendChild(quickSearchBox);
-		//////////////////// END QUICK SEARCH BOX /////////////////////////////////////////////////////////////////
 
 //////////////////////////////// here we could load something before all tabs have been loaded and restored by SS ////////////////////////////////
 
@@ -743,7 +743,6 @@ var windowListener = {
 							// it only needed if we opened a new tab in background and not from pinned tab:
 							tree.view.selection.select(oldTab._tPos - tt.nPinned);
 						}
-						//tree.treeBoxObject.invalidateRow(oldTab._tPos-tt.nPinned); // redraw twisty on the parent // ????
 					}, true);
 				} else if (argumentsList.length>=2 && !argumentsList[1].referrerURI) { // new tab button or dropping links on the native tabbar
 					g.tabContainer.addEventListener('TabOpen', function onPreAddTabWithoutRef(event) {
@@ -1017,7 +1016,7 @@ var windowListener = {
 			let tab = g.tabs[tPos-1]; // the first child is the arrow hbox
 			event.dataTransfer.mozSetDataAt(aDOMWindow.TAB_DROP_TYPE, tab, 0);
 			event.dataTransfer.mozSetDataAt('application/x-moz-node', toolbarbtn, 0);
-			event.dataTransfer.mozSetDataAt("text/x-moz-text-internal", tab.linkedBrowser.currentURI.spec, 0);
+			event.dataTransfer.mozSetDataAt('text/x-moz-text-internal', tab.linkedBrowser.currentURI.spec, 0);
 			event.stopPropagation();
 		};
 
@@ -1283,12 +1282,6 @@ var windowListener = {
 				}
 			}
 		}, false);
-		
-		// Show on hovering in full screen mode
-		//let mouseoverToggle = function() { // not needed, CSS is more concise solution
-		//};
-		//fullscrToggler.addEventListener('mouseover', mouseoverToggle, false);
-		//fullscrToggler.addEventListener('dragenter', mouseoverToggle, false);
 
 		tt.redrawToolbarbuttons(); // needed when addon is enabled from about:addons (not when firefox is being loaded)
 		tree.treeBoxObject.invalidate(); // just in case
@@ -1296,50 +1289,6 @@ var windowListener = {
 		g.mCurrentTab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(g.mCurrentTab._tPos - tt.nPinned);
 		tt.redrawToolbarbuttons();
 		aDOMWindow.TabsInTitlebar._update(true);
-
-		aDOMWindow.tbo = tree.treeBoxObject; // for debug
-		aDOMWindow.tree = tree; // for debug
-		aDOMWindow.tch = aDOMWindow.document.querySelector('#tt-treechildren'); // for debug
-		//noinspection JSUnusedGlobalSymbols
-		Object.defineProperty(aDOMWindow, 't', {get: function() {return g.mCurrentTab;}, configurable: true}); // for debug
-	} // loadIntoWindowPart2: function(aDOMWindow) {
+	} // loadIntoWindow: function(aDOMWindow) {
 	
 }; // var windowListener = {
-
-/*
- * +edit comments about Obsolete tree.view methods
- * +check scroll bar handling
- * +full screen mode
- * +check for about:config relatedToCurrent option. Will my addon still work?
- * +select something on startup
- * +css for tree for the selected tab
- * +check windowed mode
- * +full screen hiding
- * +middle click
- * +chromemargin
- * +persist width of sidebar
- * +bug with opening new windows
- * +delete browser.tabs.drawInTitlebar remembering and restoring
- * +bug with unpin
- * check win7
- * <em:maxVersion>38.*</em:maxVersion> update version
- * think about my name
- * private window
-*/
-/*
- * later:
- * tab flipping
- * pref to enable lines alongside tree
- * duplicate tab for drag and drop
- * use let draggedTab = event.dataTransfer.mozGetDataAt(TAB_DROP_TYPE, 0);
- * use gBrowser._numPinnedTabs or gBrowser.tabContainer._lastNumPinned
- * dotted border around previously selected tab
- * browser.fullscreen.animateUp
- * hide/show tt-container with checkbox in full screen mode
- */
-/*
- * known bugs:
- * dropping links on native tabbar
- * sometimes a loading throbber remains on the row after the page has been loaded
- */
-// now doing - localizing install.rdf
