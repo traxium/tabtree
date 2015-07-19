@@ -58,3 +58,9 @@
 #tt-drop-indicator {
   pointer-events: none; /* preventing the arrow flickering when mouse pointer goes over that arrow and that arrow overlaps 'toolbar' */
 }
+
+#tt,
+#tt-tree-feedback {
+  margin-left: 0;
+  margin-right: 0;
+}
