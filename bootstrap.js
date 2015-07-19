@@ -434,6 +434,12 @@ var windowListener = {
 			},
 
 			moveTabToPlus: function(aTab, tPosTo, mode) {
+				if (aTab.pinned) { // if a pinned tab is being moved from 'toolbar' to 'tree', then unpin it before moving
+					g.unpinTab(aTab);
+					this.moveTabToPlus(aTab, tPosTo, mode); // recursion
+					return;
+				}
+				
 				if (mode===tree.view.DROP_ON) {
 					ss.setTabValue(aTab, 'ttLevel', (parseInt(ss.getTabValue(g.tabs[tPosTo], 'ttLevel'))+1).toString());
 					for (let i=tPosTo+1; i<g.tabs.length+1; ++i) { // +1 on purpose in order to correctly process adding the tab to the very last position
