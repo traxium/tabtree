@@ -615,7 +615,13 @@ var windowListener = {
 					let image = aDOMWindow.document.getAnonymousNodes(toolbarbtn)[0]; // there are sites with at least 32px*32px images therefore buttons would have become huge
 					image.setAttribute('height', '16px'); // we reduce such big images
 					image.setAttribute('width', '16px'); // also there are cases where the image is 60px*20px ('chrome://browser/skin/search-indicator.png' for example)
-					toolbarbtn.setAttribute('image', g.tabs[i].image);
+					if (g.tabs[i].hasAttribute('progress')) {
+						toolbarbtn.setAttribute('image', 'chrome://browser/skin/tabbrowser/loading.png');
+					} else if (g.tabs[i].hasAttribute('busy')) {
+						toolbarbtn.setAttribute('image', 'chrome://browser/skin/tabbrowser/connecting.png');
+					} else {
+						toolbarbtn.setAttribute('image', g.tabs[i].image || 'chrome://mozapps/skin/places/defaultFavicon.png');
+					}
 				}
 			}, // redrawToolbarbuttons: function() {
 			
