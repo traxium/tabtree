@@ -1035,8 +1035,11 @@ var windowListener = {
 		toolbar.ondragover = function f(event) {
 			let dt = event.dataTransfer;
 
-			if ( (dt.mozTypesAt(0).contains('application/x-moz-node') && dt.mozGetDataAt('application/x-moz-node', 0).tagName=='toolbarbutton'
-				&& dt.mozTypesAt(0).contains(aDOMWindow.TAB_DROP_TYPE)) // rearranging pinned tabs
+			//if ( (dt.mozTypesAt(0).contains('application/x-moz-node') && dt.mozGetDataAt('application/x-moz-node', 0).tagName=='toolbarbutton' // to delete
+			//	&& dt.mozTypesAt(0).contains(aDOMWindow.TAB_DROP_TYPE)) // rearranging pinned tabs
+			//	|| dt.mozTypesAt(0).contains('text/uri-list') )			// adding new pinned tab
+			//{
+			if ( dt.mozTypesAt(0).contains(aDOMWindow.TAB_DROP_TYPE)
 				|| dt.mozTypesAt(0).contains('text/uri-list') )			// adding new pinned tab
 			{
 				event.preventDefault();
@@ -1073,15 +1076,22 @@ var windowListener = {
 		toolbar.ondrop = function f(event) {
 			let dt = event.dataTransfer;
 			
-			if ( dt.mozTypesAt(0).contains('application/x-moz-node') && dt.mozGetDataAt('application/x-moz-node', 0).tagName=='toolbarbutton'
-				&& dt.mozTypesAt(0).contains(aDOMWindow.TAB_DROP_TYPE) )
-			{
+			//if ( dt.mozTypesAt(0).contains('application/x-moz-node') && dt.mozGetDataAt('application/x-moz-node', 0).tagName=='toolbarbutton' // to delete
+			//	&& dt.mozTypesAt(0).contains(aDOMWindow.TAB_DROP_TYPE) )
+			//{
+			if (dt.mozTypesAt(0).contains(aDOMWindow.TAB_DROP_TYPE)) {
 				// rearranging pinned tabs:
 				event.preventDefault();
 				event.stopPropagation();
 
 				let sourceTab = dt.mozGetDataAt(aDOMWindow.TAB_DROP_TYPE, 0);
 
+				if (!dt.mozTypesAt(0).contains('application/x-moz-node') || dt.mozGetDataAt('application/x-moz-node', 0).tagName!='toolbarbutton') {
+					// moving a tab from 'tree' to 'toolbar'
+					g.pinTab(sourceTab);
+					console.log('unpinned to pinned');
+				}
+				
 				if (event.originalTarget.tagName == 'toolbarbutton' || event.originalTarget.tagName == 'toolbar') {
 					if (event.originalTarget.tagName == 'toolbarbutton') {
 						let idx = Array.prototype.indexOf.call(event.originalTarget.parentNode.children, event.originalTarget);
