@@ -615,7 +615,7 @@ var windowListener = {
 					let image = aDOMWindow.document.getAnonymousNodes(toolbarbtn)[0]; // there are sites with at least 32px*32px images therefore buttons would have become huge
 					image.setAttribute('height', '16px'); // we reduce such big images
 					image.setAttribute('width', '16px'); // also there are cases where the image is 60px*20px ('chrome://browser/skin/search-indicator.png' for example)
-					if (g.tabs[i].hasAttribute('progress')) {
+					if (g.tabs[i].hasAttribute('progress') && g.tabs[i].hasAttribute('busy')) {
 						toolbarbtn.setAttribute('image', 'chrome://browser/skin/tabbrowser/loading.png');
 					} else if (g.tabs[i].hasAttribute('busy')) {
 						toolbarbtn.setAttribute('image', 'chrome://browser/skin/tabbrowser/connecting.png');
@@ -623,6 +623,7 @@ var windowListener = {
 						toolbarbtn.setAttribute('image', g.tabs[i].image || 'chrome://mozapps/skin/places/defaultFavicon.png');
 					}
 				}
+				g.mCurrentTab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(g.mCurrentTab._tPos - tt.nPinned); // NEW
 			}, // redrawToolbarbuttons: function() {
 			
 			quickSearch: function(aText, tPos) {
@@ -865,7 +866,7 @@ var windowListener = {
 			},
 			getImageSrc: function(row, column) {
 				let tPos = row+tt.nPinned;
-				if (g.tabs[tPos].hasAttribute('progress')) {
+				if (g.tabs[tPos].hasAttribute('progress') && g.tabs[tPos].hasAttribute('busy')) {
 					return "chrome://browser/skin/tabbrowser/loading.png";
 				} else if (g.tabs[tPos].hasAttribute('busy')) {
 					return "chrome://browser/skin/tabbrowser/connecting.png";
@@ -966,6 +967,7 @@ var windowListener = {
 					let newTab = g.loadOneTab(url, {inBackground: true, allowThirdPartyFixup: true});
 					tt.moveTabToPlus(newTab, tPosTo, orientation);
 				}
+				g.mCurrentTab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(g.mCurrentTab._tPos - tt.nPinned); // NEW
 			} // drop(row, orientation, dataTransfer)
 		}; // tree.view = {
 
@@ -1091,7 +1093,6 @@ var windowListener = {
 				if (!dt.mozTypesAt(0).contains('application/x-moz-node') || dt.mozGetDataAt('application/x-moz-node', 0).tagName!='toolbarbutton') {
 					// moving a tab from 'tree' to 'toolbar'
 					g.pinTab(sourceTab);
-					console.log('unpinned to pinned');
 				}
 				
 				if (event.originalTarget.tagName == 'toolbarbutton' || event.originalTarget.tagName == 'toolbar') {
