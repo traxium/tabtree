@@ -4,7 +4,7 @@
      xmlns:em="http://www.mozilla.org/2004/em-rdf#">
   <Description about="urn:mozilla:install-manifest">
     <em:id>TabsTree@traxium</em:id>
-    <em:version>0.9.0</em:version>
+    <em:version>0.9.9</em:version>
     <em:type>2</em:type>
     <em:targetApplication>
       <Description>
@@ -16,24 +16,26 @@
     <em:name>Tabs Tree</em:name>
     <!-- optional -->
     <em:bootstrap>true</em:bootstrap>
-    <em:description>Tabs how they must be</em:description>
-    <em:creator>Traxium</em:creator>
+    <em:description>Tabs how they should be.</em:description>
+    <em:creator>Sergey Zelentsov</em:creator>
     <!-- start localizing -->
-    <em:localized>
-      <Description>
-        <em:locale>ru-RU</em:locale>
-        <em:name>Древовидные Вкладки</em:name>
-        <em:description>Делает вкладки такими, какими они и должны быть</em:description>
-        <em:creator>Зеленцов Сергей</em:creator>
-      </Description>
-    </em:localized>
     <em:localized>
       <Description>
         <em:locale>en-US</em:locale>
         <em:name>Tabs Tree</em:name>
-        <em:description>Tabs how they must be</em:description>
-        <em:creator>Traxium</em:creator>
+        <em:description>Tabs how they should be.</em:description>
+        <em:creator>Sergey Zelentsov</em:creator>
+        <em:translator>Sergey Zelentsov</em:translator>
       </Description>
+      <em:localized>
+        <Description>
+          <em:locale>ru</em:locale>
+          <em:name>Tabs Tree</em:name>
+          <em:description>Делает вкладки такими, какими они и должны быть.</em:description>
+          <em:creator>Зеленцов Сергей</em:creator>
+          <em:translator>Sergey Zelentsov</em:translator>
+        </Description>
+      </em:localized>
     </em:localized>
   </Description>
 </RDF>
