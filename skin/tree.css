@@ -1,17 +1,26 @@
-#tt-treechildren:-moz-tree-row(dropOn),
-#tt-treechildren:-moz-tree-row(dropBefore),
-#tt-treechildren:-moz-tree-row(dropAfter) {
-  border: #F0F 1px dashed;
+/* Tree */
+
+#tt,
+#tt-tree-feedback {
+  margin-left: 0;
+  margin-right: 0;
 }
 
-#tt-treechildren:-moz-tree-image {
-  /*noinspection CssUnknownTarget*/
+#tt-treechildren:-moz-tree-image,
+#tt-treechildren-feedback:-moz-tree-image {
   list-style-image: url(chrome://mozapps/skin/places/defaultFavicon.png);
   width: 16px; /* there are websites with at least 32x32px icons, they look ugly in our tree */
 }
 
-#tt-panel {
-  border: none;
+#tt-treechildren:-moz-tree-twisty,
+#tt-treechildren-feedback:-moz-tree-twisty {
+  list-style-image: none;
+}
+
+#tt-treechildren:-moz-tree-row(dropOn),
+#tt-treechildren:-moz-tree-row(dropBefore),
+#tt-treechildren:-moz-tree-row(dropAfter) {
+  border: #F0F 1px dashed;
 }
 
 #tt-treechildren:-moz-tree-row(quickSearch) {
@@ -26,8 +35,14 @@
   color: black;
 }
 
-#tt-treechildren:-moz-tree-twisty {
-  list-style-image: none;
+/* Other */
+
+#tt-panel {
+  border: none;
+}
+
+#tt-drop-indicator {
+  pointer-events: none; /* preventing the arrow flickering when mouse pointer goes over that arrow and that arrow overlaps 'toolbar' */
 }
 
 /* Full screen mode */
@@ -53,14 +68,4 @@
 #main-window[inFullscreen] #tt-fullscr-toggler:hover + #tt-sidebar,
 #main-window[inFullscreen] #tt-sidebar:hover {
   visibility: visible;
-}
-
-#tt-drop-indicator {
-  pointer-events: none; /* preventing the arrow flickering when mouse pointer goes over that arrow and that arrow overlaps 'toolbar' */
-}
-
-#tt,
-#tt-tree-feedback {
-  margin-left: 0;
-  margin-right: 0;
 }

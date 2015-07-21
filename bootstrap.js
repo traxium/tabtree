@@ -43,6 +43,8 @@ function startup(data, reason)
 		}
 	});
 
+	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabstree.treelines', true); // setting default pref
+	
 	windowListener.register();
 }
 
@@ -101,6 +103,7 @@ var windowListener = {
 		}
 		let sidebar = aDOMWindow.document.querySelector('#tt-sidebar');
 		ss.setWindowValue(aDOMWindow, 'tt-width', sidebar.width); // Remember the width of 'tt-sidebar'
+		Services.prefs.removeObserver('extensions.tabstree.treelines', aDOMWindow.tt.toRemove.prefsObserver); // it can also be removed in 'unloadFromWindow'
 	},
 	
 	onWindowTitleChange: function (aXULWindow, aNewTitle) {},
@@ -168,6 +171,7 @@ var windowListener = {
 			aDOMWindow.document.documentElement.removeAttribute("tabsintitlebar"); // show native titlebar
 		}
 		aDOMWindow.TabsInTitlebar._update(true); // It is needed to recalculate negative 'margin-bottom' for 'titlebar' and 'margin-bottom' for 'titlebarContainer'
+		Services.prefs.removeObserver('extensions.tabstree.treelines', aDOMWindow.tt.toRemove.prefsObserver); // it could be already removed in 'onCloseWindow'
 		
 		delete aDOMWindow.tt;
 	},
@@ -182,7 +186,7 @@ var windowListener = {
 		}
 		let g = aDOMWindow.gBrowser;
 		aDOMWindow.tt = {
-			toRemove: {eventListeners: {}},
+			toRemove: {eventListeners: {}, prefsObserver: {}},
 			toRestore: {g: {}, TabContextMenu: {}, tabsintitlebar: true}
 		};
 
@@ -309,7 +313,7 @@ var windowListener = {
 			flex: '1',
 			seltype: 'single',
 			context: 'tabContextMenu',
-			treelines: 'true',
+			treelines: Services.prefs.getBoolPref('extensions.tabstree.treelines').toString(),
 			hidecolumnpicker: 'true'
 		};
 		Object.keys(propsToSet).forEach( (p)=>{tree.setAttribute(p, propsToSet[p]);} );
@@ -350,7 +354,7 @@ var windowListener = {
 		treeFeedback.setAttribute('id', 'tt-tree-feedback');
 		treeFeedback.setAttribute('flex', '1');
 		treeFeedback.setAttribute('seltype', 'single');
-		treeFeedback.setAttribute('treelines', 'true');
+		treeFeedback.setAttribute('treelines', Services.prefs.getBoolPref('extensions.tabstree.treelines').toString());
 		treeFeedback.setAttribute('hidecolumnpicker', 'true');
 		let treecolsFeedback = aDOMWindow.document.createElement('treecols');
 		let treecolFeedback = aDOMWindow.document.createElement('treecol');
@@ -358,6 +362,7 @@ var windowListener = {
 		treecolFeedback.setAttribute('primary', 'true');
 		treecolFeedback.setAttribute('hideheader', 'true');
 		let treechildrenFeedback = aDOMWindow.document.createElement('treechildren');
+		treechildrenFeedback.setAttribute('id', 'tt-treechildren-feedback');
 		treecolsFeedback.appendChild(treecolFeedback);
 		treeFeedback.appendChild(treecolsFeedback);
 		treeFeedback.appendChild(treechildrenFeedback);
@@ -718,8 +723,16 @@ var windowListener = {
 				let marginLeft = parseInt( aDOMWindow.getComputedStyle(tree).getPropertyValue('margin-left') );
 				event.dataTransfer.setDragImage(panel, event.clientX-(tree.boxObject.x-borderLeftWidth-marginLeft)+1, -20); // I don't know why "+1"
 			}
+			// uncomment if you always want to highlight 'gBrowser.mCurrentTab':
+			//g.mCurrentTab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(g.mCurrentTab._tPos - tt.nPinned); // NEW
 			event.stopPropagation();
 		}, false); // tree.addEventListener('dragstart', function(event) {
+		
+		tree.addEventListener('dragend', function(event) {
+			if (event.dataTransfer.dropEffect == 'none') { // the drag was cancelled
+				g.mCurrentTab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(g.mCurrentTab._tPos - tt.nPinned); // NEW
+			}
+		}, false);
 
 		for (let i=0; i<g.tabs.length; ++i) {
 			if ( ss.getTabValue(g.tabs[i], 'ttLevel') === '' ) {
@@ -1307,6 +1320,19 @@ var windowListener = {
 				}
 			}
 		}, false);
+
+		Services.prefs.addObserver('extensions.tabstree.treelines', (aDOMWindow.tt.toRemove.prefsObserver = {
+			observe: function(subject, topic, data) {
+				if (topic == 'nsPref:changed') {
+					tree.setAttribute('treelines', Services.prefs.getBoolPref('extensions.tabstree.treelines').toString());
+					treeFeedback.setAttribute('treelines', Services.prefs.getBoolPref('extensions.tabstree.treelines').toString());
+					let hack = tree.style.borderStyle; // hack to force to redraw 'treelines'
+					tree.style.borderStyle = 'none';
+					tree.style.borderStyle = hack;
+					tree.treeBoxObject.invalidate();
+				}
+			}
+		}), false); // don't forget to remove // it can be removed in 'onCloseWindow' or in 'unloadFromWindow'(upon addon shutdown)
 
 		tt.redrawToolbarbuttons(); // needed when addon is enabled from about:addons (not when firefox is being loaded)
 		tree.treeBoxObject.invalidate(); // just in case
