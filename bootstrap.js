@@ -754,6 +754,7 @@ var windowListener = {
 						let tab = event.target;
 						let oldTab = g.selectedTab;
 						if (oldTab.pinned) {
+							ss.setTabValue(tab, 'ttLevel', '0');
 							tree.treeBoxObject.rowCountChanged(g.tabs.length-1 - tt.nPinned, 1); // our new tab is at index g.tabs.length-1
 						} else {
 							ss.setTabValue(tab, 'ttLevel', (parseInt(ss.getTabValue(oldTab, 'ttLevel')) + 1).toString());
