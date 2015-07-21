@@ -1,0 +1,2 @@
+<!ENTITY treelines.title "Draw the nesting lines along the side of the tree">
+<!ENTITY treelines.desc "The lines connecting child rows to parent rows (checked by default)">

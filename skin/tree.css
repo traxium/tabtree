@@ -35,6 +35,10 @@
   color: black;
 }
 
+#tt-treechildren:-moz-tree-cell-text(hover) {
+  text-decoration: underline;
+}
+
 /* Other */
 
 #tt-panel {

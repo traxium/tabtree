@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+        
+<!DOCTYPE options SYSTEM "chrome://tabstree/locale/options.dtd">
+
+<vbox xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+    <setting type="bool" pref="extensions.tabstree.treelines" title="&treelines.title;" desc="&treelines.desc;" />
+</vbox>

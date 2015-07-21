@@ -664,7 +664,7 @@ var windowListener = {
 						},
 						getCellText: function (row, column) {
 							let tPos = row + this.numStart;
-							return tPos + '#' + ss.getTabValue(g.tabs[tPos], 'ttLevel') + ': ' + g.tabs[tPos].label;
+							return ' ' + g.tabs[tPos].label;
 						},
 						getImageSrc: function (row, column) {
 							let tPos = row + this.numStart;
@@ -875,7 +875,7 @@ var windowListener = {
 			},
 			getCellText: function(row, column) {
 				let tPos = row+tt.nPinned;
-				return tPos + '#' + ss.getTabValue(g.tabs[tPos], 'ttLevel') + ': ' + g.tabs[tPos].label;
+				return ' ' + g.tabs[tPos].label;
 			},
 			getImageSrc: function(row, column) {
 				let tPos = row+tt.nPinned;
