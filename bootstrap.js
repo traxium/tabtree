@@ -1,3 +1,8 @@
+/*
+ * This file is part of Tabs Tree,
+ * Copyright (C) 2015 Sergey Zelentsov
+ */
+
 'use strict';
 /* jshint moz:true */
 /* global Components, Services, SessionStore, APP_SHUTDOWN */
