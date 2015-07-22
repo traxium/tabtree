@@ -491,8 +491,8 @@ var windowListener = {
 					let baseLevelDiff = this.levelInt(tPos) - (this.levelInt(tPosTo)+1);
 					for (let i=tPosTo+1; i<g.tabs.length+1; ++i) { // +1 on purpose in order to correctly process adding the tab to the very last position
 						// !g.tabs[i] is in order to correctly process adding the tab to the very last postition also
-						if ( !g.tabs[i] || this.levelInt(i)<=this.levelInt(tPosTo) ) {
-							if (tPos>i) {
+						if ( !g.tabs[i] || this.levelInt(i)<=this.levelInt(tPosTo) ) { // skip already existing children in the destination tab
+							if (tPos>=i) {
 								let lastDescendantPos;
 								for (lastDescendantPos=tPos+1; lastDescendantPos<g.tabs.length+1; ++lastDescendantPos) { // length+1 on purpose
 									if (!g.tabs[lastDescendantPos] || this.levelInt(lastDescendantPos)<=baseSourceLevel) {
@@ -751,6 +751,8 @@ var windowListener = {
 				// altering params.relatedToCurrent argument in order to ignore about:config insertRelatedAfterCurrent option:
 				if (argumentsList.length == 2 && typeof argumentsList[1] == "object" && !(argumentsList[1] instanceof Ci.nsIURI)) {
 					argumentsList[1].relatedToCurrent = false;
+					argumentsList[1].skipAnimation = true; // I believe after disabling animation tabs are added a little bit faster
+					// But I can't see the difference with the naked eye
 				}
 				
 				if (argumentsList.length>=2 && argumentsList[1].referrerURI) { // undo close tab hasn't got argumentsList[1]
@@ -1159,12 +1161,17 @@ var windowListener = {
 		};
 
 		aDOMWindow.tt.toRestore.g.removeTab = g.removeTab;
-		g.removeTab =  new Proxy(g.removeTab, { // only for FLST after closing tab
+		g.removeTab =  new Proxy(g.removeTab, { // for FLST after closing tab AND for nullifying 'browser.tabs.animate' about:config pref
 			apply: function(target, thisArg, argumentsList) {
 				let tab = argumentsList[0];
 				if (g.mCurrentTab === tab) {
 					let recentlyUsedTabs = Array.filter(g.tabs, (tab) => !tab.closing).sort((tab1, tab2) => tab2.lastAccessed - tab1.lastAccessed);
 					g.selectedTab = recentlyUsedTabs[0]===g.mCurrentTab ? recentlyUsedTabs[1] : recentlyUsedTabs[0];
+				}
+				if (argumentsList[1] && argumentsList[1].animate) { // nullifying 'browser.tabs.animate' about:config pref
+					// after disabling animation tabs are closed really faster, It can be seen with the naked eye
+					// gBrowser.removeTab() uses setTimeout(..., 3000, aTab, this) for animation if you don't believe me
+					argumentsList[1].animate = false;
 				}
 				return target.apply(thisArg, argumentsList);
 			}

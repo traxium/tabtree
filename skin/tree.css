@@ -25,7 +25,7 @@
 #tt-treechildren:-moz-tree-row(dropOn),
 #tt-treechildren:-moz-tree-row(dropBefore),
 #tt-treechildren:-moz-tree-row(dropAfter) {
-  border: #F0F 1px dashed;
+  border: orange 1px dashed;
 }
 
 #tt-treechildren:-moz-tree-row(quickSearch) {
