@@ -10,7 +10,8 @@
 #nav-bar .toolbarbutton-1,
 #nav-bar .toolbarbutton-menubutton-button,
 #nav-bar .toolbarbutton-menubutton-dropmarker {
-	padding: 0 !important;
+	padding-top: 0 !important;
+	padding-bottom: 0 !important;
 }
 
 /* Click at the top edge */
