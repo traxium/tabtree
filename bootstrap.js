@@ -5,7 +5,7 @@
 
 'use strict';
 /* jshint moz:true */
-/* global Components, Services, SessionStore, APP_SHUTDOWN */
+/* global Components, CustomizableUI, Services, SessionStore, APP_SHUTDOWN */
 
 //const {classes: Cc, interfaces: Ci, utils: Cu} = Components; // WebStorm inspector doesn't understand destructuring assignment
 const Cc = Components.classes;
@@ -13,12 +13,14 @@ const Ci = Components.interfaces;
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
+Cu.import("resource:///modules/CustomizableUI.jsm");
 var ssHack = Cu.import("resource:///modules/sessionstore/SessionStore.jsm");
 var ssOrig;
 const ss = Cc["@mozilla.org/browser/sessionstore;1"].getService(Ci.nsISessionStore);
 const sss = Cc["@mozilla.org/content/style-sheet-service;1"].getService(Ci.nsIStyleSheetService);
 // from 'https://github.com/Noitidart/l10n':
 var stringBundle = Services.strings.createBundle('chrome://tabstree/locale/global.properties?' + Math.random()); // Randomize URI to work around bug 719376
+var menuVisible;
 
 //noinspection JSUnusedGlobalSymbols
 function startup(data, reason)
@@ -68,6 +70,8 @@ function shutdown(aData, aReason)
 	}
 
 	ssHack.SessionStoreInternal.onLoad = ssOrig;
+
+	CustomizableUI.setToolbarVisibility('toolbar-menubar', menuVisible); // restoring menu visibility(in all windows)
 	
 	windowListener.unregister();
 }
@@ -195,6 +199,11 @@ var windowListener = {
 			toRestore: {g: {}, TabContextMenu: {}, tabsintitlebar: true}
 		};
 
+		if (menuVisible === undefined) { // we have to remember menu visibility only once
+			menuVisible = aDOMWindow.document.querySelector('#toolbar-menubar').getAttribute('autohide') != 'true'; // remember menu visibility until restart
+			CustomizableUI.setToolbarVisibility('toolbar-menubar', false); // hiding menu(in all windows) in case there are users who don't know how to do that
+		}
+		
 		// remember 'tabsintitlebar' attr before beginning to interact with it // default is 'true':
 			aDOMWindow.tt.toRestore.tabsintitlebar = (aDOMWindow.document.documentElement.getAttribute('tabsintitlebar')=='true');
 
