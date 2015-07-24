@@ -1,2 +1,7 @@
-<!ENTITY treelines.title "Draw the nesting lines along the side of the tree">
+<!ENTITY treelines.title "Draw the nesting lines along the side of the tree:">
 <!ENTITY treelines.desc "The lines connecting child rows to parent rows (checked by default)">
+<!ENTITY highlight-unloaded-tabs.title "Highlight unloaded tabs:">
+<!ENTITY highlight-unloaded-tabs.desc "If you use &quot;Don't load tabs until selected&quot; Firefox option (&quot;no&quot; by default)">
+<!ENTITY highlight-unloaded-tabs.no "no">
+<!ENTITY highlight-unloaded-tabs.grayout "gray out">
+<!ENTITY highlight-unloaded-tabs.highlight "highlight">

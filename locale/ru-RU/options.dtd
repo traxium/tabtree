@@ -1,2 +1,7 @@
-<!ENTITY treelines.title "Рисовать сбоку пунктирные линии">
+<!ENTITY treelines.title "Рисовать сбоку пунктирные линии:">
 <!ENTITY treelines.desc "Линии, соединяющие родительские и дочерние вкладки (отмечено по умолчанию)">
+<!ENTITY highlight-unloaded-tabs.title "Выделять незагруженные вкладки:">
+<!ENTITY highlight-unloaded-tabs.desc "Если вы пользуетесь опцией браузера &quot;Не загружать вкладки без запроса&quot; (&quot;нет&quot; по умолчанию)">
+<!ENTITY highlight-unloaded-tabs.no "нет">
+<!ENTITY highlight-unloaded-tabs.grayout "отображать тусклыми">
+<!ENTITY highlight-unloaded-tabs.highlight "подсветить другим цветом">

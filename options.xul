@@ -4,4 +4,11 @@
 
 <vbox xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
     <setting type="bool" pref="extensions.tabstree.treelines" title="&treelines.title;" desc="&treelines.desc;" />
+    <setting type="radio" pref="extensions.tabstree.highlight-unloaded-tabs" title="&highlight-unloaded-tabs.title;" desc="&highlight-unloaded-tabs.desc;">
+        <radiogroup>
+            <radio value="0" label="&highlight-unloaded-tabs.no;"/>
+            <radio value="1" label="&highlight-unloaded-tabs.grayout;"/>
+            <radio value="2" label="&highlight-unloaded-tabs.highlight;"/>
+        </radiogroup>
+    </setting>
 </vbox>

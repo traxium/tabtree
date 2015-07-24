@@ -18,7 +18,6 @@ var ssHack = Cu.import("resource:///modules/sessionstore/SessionStore.jsm");
 var ssOrig;
 const ss = Cc["@mozilla.org/browser/sessionstore;1"].getService(Ci.nsISessionStore);
 const sss = Cc["@mozilla.org/content/style-sheet-service;1"].getService(Ci.nsIStyleSheetService);
-// from 'https://github.com/Noitidart/l10n':
 var stringBundle = Services.strings.createBundle('chrome://tabstree/locale/global.properties?' + Math.random()); // Randomize URI to work around bug 719376
 var menuVisible;
 
@@ -51,6 +50,7 @@ function startup(data, reason)
 	});
 
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabstree.treelines', true); // setting default pref
+	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabstree.highlight-unloaded-tabs', 0); // setting default pref
 	
 	windowListener.register();
 }
@@ -81,7 +81,6 @@ function install(aData, aReason) { }
 //noinspection JSUnusedGlobalSymbols
 function uninstall(aData, aReason) { }
 
-// General idea about how to add a sidebar to all browsing windows is from 'https://gist.github.com/Noitidart/8728393':
 //noinspection JSUnusedGlobalSymbols
 var windowListener = {
 	
@@ -205,7 +204,7 @@ var windowListener = {
 		}
 		
 		// remember 'tabsintitlebar' attr before beginning to interact with it // default is 'true':
-			aDOMWindow.tt.toRestore.tabsintitlebar = (aDOMWindow.document.documentElement.getAttribute('tabsintitlebar')=='true');
+		aDOMWindow.tt.toRestore.tabsintitlebar = aDOMWindow.document.documentElement.getAttribute('tabsintitlebar')=='true';
 
 		//////////////////// TITLE BAR STANDARD BUTTONS (Minimize, Restore/Maximize, Close) ////////////////////////////
 		// We can't use 'window.load' event here, because it always shows windowState==='STATE_NORMAL' even when the actual state is 'STATE_MAXIMIZED'
@@ -922,7 +921,21 @@ var windowListener = {
 					return 'quickSearch';
 				}
 			},
-			//getCellProperties: function(row,col,props){}, // props parameter is obsolete since Gecko 22
+			getCellProperties: function(row, col) {
+				let tPos = row+tt.nPinned;
+				let pref = Services.prefs.getIntPref('extensions.tabstree.highlight-unloaded-tabs');
+				if (pref == 0) {
+					return;
+				}
+				if (g.tabs[tPos].hasAttribute('pending')) {
+					switch (pref) {
+						case 1:
+							return 'pending-grayout';
+						case 2:
+							return 'pending-highlight';
+					}
+				}
+			},
 			//getColumnProperties: function(colid,col,props){} // props parameter is obsolete since Gecko 22
 			getParentIndex: function(row) {
 				if (this.getLevel(row)==0) return -1;
@@ -1343,15 +1356,23 @@ var windowListener = {
 			}
 		}, false);
 
-		Services.prefs.addObserver('extensions.tabstree.treelines', (aDOMWindow.tt.toRemove.prefsObserver = {
+		Services.prefs.addObserver('extensions.tabstree.', (aDOMWindow.tt.toRemove.prefsObserver = {
 			observe: function(subject, topic, data) {
 				if (topic == 'nsPref:changed') {
-					tree.setAttribute('treelines', Services.prefs.getBoolPref('extensions.tabstree.treelines').toString());
-					treeFeedback.setAttribute('treelines', Services.prefs.getBoolPref('extensions.tabstree.treelines').toString());
-					let hack = tree.style.borderStyle; // hack to force to redraw 'treelines'
-					tree.style.borderStyle = 'none';
-					tree.style.borderStyle = hack;
-					tree.treeBoxObject.invalidate();
+					switch (data) {
+						case 'extensions.tabstree.highlight-unloaded-tabs':
+							tree.treeBoxObject.invalidate();
+							break;
+						case 'extensions.tabstree.treelines':
+							tree.setAttribute('treelines', Services.prefs.getBoolPref('extensions.tabstree.treelines').toString());
+							treeFeedback.setAttribute('treelines', Services.prefs.getBoolPref('extensions.tabstree.treelines').toString());
+							let hack = tree.style.borderStyle; // hack to force to redraw 'treelines'
+							tree.style.borderStyle = 'none';
+							tree.style.borderStyle = hack;
+							tree.treeBoxObject.invalidate();
+							break;
+					}
+
 				}
 			}
 		}), false); // don't forget to remove // it can be removed in 'onCloseWindow' or in 'unloadFromWindow'(upon addon shutdown)
