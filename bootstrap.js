@@ -1070,7 +1070,7 @@ var windowListener = {
 			}
 		}); // don't forget to restore
 
-		toolbar.ondragstart = function(event) {
+		toolbar.addEventListener('dragstart', function(event) {
 			let toolbarbtn = event.target;
 			let tPos = Array.prototype.indexOf.call(toolbarbtn.parentNode.children, toolbarbtn);
 			let tab = g.tabs[tPos-1]; // the first child is the arrow hbox
@@ -1078,15 +1078,11 @@ var windowListener = {
 			event.dataTransfer.mozSetDataAt('application/x-moz-node', toolbarbtn, 0);
 			event.dataTransfer.mozSetDataAt('text/x-moz-text-internal', tab.linkedBrowser.currentURI.spec, 0);
 			event.stopPropagation();
-		};
+		}, false);
 
-		toolbar.ondragover = function f(event) {
+		toolbar.addEventListener('dragover', function f(event) {
 			let dt = event.dataTransfer;
-
-			//if ( (dt.mozTypesAt(0).contains('application/x-moz-node') && dt.mozGetDataAt('application/x-moz-node', 0).tagName=='toolbarbutton' // to delete
-			//	&& dt.mozTypesAt(0).contains(aDOMWindow.TAB_DROP_TYPE)) // rearranging pinned tabs
-			//	|| dt.mozTypesAt(0).contains('text/uri-list') )			// adding new pinned tab
-			//{
+			
 			if ( dt.mozTypesAt(0).contains(aDOMWindow.TAB_DROP_TYPE)
 				|| dt.mozTypesAt(0).contains('text/uri-list') )			// adding new pinned tab
 			{
@@ -1112,21 +1108,18 @@ var windowListener = {
 					ind.style.MozMarginStart = (-ind.clientWidth) + "px"; // just copying what mozilla does
 				}
 			}
-		};
+		}, false);
 
-		toolbar.ondragleave = function f(event) {
+		toolbar.addEventListener('dragleave', function f(event) {
 			event.preventDefault();
 			event.stopPropagation();
 
 			ind.collapsed = true;
-		};
+		}, false);
 
-		toolbar.ondrop = function f(event) {
+		toolbar.addEventListener('drop', function f(event) {
 			let dt = event.dataTransfer;
-			
-			//if ( dt.mozTypesAt(0).contains('application/x-moz-node') && dt.mozGetDataAt('application/x-moz-node', 0).tagName=='toolbarbutton' // to delete
-			//	&& dt.mozTypesAt(0).contains(aDOMWindow.TAB_DROP_TYPE) )
-			//{
+
 			if (dt.mozTypesAt(0).contains(aDOMWindow.TAB_DROP_TYPE)) {
 				// rearranging pinned tabs:
 				event.preventDefault();
@@ -1138,7 +1131,7 @@ var windowListener = {
 					// moving a tab from 'tree' to 'toolbar'
 					g.pinTab(sourceTab);
 				}
-				
+
 				if (event.originalTarget.tagName == 'toolbarbutton' || event.originalTarget.tagName == 'toolbar') {
 					if (event.originalTarget.tagName == 'toolbarbutton') {
 						let idx = Array.prototype.indexOf.call(event.originalTarget.parentNode.children, event.originalTarget);
@@ -1165,7 +1158,7 @@ var windowListener = {
 				// We're adding a new tab.
 				let newTab = g.loadOneTab(url, {inBackground: true, allowThirdPartyFixup: true, relatedToCurrent: false});
 				g.pinTab(newTab);
-				
+
 				if (event.originalTarget.tagName == 'toolbarbutton' || event.originalTarget.tagName == 'toolbar') {
 					if (event.originalTarget.tagName == 'toolbarbutton') {
 						let idx = Array.prototype.indexOf.call(event.originalTarget.parentNode.children, event.originalTarget);
@@ -1181,7 +1174,7 @@ var windowListener = {
 					ind.collapsed = true;
 				}
 			}
-		};
+		}, false);
 
 		aDOMWindow.tt.toRestore.g.removeTab = g.removeTab;
 		g.removeTab =  new Proxy(g.removeTab, { // for FLST after closing tab AND for nullifying 'browser.tabs.animate' about:config pref
