@@ -62,7 +62,7 @@
 }
 
 #tt-treechildren:-moz-tree-cell-text(pending-highlight) {
-  color: green;
+  color: midnightblue;
 }
 
 /* Other */

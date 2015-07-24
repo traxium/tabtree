@@ -645,7 +645,8 @@ var windowListener = {
 			}, // redrawToolbarbuttons: function() {
 			
 			quickSearch: function(aText, tPos) {
-				if (aText && g.tabs[tPos].label.toLowerCase().indexOf(aText.toLowerCase()) != -1) {
+				let url = g.browsers[tPos].__SS_data ? g.browsers[tPos].__SS_data.entries[0].url : g.browsers[tPos].documentURI.spec;
+				if ( aText && (g.tabs[tPos].label.toLowerCase().indexOf(aText.toLowerCase())!=-1 || url.indexOf(aText.toLowerCase())!=-1) ) {
 					return true;
 				}
 			}
@@ -1227,12 +1228,12 @@ var windowListener = {
 				}
 			}
 		});
-		
-		quickSearchBox.oninput = function f(event) {
-			tree.treeBoxObject.invalidate();
-		};
 
-		tree.onkeydown = quickSearchBox.onkeydown = function f(keyboardEvent) {
+		quickSearchBox.addEventListener('input', function(event) {
+			tree.treeBoxObject.invalidate();
+		}, false);
+
+		tree.onkeydown = quickSearchBox.onkeydown = function(keyboardEvent) {
 			if (keyboardEvent.key=='Escape') {
 				quickSearchBox.value = '';
 				tree.treeBoxObject.invalidate();
