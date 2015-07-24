@@ -651,7 +651,7 @@ var windowListener = {
 			}
 		}; // let tt = {
 
-		tree.addEventListener('dragstart', function(event) {
+		treechildren.addEventListener('dragstart', function(event) { // if the event was attached to 'tree' then the popup would be shown while you scrolling
 			let tab = g.tabs[tree.currentIndex+tt.nPinned];
 			event.dataTransfer.mozSetDataAt(aDOMWindow.TAB_DROP_TYPE, tab, 0);
 			// "We must not set text/x-moz-url or text/plain data here,"
@@ -785,6 +785,7 @@ var windowListener = {
 							// it only needed if we opened a new tab in background and not from pinned tab:
 							tree.view.selection.select(oldTab._tPos - tt.nPinned);
 						}
+						tree.treeBoxObject.ensureRowIsVisible(tab._tPos - tt.nPinned);
 					}, true);
 				} else if (argumentsList.length>=2 && !argumentsList[1].referrerURI) { // new tab button or dropping links on the native tabbar
 					g.tabContainer.addEventListener('TabOpen', function onPreAddTabWithoutRef(event) {
@@ -1318,7 +1319,9 @@ var windowListener = {
 			let tab = event.target;
 			tab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(tab._tPos - tt.nPinned);
 			tt.redrawToolbarbuttons();
-			tree.treeBoxObject.ensureRowIsVisible(tab._tPos - tt.nPinned);
+			if (!tab.pinned) {
+				tree.treeBoxObject.ensureRowIsVisible(tab._tPos - tt.nPinned);
+			}
 		}), false); // don't forget to remove
 		
 		aDOMWindow.addEventListener('sizemodechange', (aDOMWindow.tt.toRemove.eventListeners.onSizemodechange = function(event) {
