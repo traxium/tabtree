@@ -65,6 +65,10 @@
   color: midnightblue;
 }
 
+#tt-treechildren:-moz-tree-cell-text(dropOn) {
+  color: white;
+}
+
 /* Other */
 
 #tt-panel {
