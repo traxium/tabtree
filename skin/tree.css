@@ -103,3 +103,9 @@
 #main-window[inFullscreen] #tt-sidebar:hover {
   visibility: visible;
 }
+
+/* Inline options */
+
+setting[pref="extensions.tabstree.dblclick"][value="false"] + setting[pref="extensions.tabstree.delay"] {
+  visibility: collapse;
+}

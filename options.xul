@@ -11,4 +11,6 @@
             <radio value="2" label="&highlight-unloaded-tabs.highlight;"/>
         </radiogroup>
     </setting>
+    <setting type="bool" pref="extensions.tabstree.dblclick" title="&dblclick.title;" desc="&dblclick.desc;" onpreferencechanged="this.setAttribute('value', this.value.toString());" />
+    <setting type="integer" pref="extensions.tabstree.delay" title="&delay.title;" desc="&delay.desc;" />
 </vbox>

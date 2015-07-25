@@ -5,3 +5,7 @@
 <!ENTITY highlight-unloaded-tabs.no "no">
 <!ENTITY highlight-unloaded-tabs.grayout "gray out">
 <!ENTITY highlight-unloaded-tabs.highlight "highlight">
+<!ENTITY dblclick.title "Double click to close a tab">
+<!ENTITY dblclick.desc "Only recommended if you don't have a mouse with a wheel (unchecked by default)">
+<!ENTITY delay.title "Double click delay (milliseconds)">
+<!ENTITY delay.desc "Actually it is a delay until a selected tab is displayed. Set it to around 160 if you don't want to see a tab flipping while closing a tab (0 by default)">

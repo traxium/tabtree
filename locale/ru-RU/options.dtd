@@ -5,3 +5,7 @@
 <!ENTITY highlight-unloaded-tabs.no "нет">
 <!ENTITY highlight-unloaded-tabs.grayout "отображать тусклыми">
 <!ENTITY highlight-unloaded-tabs.highlight "подсветить другим цветом">
+<!ENTITY dblclick.title "Закрытие вкладки по двойному щелчку мыши">
+<!ENTITY dblclick.desc "Рекомендуется включать эту настройку, только если у вас нет мышки (не отмечено по умочанию)">
+<!ENTITY delay.title "Задержка для двойного клика (миллисекунды)">
+<!ENTITY delay.desc "Задержка перед тем как выделенная вкладка активируется. Если вы не хотите видеть вкладку перед её закрытием, то установите это значение в 160 или больше (0 by default)">

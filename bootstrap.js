@@ -51,6 +51,8 @@ function startup(data, reason)
 
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabstree.treelines', true); // setting default pref
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabstree.highlight-unloaded-tabs', 0); // setting default pref
+	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabstree.dblclick', false); // setting default pref
+	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabstree.delay', 0); // setting default pref
 	
 	windowListener.register();
 }
@@ -879,6 +881,7 @@ var windowListener = {
 					tt.redrawToolbarbuttons();
 				} else {
 					tree.treeBoxObject.rowCountChanged(tPos - tt.nPinned, -1);
+					g.mCurrentTab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(g.mCurrentTab._tPos - tt.nPinned); // NEW
 				}
 			}
 		}); // don't forget to restore
@@ -1264,14 +1267,8 @@ var windowListener = {
 		
 		// we can't use 'select' event because it fires too many times(when dragging and dropping for example)
 		// and therefore it invokes unknown error while selecting pinned tab("TelemetryStopwatch:52:0")
-		// instead we using 'click' and 'keyup' events:
-		tree.addEventListener('click', function f(event) {
-			let idx = tree.treeBoxObject.getRowAt(event.clientX, event.clientY);
-			if (idx != -1) {
-				let tPos = idx + tt.nPinned;
-				g.selectTabAtIndex(tPos);
-			}
-		}, false);
+		// instead we use 'click' and 'keyup' events
+		// and because of that a tab doesn't load when right clicked:
 		
 		tree.addEventListener('keyup', function f(event) {
 			if (event.key=='ArrowUp' || event.key=='ArrowDown') {
@@ -1279,6 +1276,35 @@ var windowListener = {
 				g.selectTabAtIndex(tPos);
 			}
 		}, false);
+		
+		let onClickFast = function(event) {
+			if (event.button === 0) { // the left button click
+				let idx = tree.treeBoxObject.getRowAt(event.clientX, event.clientY);
+				if (idx != -1) {
+					let tPos = idx + tt.nPinned;
+					g.selectTabAtIndex(tPos);
+				}
+			}
+		};
+		let onClickSlow = function f(event) { // and also double click
+			if (event.button === 0) { // the left button click
+				let idx = tree.treeBoxObject.getRowAt(event.clientX, event.clientY);
+				if (idx != -1) {
+					let tPos = idx + tt.nPinned;
+					if (event.detail == 1) {
+						f.timer = aDOMWindow.setTimeout(function(){g.selectTabAtIndex(tPos);}, Services.prefs.getIntPref('extensions.tabstree.delay'));
+					} else if (event.detail == 2) {
+						aDOMWindow.clearTimeout(f.timer);
+						g.removeTab(g.tabs[tPos]);
+					}
+				}
+			}
+		};
+		if (Services.prefs.getBoolPref('extensions.tabstree.dblclick')) {
+			tree.addEventListener('click', onClickSlow, false);
+		} else {
+			tree.addEventListener('click', onClickFast, false);
+		}
         
 		g.tabContainer.addEventListener("TabMove", (aDOMWindow.tt.toRemove.eventListeners.onTabMove = function(event) {
 			let tab = event.target;
@@ -1357,6 +1383,15 @@ var windowListener = {
 			observe: function(subject, topic, data) {
 				if (topic == 'nsPref:changed') {
 					switch (data) {
+						case 'extensions.tabstree.dblclick':
+							if (Services.prefs.getBoolPref('extensions.tabstree.dblclick')) {
+								tree.removeEventListener('click', onClickFast, false);
+								tree.addEventListener('click', onClickSlow, false);
+							} else {
+								tree.removeEventListener('click', onClickSlow, false);
+								tree.addEventListener('click', onClickFast, false);
+							}
+							break;
 						case 'extensions.tabstree.highlight-unloaded-tabs':
 							tree.treeBoxObject.invalidate();
 							break;
