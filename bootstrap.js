@@ -1,6 +1,6 @@
 /*
  * This file is part of Tabs Tree,
- * Copyright (C) 2015 Sergey Zelentsov
+ * Copyright (C) 2015 Sergey Zelentsov <crayfishexterminator@gmail.com>
  */
 
 'use strict';
@@ -113,6 +113,8 @@ var windowListener = {
 		}
 		let sidebar = aDOMWindow.document.querySelector('#tt-sidebar');
 		ss.setWindowValue(aDOMWindow, 'tt-width', sidebar.width); // Remember the width of 'tt-sidebar'
+		// Remember the first visible row of the <tree id="tt">:
+		ss.setWindowValue(aDOMWindow, 'tt-first-visible-row', aDOMWindow.document.querySelector('#tt').treeBoxObject.getFirstVisibleRow().toString());
 		Services.prefs.removeObserver('extensions.tabstree.treelines', aDOMWindow.tt.toRemove.prefsObserver); // it can also be removed in 'unloadFromWindow'
 	},
 	
@@ -167,6 +169,7 @@ var windowListener = {
 		aDOMWindow.gBrowser.tabContainer.removeEventListener("TabMove", aDOMWindow.tt.toRemove.eventListeners.onTabMove, false);
 		aDOMWindow.gBrowser.tabContainer.removeEventListener("TabSelect", aDOMWindow.tt.toRemove.eventListeners.onTabSelect, false);
 		aDOMWindow.gBrowser.tabContainer.removeEventListener("TabAttrModified", aDOMWindow.tt.toRemove.eventListeners.onTabAttrModified, false);
+		aDOMWindow.gBrowser.tabContainer.removeTabsProgressListener(aDOMWindow.tt.toRemove.tabsProgressListener);
 		aDOMWindow.removeEventListener("sizemodechange", aDOMWindow.tt.toRemove.eventListeners.onSizemodechange, false);
 		if (aDOMWindow.tt && aDOMWindow.tt.toRemove && aDOMWindow.tt.toRemove.observer) { // maybe this conditions are unnecessary
 			Services.obs.removeObserver(aDOMWindow.tt.toRemove.observer, 'document-element-inserted');
@@ -196,7 +199,7 @@ var windowListener = {
 		}
 		let g = aDOMWindow.gBrowser;
 		aDOMWindow.tt = {
-			toRemove: {eventListeners: {}, prefsObserver: {}},
+			toRemove: {eventListeners: {}, prefsObserver: null, tabsProgressListener: null},
 			toRestore: {g: {}, TabContextMenu: {}, tabsintitlebar: true}
 		};
 
@@ -384,6 +387,25 @@ var windowListener = {
 
 		panel.appendChild(treeFeedback);
 		//////////////////// END FEEDBACK TREE /////////////////////////////////////////////////////////////////
+
+		/////////////////////////// PSEUDO-ANIMATED PNG ////////////////////////////////////////////////////////////////
+		// my way to force Firefox to cache images. Otherwise they would be loaded upon the first request (a tab load/refresh) and it wouldn't look smooth:
+		// I can't use a real animated PNG with <tree> element because it causes abnormally high CPU load
+		let pngsConnecting = aDOMWindow.document.createElement('hbox');
+		let pngsLoading = aDOMWindow.document.createElement('hbox');
+		for (let i=1; i<=18; ++i) { // 18 frames for each animated png
+			let pngConnecting = aDOMWindow.document.createElement('image');
+			let pngLoading = aDOMWindow.document.createElement('image');
+			pngConnecting.setAttribute('collapsed', 'true');
+			pngLoading.setAttribute('collapsed', 'true');
+			pngConnecting.setAttribute('src', 'chrome://tabstree/skin/connecting-F'+i+'.png');
+			pngLoading.setAttribute('src', 'chrome://tabstree/skin/loading-F'+i+'.png');
+			pngsConnecting.appendChild(pngConnecting);
+			pngsLoading.appendChild(pngLoading);
+		}
+		sidebar.appendChild(pngsConnecting);
+		sidebar.appendChild(pngsLoading);
+		/////////////////////// END PSEUDO-ANIMATED PNG ////////////////////////////////////////////////////////////////
 
 //////////////////////////////// here we could load something before all tabs have been loaded and restored by SS ////////////////////////////////
 
@@ -647,8 +669,10 @@ var windowListener = {
 			}, // redrawToolbarbuttons: function() {
 			
 			quickSearch: function(aText, tPos) {
-				let url = g.browsers[tPos].__SS_data ? g.browsers[tPos].__SS_data.entries[0].url : g.browsers[tPos].documentURI.spec;
-				if ( aText && (g.tabs[tPos].label.toLowerCase().indexOf(aText.toLowerCase())!=-1 || url.indexOf(aText.toLowerCase())!=-1) ) {
+				// I assume that this method is never invoked with aText=''
+				let url = g.browsers[tPos]._userTypedValue || g.browsers[tPos].contentDocument.URL || '';
+				let txt = aText.toLowerCase();
+				if (g.tabs[tPos].label.toLowerCase().indexOf(txt)!=-1 || url.toLowerCase().indexOf(txt)!=-1) { // 'url.toLowerCase()' may be replaced by 'url'
 					return true;
 				}
 			}
@@ -900,11 +924,20 @@ var windowListener = {
 			},
 			getImageSrc: function(row, column) {
 				let tPos = row+tt.nPinned;
-				if (g.tabs[tPos].hasAttribute('progress') && g.tabs[tPos].hasAttribute('busy')) {
-					return "chrome://browser/skin/tabbrowser/loading.png";
-				} else if (g.tabs[tPos].hasAttribute('busy')) {
-					return "chrome://browser/skin/tabbrowser/connecting.png";
+				if ('ttThrobC' in g.tabs[tPos]) {
+					if (g.tabs[tPos].hasAttribute('progress') && g.tabs[tPos].hasAttribute('busy')) {
+						return 'chrome://tabstree/skin/loading-F' + g.tabs[tPos].ttThrobC + '.png';
+					} else if (g.tabs[tPos].hasAttribute('busy')) {
+						return 'chrome://tabstree/skin/connecting-F' + g.tabs[tPos].ttThrobC + '.png';
+					}
 				}
+				// using animated png's causes abnormal CPU load (due to too frequent rows invalidating)
+				// and until this Firefox bug is fixed the following code will be commented out:
+				//if (g.tabs[tPos].hasAttribute('progress') && g.tabs[tPos].hasAttribute('busy')) {
+				//	return "chrome://browser/skin/tabbrowser/loading.png";
+				//} else if (g.tabs[tPos].hasAttribute('busy')) {
+				//	return "chrome://browser/skin/tabbrowser/connecting.png";
+				//}
 				return g.tabs[tPos].image;
 			}, // or null to hide icons or /g.getIcon(g.tabs[row])/
 			isContainer: function(row) { return true; }, // drop can be performed only on containers
@@ -921,17 +954,20 @@ var windowListener = {
 			isSorted: function() { return false; },
 			isEditable: function(row, column) { return false; },
 			getRowProperties: function(row) {
+				if (quickSearchBox.value==='') {
+					return;
+				}
 				let tPos = row+tt.nPinned;
 				if ( tt.quickSearch(quickSearchBox.value, tPos) ) {
 					return 'quickSearch';
 				}
 			},
 			getCellProperties: function(row, col) {
-				let tPos = row+tt.nPinned;
 				let pref = Services.prefs.getIntPref('extensions.tabstree.highlight-unloaded-tabs');
-				if (pref == 0) {
+				if (pref === 0) {
 					return;
 				}
+				let tPos = row+tt.nPinned;
 				if (g.tabs[tPos].hasAttribute('pending')) {
 					switch (pref) {
 						case 1:
@@ -1320,11 +1356,44 @@ var windowListener = {
 		}, false);
 
 		// "This event should be dispatched when any of these attributes change:
-		// label, crop, busy, image, selected"
+		// label, crop, busy, image, selected" from 'tabbrowser.xml'
+		// but of course it doesn't. It is not dispatched when refreshing a page, although a 'busy' attribute changes
+		// actually it fires only once when a 'busy' attribute is removed, but not when it is set
 		g.tabContainer.addEventListener("TabAttrModified", (aDOMWindow.tt.toRemove.eventListeners.onTabAttrModified = function(event) {
 			let tab = event.target;
+			if (!('ttThrob' in tab)) {
+				if (tab.hasAttribute('busy')) {
+					tab.ttThrob = aDOMWindow.setInterval(function() {
+						if (tab.hasAttribute('busy')) {
+							tab.ttThrobC = tab.ttThrobC === 18 || !('ttThrobC' in tab) ? 1 : tab.ttThrobC + 1;
+							tree.treeBoxObject.invalidateRow(tab._tPos - tt.nPinned);
+						} else {
+							aDOMWindow.clearInterval(tab.ttThrob);
+							console.log('interval #'+tab.ttThrob+' is cleared'); // to delete
+							delete tab.ttThrobC;
+							delete tab.ttThrob;
+						}
+					}, 50); // originally it was 50ms for 'connecting.png' and 40ms for 'loading.png'
+					console.log('#'+tab.ttThrob+' is set on tab #'+tab._tPos+' \"'+tab.label); // to delete
+				}
+			}
 			tab.pinned ? tt.redrawToolbarbuttons() : tree.treeBoxObject.invalidateRow(tab._tPos - tt.nPinned);
 		}), false); // don't forget to remove
+
+		// but it can be easily corrected it:
+		//noinspection JSUnusedGlobalSymbols
+		g.addTabsProgressListener((aDOMWindow.tt.toRemove.tabsProgressListener = {
+			onStateChange: function(/*nsIDOMXULElement*/ aBrowser, /*nsIWebProgress*/ aWebProgress, /*nsIRequest*/ aRequest, /*unsigned long*/ aStateFlags, /*nsresult*/ aStatus) {
+				// "If you use myListener for more than one tab/window, use
+				// aWebProgress.DOMWindow to obtain the tab/window which triggers the state change" from MDN
+				//noinspection JSBitwiseOperatorUsage
+				if (aStateFlags & Ci.nsIWebProgressListener.STATE_START) {
+					// This fires when the load event is initiated
+					console.log('onStateChange - refreshing a page: '+g.getTabForBrowser(aBrowser).label); // to delete
+					g._tabAttrModified(g.getTabForBrowser(aBrowser));
+				}
+			}
+		})); // don't forget to remove
 		
 		// This is needed for initial firefox load, otherwise favicons on the tree wouldn't be loaded
 		// But it probably better to find another way to do initial favicon loading:
@@ -1413,6 +1482,10 @@ var windowListener = {
 		tree.treeBoxObject.invalidate(); // just in case
 		// highlighting a current tree row/toolbarbutton at startup:
 		g.mCurrentTab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(g.mCurrentTab._tPos - tt.nPinned);
+		// scroll <tree id="tt"> to the position where it was before shutdown/restart:
+		tree.treeBoxObject.scrollToRow(parseInt(ss.getWindowValue(aDOMWindow, 'tt-first-visible-row')));
+		// but ensuring that a selected row is visible takes precedence:
+		tree.treeBoxObject.ensureRowIsVisible(g.mCurrentTab._tPos - tt.nPinned);
 		tt.redrawToolbarbuttons();
 		aDOMWindow.TabsInTitlebar._update(true);
 	} // loadIntoWindow: function(aDOMWindow) {

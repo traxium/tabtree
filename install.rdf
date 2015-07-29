@@ -4,7 +4,7 @@
      xmlns:em="http://www.mozilla.org/2004/em-rdf#">
   <Description about="urn:mozilla:install-manifest">
     <em:id>TabsTree@traxium</em:id>
-    <em:version>0.9.9</em:version>
+    <em:version>1.0.6</em:version>
     <em:type>2</em:type>
     <em:targetApplication>
       <Description>
