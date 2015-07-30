@@ -856,7 +856,8 @@ var windowListener = {
 									ss.deleteTabValue(tab, 'ttSS');
 								}
 
-								tree.view.selection.select(tab._tPos - tt.nPinned); // after 'rowCountChanged' the selected row is moved 1 position ahead 
+								tree.view.selection.select(tab._tPos - tt.nPinned); // after 'rowCountChanged' the selected row is moved 1 position ahead
+								tree.treeBoxObject.ensureRowIsVisible(tab._tPos - tt.nPinned);
 							}
 						}, true);
 					}, true);
@@ -1104,6 +1105,7 @@ var windowListener = {
 						let tPos = event.target._tPos;
 						tt.redrawToolbarbuttons();
 						tree.treeBoxObject.rowCountChanged(tPos - tt.nPinned, 1); // the first argument is always 0
+						//tree.treeBoxObject.ensureRowIsVisible(tab._tPos - tt.nPinned); // questionable option, I think I should leave it out
 					}, false);
 				}
 				return target.apply(thisArg, argumentsList); // dispatches 'TabUnpinned' event
@@ -1369,12 +1371,10 @@ var windowListener = {
 							tree.treeBoxObject.invalidateRow(tab._tPos - tt.nPinned);
 						} else {
 							aDOMWindow.clearInterval(tab.ttThrob);
-							console.log('interval #'+tab.ttThrob+' is cleared'); // to delete
 							delete tab.ttThrobC;
 							delete tab.ttThrob;
 						}
 					}, 50); // originally it was 50ms for 'connecting.png' and 40ms for 'loading.png'
-					console.log('#'+tab.ttThrob+' is set on tab #'+tab._tPos+' \"'+tab.label); // to delete
 				}
 			}
 			tab.pinned ? tt.redrawToolbarbuttons() : tree.treeBoxObject.invalidateRow(tab._tPos - tt.nPinned);
@@ -1389,7 +1389,6 @@ var windowListener = {
 				//noinspection JSBitwiseOperatorUsage
 				if (aStateFlags & Ci.nsIWebProgressListener.STATE_START) {
 					// This fires when the load event is initiated
-					console.log('onStateChange - refreshing a page: '+g.getTabForBrowser(aBrowser).label); // to delete
 					g._tabAttrModified(g.getTabForBrowser(aBrowser));
 				}
 			}
@@ -1484,7 +1483,7 @@ var windowListener = {
 		g.mCurrentTab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(g.mCurrentTab._tPos - tt.nPinned);
 		// scroll <tree id="tt"> to the position where it was before shutdown/restart:
 		tree.treeBoxObject.scrollToRow(parseInt(ss.getWindowValue(aDOMWindow, 'tt-first-visible-row')));
-		// but ensuring that a selected row is visible takes precedence:
+		// but ensuring that a selected row is visible takes priority over the scrolling position:
 		tree.treeBoxObject.ensureRowIsVisible(g.mCurrentTab._tPos - tt.nPinned);
 		tt.redrawToolbarbuttons();
 		aDOMWindow.TabsInTitlebar._update(true);
