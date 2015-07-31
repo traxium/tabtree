@@ -108,7 +108,8 @@ var windowListener = {
 		if (!browser) {
 			return;
 		}
-		if (aDOMWindow.tt && aDOMWindow.tt.toRemove && aDOMWindow.tt.toRemove.observer) { // condition is needed because we also remove the observer in 'unloadFromWindow'
+		// observer can also be removed in 'unloadFromWindow', maybe this conditions are unnecessary:
+		if (aDOMWindow.tt && aDOMWindow.tt.toRemove && aDOMWindow.tt.toRemove.observer) {
 			Services.obs.removeObserver(aDOMWindow.tt.toRemove.observer, 'document-element-inserted');
 		}
 		let sidebar = aDOMWindow.document.querySelector('#tt-sidebar');
@@ -1047,7 +1048,7 @@ var windowListener = {
 					
 					// there is no "event" parameter therefore there is no "event.shiftKey" therefore we always load link in background
 					// (unlike default behaviour where holding shift allows loading links in foreground, depending on "browser.tabs.loadInBackground" pref)
-					// but with some effort(using dragover or mouseover default events for example) I think it can be implemented but I leave it out for now
+					// but with some effort (using drag-over or mouse-over default events for example) I think it can be implemented but I leave it out for now
 
 					// We're adding a new tab.
 					let newTab = g.loadOneTab(url, {inBackground: true, allowThirdPartyFixup: true});
@@ -1193,7 +1194,7 @@ var windowListener = {
 				// adding new pinned tab:
 				// there is no "event" parameter therefore there is no "event.shiftKey" therefore we always load link in background
 				// (unlike default behaviour where holding shift allows loading links in foreground, depending on "browser.tabs.loadInBackground" pref)
-				// but with some effort(using dragover or mouseover default events for example) I think it can be implemented but I leave it out for now
+				// but with some effort (using drag-over or mouse-over default events for example) I think it can be implemented but I leave it out for now
 				event.preventDefault();
 				event.stopPropagation();
 
