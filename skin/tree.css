@@ -29,8 +29,12 @@
   border: orange 1px dashed;
 }
 
+#tt-treechildren:-moz-tree-row(current) { /* afterimage around a row while viewing pinned tabs, 'quickSearch' takes priority over it now */
+  border: 1px dotted #316AC5;
+}
+
 #tt-treechildren:-moz-tree-row(quickSearch) {
-  background-color: lightblue;
+  border: 1px solid #EF0FFF; /* default Firefox color for "Highlight all" option in <findbar> */
 }
 
 #tt-treechildren:-moz-tree-row(selected) {
