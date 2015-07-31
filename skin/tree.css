@@ -26,7 +26,7 @@
 #tt-treechildren:-moz-tree-row(dropOn),
 #tt-treechildren:-moz-tree-row(dropBefore),
 #tt-treechildren:-moz-tree-row(dropAfter) {
-  border: green 1px dashed;
+  border: 1px dashed #316AC5;
 }
 
 #tt-treechildren:-moz-tree-row(current) { /* afterimage around a row while viewing pinned tabs, 'quickSearch' takes priority over it now */
