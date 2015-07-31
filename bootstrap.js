@@ -823,6 +823,7 @@ var windowListener = {
 						tree.treeBoxObject.rowCountChanged(event.target._tPos-tt.nPinned, 1);
 					}, true);
 				} else { // undo close tab
+					g.tabContainer.ttUndoingCloseTab = true; // for 'TabSelected' event handler in order not to fire when it is unnecessary
 					g.tabContainer.addEventListener('TabOpen', function onPreAddUndoCloseTab(event) {
 						g.tabContainer.removeEventListener('TabOpen', onPreAddUndoCloseTab, true);
 						aDOMWindow.document.addEventListener('SSTabRestoring', function onSSing(event) {
@@ -832,11 +833,11 @@ var windowListener = {
 								tt.redrawToolbarbuttons();
 							} else {
 								tree.treeBoxObject.rowCountChanged(tab._tPos - tt.nPinned, 1);
-								// need to restore twisty
-								let pTab = tt.parentTab(tab);
-								if (pTab) {
-									tree.treeBoxObject.invalidateRow(pTab._tPos - tt.nPinned);
-								}
+								// refresh the twisty (commented out while the twisty is disabled):
+								//let pTab = tt.parentTab(tab);
+								//if (pTab) {
+								//	tree.treeBoxObject.invalidateRow(pTab._tPos - tt.nPinned);
+								//}
 
 								if (ss.getTabValue(tab, 'ttSS')) { // if tab had direct children, then make them children again
 									let arr = JSON.parse(ss.getTabValue(tab, 'ttSS'));
@@ -1404,11 +1405,16 @@ var windowListener = {
 		}), 'document-element-inserted', false); // don't forget to remove later
 
 		g.tabContainer.addEventListener("TabSelect", (aDOMWindow.tt.toRemove.eventListeners.onTabSelect = function(event) {
-			let tab = event.target;
-			tab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(tab._tPos - tt.nPinned);
-			tt.redrawToolbarbuttons();
-			if (!tab.pinned) {
-				tree.treeBoxObject.ensureRowIsVisible(tab._tPos - tt.nPinned);
+			if (g.tabContainer.ttUndoingCloseTab) {
+				// if a tab is selected as part of a process of restoring a closed tab then do nothing
+				delete g.tabContainer.ttUndoingCloseTab;
+			} else {
+				let tab = event.target;
+				tab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(tab._tPos - tt.nPinned);
+				tt.redrawToolbarbuttons();
+				if (!tab.pinned) {
+					tree.treeBoxObject.ensureRowIsVisible(tab._tPos - tt.nPinned);
+				}
 			}
 		}), false); // don't forget to remove
 		
