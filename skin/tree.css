@@ -29,6 +29,11 @@
   border: 1px dashed #316AC5;
 }
 
+#tt-treechildren:-moz-tree-row(dropOn) { /* in order to replace unreadable default Windows 7 style */
+  background-color: #316AC5;
+  color: #FFFFFF;
+}
+
 #tt-treechildren:-moz-tree-row(current) { /* afterimage around a row while viewing pinned tabs, 'quickSearch' takes priority over it now */
   border: 1px dotted #316AC5;
 }
@@ -69,7 +74,7 @@
   color: midnightblue;
 }
 
-#tt-treechildren:-moz-tree-cell-text(dropOn) {
+#tt-treechildren:-moz-tree-cell-text(pending-highlight dropOn) {
   color: white;
 }
 
