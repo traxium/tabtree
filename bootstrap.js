@@ -1502,7 +1502,9 @@ var windowListener = {
 		// scroll <tree id="tt"> to the position where it was before shutdown/restart:
 		tree.treeBoxObject.scrollToRow(parseInt(ss.getWindowValue(aDOMWindow, 'tt-first-visible-row')));
 		// but ensuring that a selected row is visible takes priority over the scrolling position:
-		tree.treeBoxObject.ensureRowIsVisible(g.mCurrentTab._tPos - tt.nPinned);
+		if (!g.mCurrentTab.pinned) {
+			tree.treeBoxObject.ensureRowIsVisible(g.mCurrentTab._tPos - tt.nPinned);
+		}
 		tt.redrawToolbarbuttons();
 		aDOMWindow.TabsInTitlebar._update(true);
 	} // loadIntoWindow: function(aDOMWindow) {
