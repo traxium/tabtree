@@ -11,7 +11,7 @@
     <em:name>Tabs Tree</em:name>
     <em:description>Tabs how they must be.</em:description>
     <em:creator>Sergey Zelentsov</em:creator>
-    <!-- <em:homepageURL></em:homepageURL> -->
+    <em:homepageURL>https://addons.mozilla.org/en-US/firefox/addon/tabs-tree/</em:homepageURL>
     <em:type>2</em:type>
     <em:bootstrap>true</em:bootstrap>
     <em:targetApplication>
@@ -29,7 +29,7 @@
         <em:name>Tabs Tree</em:name>
         <em:description>Tabs how they must be.</em:description>
         <em:creator>Sergey Zelentsov</em:creator>
-        <!-- <em:homepageURL></em:homepageURL> -->
+        <em:homepageURL>https://addons.mozilla.org/en-US/firefox/addon/tabs-tree/</em:homepageURL>
         <em:translator>Sergey Zelentsov</em:translator>
       </Description>
     </em:localized>
@@ -39,7 +39,7 @@
         <em:name>Tabs Tree</em:name>
         <em:description>Делает вкладки такими, какими они и должны быть.</em:description>
         <em:creator>Зеленцов Сергей</em:creator>
-        <!-- <em:homepageURL></em:homepageURL> -->
+        <em:homepageURL>https://addons.mozilla.org/ru/firefox/addon/tabs-tree/</em:homepageURL>
         <em:translator>Sergey Zelentsov</em:translator>
       </Description>
     </em:localized>
