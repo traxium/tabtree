@@ -814,6 +814,8 @@ var windowListener = {
 							tree.view.selection.select(oldTab._tPos - tt.nPinned);
 						}
 						tree.treeBoxObject.ensureRowIsVisible(tab._tPos - tt.nPinned);
+						let xulImage = aDOMWindow.document.getAnonymousElementByAttribute(tab, 'anonid', 'tab-icon-image');
+						xulImage.setAttribute('onload', 'document.querySelector("#tt").treeBoxObject.invalidateRow(document.getBindingParent(this)._tPos-gBrowser._numPinnedTabs); this.removeAttribute("onload");'); // refresh a row image when favicon is loaded
 					}, true);
 				} else if (argumentsList.length>=2 && !argumentsList[1].referrerURI) { // new tab button or dropping links on the native tabbar
 					g.tabContainer.addEventListener('TabOpen', function onPreAddTabWithoutRef(event) {
@@ -926,12 +928,15 @@ var windowListener = {
 				return ' ' + g.tabs[tPos].label;
 			},
 			getImageSrc: function(row, column) {
+				// Notice that when 'busy' attribute has already been removed the favicon can still be not loaded
 				let tPos = row+tt.nPinned;
 				if ('ttThrobC' in g.tabs[tPos]) {
 					if (g.tabs[tPos].hasAttribute('progress') && g.tabs[tPos].hasAttribute('busy')) {
 						return 'chrome://tabstree/skin/loading-F' + g.tabs[tPos].ttThrobC + '.png';
 					} else if (g.tabs[tPos].hasAttribute('busy')) {
 						return 'chrome://tabstree/skin/connecting-F' + g.tabs[tPos].ttThrobC + '.png';
+					} else {
+						return 'chrome://mozapps/skin/places/defaultFavicon.png';
 					}
 				}
 				// using animated png's causes abnormal CPU load (due to too frequent rows invalidating)
