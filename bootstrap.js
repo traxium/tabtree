@@ -170,7 +170,7 @@ var windowListener = {
 		aDOMWindow.gBrowser.tabContainer.removeEventListener("TabMove", aDOMWindow.tt.toRemove.eventListeners.onTabMove, false);
 		aDOMWindow.gBrowser.tabContainer.removeEventListener("TabSelect", aDOMWindow.tt.toRemove.eventListeners.onTabSelect, false);
 		aDOMWindow.gBrowser.tabContainer.removeEventListener("TabAttrModified", aDOMWindow.tt.toRemove.eventListeners.onTabAttrModified, false);
-		aDOMWindow.gBrowser.tabContainer.removeTabsProgressListener(aDOMWindow.tt.toRemove.tabsProgressListener);
+		aDOMWindow.gBrowser.removeTabsProgressListener(aDOMWindow.tt.toRemove.tabsProgressListener);
 		aDOMWindow.removeEventListener("sizemodechange", aDOMWindow.tt.toRemove.eventListeners.onSizemodechange, false);
 		if (aDOMWindow.tt && aDOMWindow.tt.toRemove && aDOMWindow.tt.toRemove.observer) { // maybe this conditions are unnecessary
 			Services.obs.removeObserver(aDOMWindow.tt.toRemove.observer, 'document-element-inserted');
@@ -936,7 +936,10 @@ var windowListener = {
 					} else if (g.tabs[tPos].hasAttribute('busy')) {
 						return 'chrome://tabstree/skin/connecting-F' + g.tabs[tPos].ttThrobC + '.png';
 					} else {
-						return 'chrome://mozapps/skin/places/defaultFavicon.png';
+						// we can also clear this Interval in 'TabAttrModified' event listener
+						aDOMWindow.clearInterval(g.tabs[tPos].ttThrob);
+						delete g.tabs[tPos].ttThrobC;
+						delete g.tabs[tPos].ttThrob;
 					}
 				}
 				// using animated png's causes abnormal CPU load (due to too frequent rows invalidating)
@@ -1377,6 +1380,7 @@ var windowListener = {
 							tab.ttThrobC = tab.ttThrobC === 18 || !('ttThrobC' in tab) ? 1 : tab.ttThrobC + 1;
 							tree.treeBoxObject.invalidateRow(tab._tPos - tt.nPinned);
 						} else {
+							// we can also clear this Interval in 'getImageSrc'
 							aDOMWindow.clearInterval(tab.ttThrob);
 							delete tab.ttThrobC;
 							delete tab.ttThrob;
