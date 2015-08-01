@@ -1393,11 +1393,13 @@ var windowListener = {
 			onStateChange: function(/*nsIDOMXULElement*/ aBrowser, /*nsIWebProgress*/ aWebProgress, /*nsIRequest*/ aRequest, /*unsigned long*/ aStateFlags, /*nsresult*/ aStatus) {
 				// "If you use myListener for more than one tab/window, use
 				// aWebProgress.DOMWindow to obtain the tab/window which triggers the state change" from MDN
-				//noinspection JSBitwiseOperatorUsage
-				if (aStateFlags & Ci.nsIWebProgressListener.STATE_START) {
-					// This fires when the load event is initiated
-					g._tabAttrModified(g.getTabForBrowser(aBrowser));
-				}
+				g._tabAttrModified(g.getTabForBrowser(aBrowser));
+			},
+			
+			// it is necessary to detect when 'progress' attribute appears (it is necessary to properly animate a 'progress' state on pinned tabs):
+			onProgressChange: function(/*nsIDOMXULElement*/ aBrowser, /*nsIWebProgress*/ aWebProgress, /*nsIRequest*/ aRequest, /*PRInt32*/
+									   aCurSelfProgress, /*PRInt32*/ aMaxSelfProgress, /*PRInt32*/ aCurTotalProgress, /*PRInt32*/ aMaxTotalProgress) {
+				g._tabAttrModified(g.getTabForBrowser(aBrowser));
 			}
 		})); // don't forget to remove
 		
