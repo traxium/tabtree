@@ -815,7 +815,11 @@ var windowListener = {
 						}
 						tree.treeBoxObject.ensureRowIsVisible(tab._tPos - tt.nPinned);
 						let xulImage = aDOMWindow.document.getAnonymousElementByAttribute(tab, 'anonid', 'tab-icon-image');
-						xulImage.setAttribute('onload', 'document.querySelector("#tt").treeBoxObject.invalidateRow(document.getBindingParent(this)._tPos-gBrowser._numPinnedTabs); this.removeAttribute("onload");'); // refresh a row image when favicon is loaded
+						xulImage.addEventListener('load', function onLoad(event) { // refresh a row image when the favicon is loaded
+							xulImage.removeEventListener('load', onLoad, false); // this event handler is really necessary when a website doesn't have a favicon
+							let tab = aDOMWindow.document.getBindingParent(event.target); // otherwise a row wouldn't have even a default favicon
+							tree.treeBoxObject.invalidateRow(tab._tPos - tt.nPinned);
+						}, false);
 					}, true);
 				} else if (argumentsList.length>=2 && !argumentsList[1].referrerURI) { // new tab button or dropping links on the native tabbar
 					g.tabContainer.addEventListener('TabOpen', function onPreAddTabWithoutRef(event) {
