@@ -200,7 +200,7 @@ var windowListener = {
 		}
 		let g = aDOMWindow.gBrowser;
 		aDOMWindow.tt = {
-			toRemove: {eventListeners: {}, prefsObserver: null, tabsProgressListener: null},
+			toRemove: {eventListeners: {}, observer: null, prefsObserver: null, tabsProgressListener: null},
 			toRestore: {g: {}, TabContextMenu: {}, tabsintitlebar: true}
 		};
 
@@ -934,18 +934,34 @@ var windowListener = {
 			getImageSrc: function(row, column) {
 				// Notice that when 'busy' attribute has already been removed the favicon can still be not loaded
 				let tPos = row+tt.nPinned;
-				if ('ttThrobC' in g.tabs[tPos]) {
-					if (g.tabs[tPos].hasAttribute('progress') && g.tabs[tPos].hasAttribute('busy')) {
-						return 'chrome://tabstree/skin/loading-F' + g.tabs[tPos].ttThrobC + '.png';
-					} else if (g.tabs[tPos].hasAttribute('busy')) {
-						return 'chrome://tabstree/skin/connecting-F' + g.tabs[tPos].ttThrobC + '.png';
+				let tab = g.tabs[tPos];
+				if ('ttThrobC' in tab) {
+					if (tab.hasAttribute('progress') && tab.hasAttribute('busy')) {
+						return 'chrome://tabstree/skin/loading-F' + tab.ttThrobC + '.png';
+					} else if (tab.hasAttribute('busy')) {
+						return 'chrome://tabstree/skin/connecting-F' + tab.ttThrobC + '.png';
 					} else {
 						// we can also clear this Interval in 'TabAttrModified' event listener
-						aDOMWindow.clearInterval(g.tabs[tPos].ttThrob);
-						delete g.tabs[tPos].ttThrobC;
-						delete g.tabs[tPos].ttThrob;
+						aDOMWindow.clearInterval(tab.ttThrob);
+						delete tab.ttThrobC;
+						delete tab.ttThrob;
 					}
 				}
+				
+				// Firefox uses <xul:image> instead of <img>. <xul:image> doesn't have '.complete' property
+				// And I don't know any other way to determine whether an image was loaded or not.
+				// If I just wrote "return g.tabs[tPos].image;" then there would be a small period of time when
+				// a page is already loaded (and attribute 'busy' removed), but the favicon is still loading and
+				// in that period of time a row wouldn't have any icon and for user it would look like a tab title jumping to the left for a split of a second
+				let im = new aDOMWindow.Image();
+				im.src = tab.image;
+				if (im.complete) {
+					return tab.image;
+				} else {
+					return 'chrome://mozapps/skin/places/defaultFavicon.png';
+					// or 'chrome://tabstree/skin/completelyTransparent.png' // it would look exactly like what Firefox does for its default tabs
+				}
+				
 				// using animated png's causes abnormal CPU load (due to too frequent rows invalidating)
 				// and until this Firefox bug is fixed the following code will be commented out:
 				//if (g.tabs[tPos].hasAttribute('progress') && g.tabs[tPos].hasAttribute('busy')) {
@@ -953,8 +969,8 @@ var windowListener = {
 				//} else if (g.tabs[tPos].hasAttribute('busy')) {
 				//	return "chrome://browser/skin/tabbrowser/connecting.png";
 				//}
-				return g.tabs[tPos].image;
-			}, // or null to hide icons or /g.getIcon(g.tabs[row])/
+				//return g.tabs[tPos].image;
+			}, // or null to hide icons or /g.getIcon(g.tabs[tPos])/
 			isContainer: function(row) { return true; }, // drop can be performed only on containers
 			isContainerOpen: function(row) { return true; },
 			isContainerEmpty: function(row) {
@@ -1379,10 +1395,18 @@ var windowListener = {
 			let tab = event.target;
 			if (!('ttThrob' in tab)) {
 				if (tab.hasAttribute('busy')) {
+					// we must do it with unpinned and pinned tabs
+					// because a pinned tab can become an unpinned tab while loading or connecting
+					tab.ttThrobC = 1;
 					tab.ttThrob = aDOMWindow.setInterval(function() {
-						if (tab.hasAttribute('busy')) {
-							tab.ttThrobC = tab.ttThrobC === 18 || !('ttThrobC' in tab) ? 1 : tab.ttThrobC + 1;
-							tree.treeBoxObject.invalidateRow(tab._tPos - tt.nPinned);
+						let mainTree = aDOMWindow.document.querySelector('#tt');
+						// if there is no <tree id="tt"> then it must mean that add-on has been shut down while a tab was 'loading' or 'connecting'
+						// we must clear our 'interval' in that case
+						if (mainTree && tab.hasAttribute('busy')) {
+							if (!tab.pinned) {
+								tab.ttThrobC = tab.ttThrobC === 18 ? 1 : tab.ttThrobC + 1;
+								mainTree.treeBoxObject.invalidateRow(tab._tPos - tt.nPinned);
+							} // else saving CPU cycles
 						} else {
 							// we can also clear this Interval in 'getImageSrc'
 							aDOMWindow.clearInterval(tab.ttThrob);
