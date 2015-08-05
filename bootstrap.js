@@ -108,10 +108,6 @@ var windowListener = {
 		if (!browser) {
 			return;
 		}
-		// observer can also be removed in 'unloadFromWindow', maybe this conditions are unnecessary:
-		if (aDOMWindow.tt && aDOMWindow.tt.toRemove && aDOMWindow.tt.toRemove.observer) {
-			Services.obs.removeObserver(aDOMWindow.tt.toRemove.observer, 'document-element-inserted');
-		}
 		let sidebar = aDOMWindow.document.querySelector('#tt-sidebar');
 		ss.setWindowValue(aDOMWindow, 'tt-width', sidebar.width); // Remember the width of 'tt-sidebar'
 		// Remember the first visible row of the <tree id="tt">:
@@ -172,9 +168,6 @@ var windowListener = {
 		aDOMWindow.gBrowser.tabContainer.removeEventListener("TabAttrModified", aDOMWindow.tt.toRemove.eventListeners.onTabAttrModified, false);
 		aDOMWindow.gBrowser.removeTabsProgressListener(aDOMWindow.tt.toRemove.tabsProgressListener);
 		aDOMWindow.removeEventListener("sizemodechange", aDOMWindow.tt.toRemove.eventListeners.onSizemodechange, false);
-		if (aDOMWindow.tt && aDOMWindow.tt.toRemove && aDOMWindow.tt.toRemove.observer) { // maybe this conditions are unnecessary
-			Services.obs.removeObserver(aDOMWindow.tt.toRemove.observer, 'document-element-inserted');
-		}
 		// Restore default title bar buttons position (Minimize, Restore/Maximize, Close):
 		let titlebarButtonboxContainer = aDOMWindow.document.querySelector('#titlebar-buttonbox-container');
 		let titlebarContent = aDOMWindow.document.querySelector('#titlebar-content');
@@ -200,7 +193,7 @@ var windowListener = {
 		}
 		let g = aDOMWindow.gBrowser;
 		aDOMWindow.tt = {
-			toRemove: {eventListeners: {}, observer: null, prefsObserver: null, tabsProgressListener: null},
+			toRemove: {eventListeners: {}, prefsObserver: null, tabsProgressListener: null},
 			toRestore: {g: {}, TabContextMenu: {}, tabsintitlebar: true}
 		};
 
@@ -814,12 +807,6 @@ var windowListener = {
 							tree.view.selection.select(oldTab._tPos - tt.nPinned);
 						}
 						tree.treeBoxObject.ensureRowIsVisible(tab._tPos - tt.nPinned);
-						let xulImage = aDOMWindow.document.getAnonymousElementByAttribute(tab, 'anonid', 'tab-icon-image');
-						xulImage.addEventListener('load', function onLoad(event) { // refresh a row image when the favicon is loaded
-							xulImage.removeEventListener('load', onLoad, false); // this event handler is really necessary when a website doesn't have a favicon
-							let tab = aDOMWindow.document.getBindingParent(event.target); // otherwise a row wouldn't have even a default favicon
-							tree.treeBoxObject.invalidateRow(tab._tPos - tt.nPinned);
-						}, false);
 					}, true);
 				} else if (argumentsList.length>=2 && !argumentsList[1].referrerURI) { // new tab button or dropping links on the native tabbar
 					g.tabContainer.addEventListener('TabOpen', function onPreAddTabWithoutRef(event) {
@@ -1435,15 +1422,6 @@ var windowListener = {
 			}
 		})); // don't forget to remove
 		
-		// This is needed for initial firefox load, otherwise favicons on the tree wouldn't be loaded
-		// But it probably better to find another way to do initial favicon loading:
-		//noinspection JSUnusedGlobalSymbols
-		Services.obs.addObserver((aDOMWindow.tt.toRemove.observer = {
-			observe: function f(aSubject, aTopic, aData) {
-				tree.treeBoxObject.invalidate();
-			}
-		}), 'document-element-inserted', false); // don't forget to remove later
-
 		g.tabContainer.addEventListener("TabSelect", (aDOMWindow.tt.toRemove.eventListeners.onTabSelect = function(event) {
 			if (g.tabContainer.ttUndoingCloseTab) {
 				// if a tab is selected as part of a process of restoring a closed tab then do nothing
@@ -1493,6 +1471,7 @@ var windowListener = {
 			}
 		}, false);
 
+		//noinspection JSUnusedGlobalSymbols
 		Services.prefs.addObserver('extensions.tabstree.', (aDOMWindow.tt.toRemove.prefsObserver = {
 			observe: function(subject, topic, data) {
 				if (topic == 'nsPref:changed') {
@@ -1535,6 +1514,33 @@ var windowListener = {
 		}
 		tt.redrawToolbarbuttons();
 		aDOMWindow.TabsInTitlebar._update(true);
+		
+		// the problem is that at Firefox startup at this point tab.hasAttribute('image') is always 'false'
+		aDOMWindow.tt.toRestore.g.setIcon = g.setIcon;
+		g.setIcon = new Proxy(g.setIcon, {
+			apply: function(target, thisArg, argumentsList) {
+				target.apply(thisArg, argumentsList); // returns nothing
+				let tab = argumentsList[0];
+				if (tab.hasAttribute('image')) {
+					let im = new aDOMWindow.Image(); // I don't know any other way to check whether the image was loaded or not
+					im.src = tab.image;
+					if (!im.complete) { // if the image wasn't yet loaded then listen for 'load' event
+						let xulImage = aDOMWindow.document.getAnonymousElementByAttribute(tab, 'anonid', 'tab-icon-image');
+						xulImage.addEventListener('load', function onLoad(event) { // refresh a row image when the favicon is loaded at add-on startup
+							xulImage.removeEventListener('load', onLoad, false);
+							let mainTree = aDOMWindow.document.querySelector('#tt');
+							if (mainTree) { // checking if our add-on hasn't been shut down while we were waiting for the 'load' event to fire
+								//let tab = aDOMWindow.document.getBindingParent(event.target); // already here
+								if (!tab.pinned) { // status of a tab can potentially be changed while waiting for the 'load' event to fire
+									mainTree.treeBoxObject.invalidateRow(tab._tPos - tt.nPinned);
+								}
+							}
+						}, false);
+					}
+				}
+			}
+		}); // don't forget to restore
+		
 	} // loadIntoWindow: function(aDOMWindow) {
 	
 }; // var windowListener = {
