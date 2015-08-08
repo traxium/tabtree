@@ -1360,6 +1360,15 @@ var windowListener = {
 		} else {
 			tree.addEventListener('click', onClickFast, false);
 		}
+		
+		tree.addEventListener('dblclick', function(event) {
+			if (event.button === 0) { // the left button click
+				let idx = tree.treeBoxObject.getRowAt(event.clientX, event.clientY);
+				if (idx === -1) {
+					aDOMWindow.BrowserOpenNewTabOrWindow(event);
+				}
+			}
+		}, false);
         
 		g.tabContainer.addEventListener("TabMove", (aDOMWindow.tt.toRemove.eventListeners.onTabMove = function(event) {
 			let tab = event.target;
