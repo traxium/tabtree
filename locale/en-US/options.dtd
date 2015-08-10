@@ -9,3 +9,7 @@
 <!ENTITY dblclick.desc "Only recommended if you don't have a mouse with a wheel (unchecked by default)">
 <!ENTITY delay.title "Double click delay (milliseconds)">
 <!ENTITY delay.desc "Actually it is a delay until a selected tab is displayed. Set it to around 160 if you don't want to see a tab flipping while closing a tab (0 by default)">
+<!ENTITY position.left "Left">
+<!ENTITY position.right "Right">
+<!ENTITY position.title "Position:">
+<!ENTITY position.desc "(&quot;Left&quot; by default)">

@@ -16,4 +16,10 @@
     </setting>
     <setting type="bool" pref="extensions.tabstree.dblclick" title="&dblclick.title;" desc="&dblclick.desc;" onpreferencechanged="this.setAttribute('value', this.value.toString());" />
     <setting type="integer" pref="extensions.tabstree.delay" title="&delay.title;" desc="&delay.desc;" />
+    <setting type="radio" pref="extensions.tabstree.position" title="&position.title;" desc="&position.desc;">
+        <radiogroup>
+            <radio value="0" label="&position.left;"/>
+            <radio value="1" label="&position.right;"/>
+        </radiogroup>
+    </setting>
 </vbox>

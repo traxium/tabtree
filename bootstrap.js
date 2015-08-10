@@ -53,6 +53,7 @@ function startup(data, reason)
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabstree.highlight-unloaded-tabs', 0); // setting default pref
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabstree.dblclick', false); // setting default pref
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabstree.delay', 0); // setting default pref
+	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabstree.position', 0); // setting default pref // 0 - Left, 1 - Right
 	
 	windowListener.register();
 }
@@ -230,18 +231,27 @@ var windowListener = {
 
 		let propsToSet;
 		
+		//  for "Left" position:
 		//  <vbox id="tt-fullscr-toggler"></vbox>
 		//  <vbox id="tt-sidebar" width="200">
 		//    <toolbox></toolbox>
 		//    <tree id="tt" flex="1" seltype="single" context="tabContextMenu" treelines="true" hidecolumnpicker="true"></tree>
 		//  </vbox>
 		//  <splitter id="tt-splitter" />
+
+		//  for "Right" position:
+		//  <splitter id="tt-splitter" />
+		//  <vbox id="tt-fullscr-toggler"></vbox>
+		//  <vbox id="tt-sidebar" width="200">
+		//    <toolbox></toolbox>
+		//    <tree id="tt" flex="1" seltype="single" context="tabContextMenu" treelines="true" hidecolumnpicker="true"></tree>
+		//  </vbox>
 		
 		////////////////////////////////////////// VBOX tt-fullscr-toggler /////////////////////////////////////////////
 		// <vbox id="tt-fullscr-toggler"></vbox> // I am just copying what firefox does for its 'fullscr-toggler'
 		let fullscrToggler = aDOMWindow.document.createElement('vbox');
 		fullscrToggler.setAttribute('id', 'tt-fullscr-toggler');
-		browser.insertBefore(fullscrToggler, aDOMWindow.document.querySelector('#appcontent')); // don't forget to remove 
+		// added later
 		//////////////////////////////////////// END VBOX tt-fullscr-toggler ///////////////////////////////////////////
 		
 		//////////////////// VBOX ///////////////////////////////////////////////////////////////////////
@@ -252,7 +262,7 @@ var windowListener = {
 			//persist: 'width' // It seems 'persist' attr doesn't work in bootstrap addons, I'll use SS instead
 		};
 		Object.keys(propsToSet).forEach( (p)=>{sidebar.setAttribute(p, propsToSet[p])} );
-		browser.insertBefore(sidebar, aDOMWindow.document.querySelector('#appcontent')); // don't forget to remove 
+		// added later
 		//////////////////// END VBOX ///////////////////////////////////////////////////////////////////////
 		
 		//////////////////// SPLITTER ///////////////////////////////////////////////////////////////////////
@@ -263,8 +273,18 @@ var windowListener = {
 			// "I left it out, but you can leave it in to see how you can style the splitter"
 		};
 		Object.keys(propsToSet).forEach( (p)=>{splitter.setAttribute(p, propsToSet[p]);} );
-		browser.insertBefore(splitter, aDOMWindow.document.querySelector('#appcontent'));
+		// added later
 		//////////////////// END SPLITTER ///////////////////////////////////////////////////////////////////////
+		
+		if (Services.prefs.getIntPref('extensions.tabstree.position') == 1) {
+			browser.appendChild(fullscrToggler);
+			browser.appendChild(splitter);
+			browser.appendChild(sidebar);
+		} else {
+			browser.insertBefore(fullscrToggler, aDOMWindow.document.querySelector('#appcontent')); // don't forget to remove
+			browser.insertBefore(sidebar, aDOMWindow.document.querySelector('#appcontent')); // don't forget to remove
+			browser.insertBefore(splitter, aDOMWindow.document.querySelector('#appcontent'));
+		}
 
 		//////////////////// QUICK SEARCH BOX ////////////////////////////////////////////////////////////////////////
 		let quickSearchBox = aDOMWindow.document.createElement('textbox');
@@ -907,7 +927,7 @@ var windowListener = {
 		}); // don't forget to restore
 
 		//noinspection JSUnusedGlobalSymbols
-		tree.view = {
+		let view = {
 			treeBox: null,
 			selection: null,
 			setTree: function(treeBox) { this.treeBox = treeBox; },
@@ -1071,7 +1091,8 @@ var windowListener = {
 				}
 				g.mCurrentTab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(g.mCurrentTab._tPos - tt.nPinned); // NEW
 			} // drop(row, orientation, dataTransfer)
-		}; // tree.view = {
+		}; // let view = {
+		tree.view = view;
 
 		aDOMWindow.tt.toRestore.g.pinTab = g.pinTab;
 		g.pinTab = new Proxy(g.pinTab, {
@@ -1496,6 +1517,20 @@ var windowListener = {
 							break;
 						case 'extensions.tabstree.highlight-unloaded-tabs':
 							tree.treeBoxObject.invalidate();
+							break;
+						case 'extensions.tabstree.position':
+							let firstVisibleRow = tree.treeBoxObject.getFirstVisibleRow();
+							if (Services.prefs.getIntPref('extensions.tabstree.position') === 1) {
+								browser.appendChild(fullscrToggler);
+								browser.appendChild(splitter);
+								browser.appendChild(sidebar);
+							} else {
+								browser.insertBefore(fullscrToggler, aDOMWindow.document.querySelector('#appcontent'));
+								browser.insertBefore(sidebar, aDOMWindow.document.querySelector('#appcontent'));
+								browser.insertBefore(splitter, aDOMWindow.document.querySelector('#appcontent'));
+							}
+							tree.view = view;
+							tree.treeBoxObject.scrollToRow(firstVisibleRow);
 							break;
 						case 'extensions.tabstree.treelines':
 							tree.setAttribute('treelines', Services.prefs.getBoolPref('extensions.tabstree.treelines').toString());

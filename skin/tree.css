@@ -96,7 +96,7 @@
 
 #tt-fullscr-toggler {
   width: 1px;
-  background: none repeat scroll 0 0 #000;
+  background: transparent;
 }
 
 #main-window:not([inFullscreen]) #tt-fullscr-toggler {
@@ -108,7 +108,7 @@
   visibility: collapse;
 }
 
-#main-window[inFullscreen] #tt-fullscr-toggler:hover + #tt-sidebar,
+#main-window[inFullscreen] #tt-fullscr-toggler:hover ~ #tt-sidebar, /* "~" is necessary when tabstree.position = 1 */
 #main-window[inFullscreen] #tt-sidebar:hover {
   visibility: visible;
 }
