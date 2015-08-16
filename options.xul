@@ -1,22 +1,22 @@
 <?xml version="1.0"?>
 
-<!-- This file is part of Tabs Tree,
+<!-- This file is part of Tab Tree,
 - Copyright (C) 2015 Sergey Zelentsov <crayfishexterminator@gmail.com> -->
         
-<!DOCTYPE options SYSTEM "chrome://tabstree/locale/options.dtd">
+<!DOCTYPE options SYSTEM "chrome://tabtree/locale/options.dtd">
 
 <vbox xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-    <setting type="bool" pref="extensions.tabstree.treelines" title="&treelines.title;" desc="&treelines.desc;" />
-    <setting type="radio" pref="extensions.tabstree.highlight-unloaded-tabs" title="&highlight-unloaded-tabs.title;" desc="&highlight-unloaded-tabs.desc;">
+    <setting type="bool" pref="extensions.tabtree.treelines" title="&treelines.title;" desc="&treelines.desc;" />
+    <setting type="radio" pref="extensions.tabtree.highlight-unloaded-tabs" title="&highlight-unloaded-tabs.title;" desc="&highlight-unloaded-tabs.desc;">
         <radiogroup>
             <radio value="0" label="&highlight-unloaded-tabs.no;"/>
             <radio value="1" label="&highlight-unloaded-tabs.grayout;"/>
             <radio value="2" label="&highlight-unloaded-tabs.highlight;"/>
         </radiogroup>
     </setting>
-    <setting type="bool" pref="extensions.tabstree.dblclick" title="&dblclick.title;" desc="&dblclick.desc;" onpreferencechanged="this.setAttribute('value', this.value.toString());" />
-    <setting type="integer" pref="extensions.tabstree.delay" title="&delay.title;" desc="&delay.desc;" />
-    <setting type="radio" pref="extensions.tabstree.position" title="&position.title;" desc="&position.desc;">
+    <setting type="bool" pref="extensions.tabtree.dblclick" title="&dblclick.title;" desc="&dblclick.desc;" onpreferencechanged="this.setAttribute('value', this.value.toString());" />
+    <setting type="integer" pref="extensions.tabtree.delay" title="&delay.title;" desc="&delay.desc;" />
+    <setting type="radio" pref="extensions.tabtree.position" title="&position.title;" desc="&position.desc;">
         <radiogroup>
             <radio value="0" label="&position.left;"/>
             <radio value="1" label="&position.right;"/>

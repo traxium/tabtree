@@ -1,5 +1,5 @@
 /*
- * This file is part of Tabs Tree,
+ * This file is part of Tab Tree,
  * Copyright (C) 2015 Sergey Zelentsov <crayfishexterminator@gmail.com>
  */
 
@@ -18,15 +18,15 @@ var ssHack = Cu.import("resource:///modules/sessionstore/SessionStore.jsm");
 var ssOrig;
 const ss = Cc["@mozilla.org/browser/sessionstore;1"].getService(Ci.nsISessionStore);
 const sss = Cc["@mozilla.org/content/style-sheet-service;1"].getService(Ci.nsIStyleSheetService);
-var stringBundle = Services.strings.createBundle('chrome://tabstree/locale/global.properties?' + Math.random()); // Randomize URI to work around bug 719376
+var stringBundle = Services.strings.createBundle('chrome://tabtree/locale/global.properties?' + Math.random()); // Randomize URI to work around bug 719376
 var menuVisible;
 
 //noinspection JSUnusedGlobalSymbols
 function startup(data, reason)
 {
-	let uri = Services.io.newURI("chrome://tabstree/skin/tree.css", null, null);
+	let uri = Services.io.newURI("chrome://tabtree/skin/tree.css", null, null);
 	sss.loadAndRegisterSheet(uri, sss.AUTHOR_SHEET);
-	uri = Services.io.newURI("chrome://tabstree/skin/toolbox.css", null, null);
+	uri = Services.io.newURI("chrome://tabtree/skin/toolbox.css", null, null);
 	sss.loadAndRegisterSheet(uri, sss.AUTHOR_SHEET);
 
 	//	// Why do we use Proxy here? Let's see the chain how SS works:
@@ -38,22 +38,48 @@ function startup(data, reason)
 	//	// -> SessionStoreInternal.onLoad(aWindow); ->
 	//	// (1) -> Services.obs.notifyObservers(null, NOTIFY_WINDOWS_RESTORED, "");
 	//	// (2) -> or just end
+	//  //  UPD: Firefox 41+ splits SessionStoreInternal.onLoad in two - onLoad and initializeWindow
+	
 	//  // Here we dispatch our new event 'tt-TabsLoad'
-	ssOrig = ssHack.SessionStoreInternal.onLoad;
-	ssHack.SessionStoreInternal.onLoad = new Proxy(ssHack.SessionStoreInternal.onLoad, {
-		apply: function(target, thisArg, argumentsList) {
-			target.apply(thisArg, argumentsList); // returns nothing
-			let aWindow = argumentsList[0];
-			let event = new Event('tt-TabsLoad'); // we just added our event after this function is executed
-			aWindow.dispatchEvent(event);
-		}
-	});
+	if (ssHack.SessionStoreInternal.initializeWindow) { // Fix for Firefox 41+
+		ssOrig = ssHack.SessionStoreInternal.initializeWindow;
+		ssHack.SessionStoreInternal.initializeWindow = new Proxy(ssHack.SessionStoreInternal.initializeWindow, {
+			apply: function (target, thisArg, argumentsList) {
+				target.apply(thisArg, argumentsList); // returns nothing
+				let aWindow = argumentsList[0];
+				let event = new Event('tt-TabsLoad'); // we just added our event after this function is executed
+				aWindow.dispatchEvent(event);
+			}
+		});
+	} else { // to support Firefox before version 41
+		ssOrig = ssHack.SessionStoreInternal.onLoad;
+		ssHack.SessionStoreInternal.onLoad = new Proxy(ssHack.SessionStoreInternal.onLoad, {
+			apply: function (target, thisArg, argumentsList) {
+				target.apply(thisArg, argumentsList); // returns nothing
+				let aWindow = argumentsList[0];
+				let event = new Event('tt-TabsLoad'); // we just added our event after this function is executed
+				aWindow.dispatchEvent(event);
+			}
+		});
+	}
 
-	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabstree.treelines', true); // setting default pref
-	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabstree.highlight-unloaded-tabs', 0); // setting default pref
-	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabstree.dblclick', false); // setting default pref
-	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabstree.delay', 0); // setting default pref
-	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabstree.position', 0); // setting default pref // 0 - Left, 1 - Right
+	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.treelines', true); // setting default pref
+	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.highlight-unloaded-tabs', 0); // setting default pref
+	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.dblclick', false); // setting default pref
+	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.delay', 0); // setting default pref
+	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.position', 0); // setting default pref // 0 - Left, 1 - Right
+	
+	// migration code :
+	try {
+		Services.prefs.setBoolPref('extensions.tabtree.treelines', Services.prefs.getBoolPref('extensions.tabstree.treelines'));
+		Services.prefs.setIntPref('extensions.tabtree.highlight-unloaded-tabs', Services.prefs.getIntPref('extensions.tabstree.highlight-unloaded-tabs'));
+		Services.prefs.setBoolPref('extensions.tabtree.dblclick', Services.prefs.getBoolPref('extensions.tabstree.dblclick'));
+		Services.prefs.setIntPref('extensions.tabtree.delay', Services.prefs.getIntPref('extensions.tabstree.delay'));
+		Services.prefs.setIntPref('extensions.tabtree.position', Services.prefs.getIntPref('extensions.tabstree.position'));
+		Services.prefs.deleteBranch('extensions.tabstree.');
+	} catch (e) {
+	}
+	// - end migration code // don't forget to delete when v1.1.0 isn't in use anymore
 	
 	windowListener.register();
 }
@@ -63,16 +89,20 @@ function shutdown(aData, aReason)
 {
 	if (aReason == APP_SHUTDOWN) return;
 
-	let uri = Services.io.newURI("chrome://tabstree/skin/tree.css", null, null);
+	let uri = Services.io.newURI("chrome://tabtree/skin/tree.css", null, null);
 	if( sss.sheetRegistered(uri, sss.AUTHOR_SHEET) ) {
 		sss.unregisterSheet(uri, sss.AUTHOR_SHEET);
 	}
-	uri = Services.io.newURI("chrome://tabstree/skin/toolbox.css", null, null);
+	uri = Services.io.newURI("chrome://tabtree/skin/toolbox.css", null, null);
 	if( sss.sheetRegistered(uri, sss.AUTHOR_SHEET) ) {
 		sss.unregisterSheet(uri, sss.AUTHOR_SHEET);
 	}
 
-	ssHack.SessionStoreInternal.onLoad = ssOrig;
+	if (ssHack.SessionStoreInternal.initializeWindow) { // Fix for Firefox 41+
+		ssHack.SessionStoreInternal.initializeWindow = ssOrig;
+	} else { // to support Firefox before version 41
+		ssHack.SessionStoreInternal.onLoad = ssOrig;
+	}
 
 	CustomizableUI.setToolbarVisibility('toolbar-menubar', menuVisible); // restoring menu visibility(in all windows)
 	
@@ -113,7 +143,7 @@ var windowListener = {
 		ss.setWindowValue(aDOMWindow, 'tt-width', sidebar.width); // Remember the width of 'tt-sidebar'
 		// Remember the first visible row of the <tree id="tt">:
 		ss.setWindowValue(aDOMWindow, 'tt-first-visible-row', aDOMWindow.document.querySelector('#tt').treeBoxObject.getFirstVisibleRow().toString());
-		Services.prefs.removeObserver('extensions.tabstree.treelines', aDOMWindow.tt.toRemove.prefsObserver); // it can also be removed in 'unloadFromWindow'
+		Services.prefs.removeObserver('extensions.tabtree.treelines', aDOMWindow.tt.toRemove.prefsObserver); // it can also be removed in 'unloadFromWindow'
 	},
 	
 	onWindowTitleChange: function (aXULWindow, aNewTitle) {},
@@ -179,7 +209,7 @@ var windowListener = {
 			aDOMWindow.document.documentElement.removeAttribute("tabsintitlebar"); // show native titlebar
 		}
 		aDOMWindow.TabsInTitlebar._update(true); // It is needed to recalculate negative 'margin-bottom' for 'titlebar' and 'margin-bottom' for 'titlebarContainer'
-		Services.prefs.removeObserver('extensions.tabstree.treelines', aDOMWindow.tt.toRemove.prefsObserver); // it could be already removed in 'onCloseWindow'
+		Services.prefs.removeObserver('extensions.tabtree.treelines', aDOMWindow.tt.toRemove.prefsObserver); // it could be already removed in 'onCloseWindow'
 		
 		delete aDOMWindow.tt;
 	},
@@ -276,7 +306,7 @@ var windowListener = {
 		// added later
 		//////////////////// END SPLITTER ///////////////////////////////////////////////////////////////////////
 		
-		if (Services.prefs.getIntPref('extensions.tabstree.position') == 1) {
+		if (Services.prefs.getIntPref('extensions.tabtree.position') == 1) {
 			browser.appendChild(fullscrToggler);
 			browser.appendChild(splitter);
 			browser.appendChild(sidebar);
@@ -345,7 +375,7 @@ var windowListener = {
 			flex: '1',
 			seltype: 'single',
 			context: 'tabContextMenu',
-			treelines: Services.prefs.getBoolPref('extensions.tabstree.treelines').toString(),
+			treelines: Services.prefs.getBoolPref('extensions.tabtree.treelines').toString(),
 			hidecolumnpicker: 'true'
 		};
 		Object.keys(propsToSet).forEach( (p)=>{tree.setAttribute(p, propsToSet[p]);} );
@@ -386,7 +416,7 @@ var windowListener = {
 		treeFeedback.setAttribute('id', 'tt-tree-feedback');
 		treeFeedback.setAttribute('flex', '1');
 		treeFeedback.setAttribute('seltype', 'single');
-		treeFeedback.setAttribute('treelines', Services.prefs.getBoolPref('extensions.tabstree.treelines').toString());
+		treeFeedback.setAttribute('treelines', Services.prefs.getBoolPref('extensions.tabtree.treelines').toString());
 		treeFeedback.setAttribute('hidecolumnpicker', 'true');
 		let treecolsFeedback = aDOMWindow.document.createElement('treecols');
 		let treecolFeedback = aDOMWindow.document.createElement('treecol');
@@ -412,8 +442,8 @@ var windowListener = {
 			let pngLoading = aDOMWindow.document.createElement('image');
 			pngConnecting.setAttribute('collapsed', 'true');
 			pngLoading.setAttribute('collapsed', 'true');
-			pngConnecting.setAttribute('src', 'chrome://tabstree/skin/connecting-F'+i+'.png');
-			pngLoading.setAttribute('src', 'chrome://tabstree/skin/loading-F'+i+'.png');
+			pngConnecting.setAttribute('src', 'chrome://tabtree/skin/connecting-F'+i+'.png');
+			pngLoading.setAttribute('src', 'chrome://tabtree/skin/loading-F'+i+'.png');
 			pngsConnecting.appendChild(pngConnecting);
 			pngsLoading.appendChild(pngLoading);
 		}
@@ -944,9 +974,9 @@ var windowListener = {
 				let tab = g.tabs[tPos];
 				if ('ttThrobC' in tab) {
 					if (tab.hasAttribute('progress') && tab.hasAttribute('busy')) {
-						return 'chrome://tabstree/skin/loading-F' + tab.ttThrobC + '.png';
+						return 'chrome://tabtree/skin/loading-F' + tab.ttThrobC + '.png';
 					} else if (tab.hasAttribute('busy')) {
-						return 'chrome://tabstree/skin/connecting-F' + tab.ttThrobC + '.png';
+						return 'chrome://tabtree/skin/connecting-F' + tab.ttThrobC + '.png';
 					} else {
 						// we can also clear this Interval in 'TabAttrModified' event listener
 						aDOMWindow.clearInterval(tab.ttThrob);
@@ -966,7 +996,7 @@ var windowListener = {
 					return tab.image;
 				} else {
 					return 'chrome://mozapps/skin/places/defaultFavicon.png';
-					// or 'chrome://tabstree/skin/completelyTransparent.png' // it would look exactly like what Firefox does for its default tabs
+					// or 'chrome://tabtree/skin/completelyTransparent.png' // it would look exactly like what Firefox does for its default tabs
 				}
 				
 				// using animated png's causes abnormal CPU load (due to too frequent rows invalidating)
@@ -1001,7 +1031,7 @@ var windowListener = {
 				}
 			},
 			getCellProperties: function(row, col) {
-				let pref = Services.prefs.getIntPref('extensions.tabstree.highlight-unloaded-tabs');
+				let pref = Services.prefs.getIntPref('extensions.tabtree.highlight-unloaded-tabs');
 				if (pref === 0) {
 					return;
 				}
@@ -1368,7 +1398,7 @@ var windowListener = {
 				if (idx != -1) {
 					let tPos = idx + tt.nPinned;
 					if (event.detail == 1) {
-						f.timer = aDOMWindow.setTimeout(function(){g.selectTabAtIndex(tPos);}, Services.prefs.getIntPref('extensions.tabstree.delay'));
+						f.timer = aDOMWindow.setTimeout(function(){g.selectTabAtIndex(tPos);}, Services.prefs.getIntPref('extensions.tabtree.delay'));
 					} else if (event.detail == 2) {
 						aDOMWindow.clearTimeout(f.timer);
 						g.removeTab(g.tabs[tPos]);
@@ -1376,7 +1406,7 @@ var windowListener = {
 				}
 			}
 		};
-		if (Services.prefs.getBoolPref('extensions.tabstree.dblclick')) {
+		if (Services.prefs.getBoolPref('extensions.tabtree.dblclick')) {
 			tree.addEventListener('click', onClickSlow, false);
 		} else {
 			tree.addEventListener('click', onClickFast, false);
@@ -1502,12 +1532,12 @@ var windowListener = {
 		}, false);
 
 		//noinspection JSUnusedGlobalSymbols
-		Services.prefs.addObserver('extensions.tabstree.', (aDOMWindow.tt.toRemove.prefsObserver = {
+		Services.prefs.addObserver('extensions.tabtree.', (aDOMWindow.tt.toRemove.prefsObserver = {
 			observe: function(subject, topic, data) {
 				if (topic == 'nsPref:changed') {
 					switch (data) {
-						case 'extensions.tabstree.dblclick':
-							if (Services.prefs.getBoolPref('extensions.tabstree.dblclick')) {
+						case 'extensions.tabtree.dblclick':
+							if (Services.prefs.getBoolPref('extensions.tabtree.dblclick')) {
 								tree.removeEventListener('click', onClickFast, false);
 								tree.addEventListener('click', onClickSlow, false);
 							} else {
@@ -1515,12 +1545,12 @@ var windowListener = {
 								tree.addEventListener('click', onClickFast, false);
 							}
 							break;
-						case 'extensions.tabstree.highlight-unloaded-tabs':
+						case 'extensions.tabtree.highlight-unloaded-tabs':
 							tree.treeBoxObject.invalidate();
 							break;
-						case 'extensions.tabstree.position':
+						case 'extensions.tabtree.position':
 							let firstVisibleRow = tree.treeBoxObject.getFirstVisibleRow();
-							if (Services.prefs.getIntPref('extensions.tabstree.position') === 1) {
+							if (Services.prefs.getIntPref('extensions.tabtree.position') === 1) {
 								browser.appendChild(fullscrToggler);
 								browser.appendChild(splitter);
 								browser.appendChild(sidebar);
@@ -1531,10 +1561,11 @@ var windowListener = {
 							}
 							tree.view = view;
 							tree.treeBoxObject.scrollToRow(firstVisibleRow);
+							tt.redrawToolbarbuttons();
 							break;
-						case 'extensions.tabstree.treelines':
-							tree.setAttribute('treelines', Services.prefs.getBoolPref('extensions.tabstree.treelines').toString());
-							treeFeedback.setAttribute('treelines', Services.prefs.getBoolPref('extensions.tabstree.treelines').toString());
+						case 'extensions.tabtree.treelines':
+							tree.setAttribute('treelines', Services.prefs.getBoolPref('extensions.tabtree.treelines').toString());
+							treeFeedback.setAttribute('treelines', Services.prefs.getBoolPref('extensions.tabtree.treelines').toString());
 							let hack = tree.style.borderStyle; // hack to force to redraw 'treelines'
 							tree.style.borderStyle = 'none';
 							tree.style.borderStyle = hack;

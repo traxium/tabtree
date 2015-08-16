@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- This file is part of Tabs Tree,
+<!-- This file is part of Tab Tree,
    - Copyright (C) 2015 Sergey Zelentsov <crayfishexterminator@gmail.com> -->
 
 <RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:em="http://www.mozilla.org/2004/em-rdf#">
   <Description about="urn:mozilla:install-manifest">
     <em:id>TabsTree@traxium</em:id>
-    <em:version>1.1.0</em:version>
-    <em:name>Tabs Tree</em:name>
+    <em:version>1.1.2</em:version>
+    <em:name>Tab Tree</em:name>
     <em:description>Tabs how they must be.</em:description>
     <em:creator>Sergey Zelentsov</em:creator>
-    <em:homepageURL>https://addons.mozilla.org/en-US/firefox/addon/tabs-tree/</em:homepageURL>
+    <em:homepageURL>https://addons.mozilla.org/en-US/firefox/addon/tab-tree/</em:homepageURL>
     <em:type>2</em:type>
     <em:bootstrap>true</em:bootstrap>
     <em:targetApplication>
@@ -26,20 +26,20 @@
     <em:localized>
       <Description>
         <em:locale>en-US</em:locale>
-        <em:name>Tabs Tree</em:name>
+        <em:name>Tab Tree</em:name>
         <em:description>Tabs how they must be.</em:description>
         <em:creator>Sergey Zelentsov</em:creator>
-        <em:homepageURL>https://addons.mozilla.org/en-US/firefox/addon/tabs-tree/</em:homepageURL>
+        <em:homepageURL>https://addons.mozilla.org/en-US/firefox/addon/tab-tree/</em:homepageURL>
         <em:translator>Sergey Zelentsov</em:translator>
       </Description>
     </em:localized>
     <em:localized>
       <Description>
         <em:locale>ru</em:locale>
-        <em:name>Tabs Tree</em:name>
+        <em:name>Tab Tree</em:name>
         <em:description>Делает вкладки такими, какими они и должны быть.</em:description>
         <em:creator>Зеленцов Сергей</em:creator>
-        <em:homepageURL>https://addons.mozilla.org/ru/firefox/addon/tabs-tree/</em:homepageURL>
+        <em:homepageURL>https://addons.mozilla.org/ru/firefox/addon/tab-tree/</em:homepageURL>
         <em:translator>Sergey Zelentsov</em:translator>
       </Description>
     </em:localized>
