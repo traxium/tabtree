@@ -892,7 +892,7 @@ var windowListener = {
 						}
 						tree.treeBoxObject.ensureRowIsVisible(tab._tPos - tt.nPinned);
 					}, true);
-				} else if (argumentsList.length>=2 && !argumentsList[1].referrerURI) { // new tab button or dropping links on the native tabbar
+				} else if (argumentsList.length>=2 && !argumentsList[1].referrerURI || argumentsList.length===1) { // new tab button or dropping links on the native tabbar
 					g.tabContainer.addEventListener('TabOpen', function onPreAddTabWithoutRef(event) {
 						g.tabContainer.removeEventListener('TabOpen', onPreAddTabWithoutRef, true);
 						if ( ss.getTabValue(event.target, 'ttLevel') === '' ) { // despite MDN it returns '' instead of undefined
