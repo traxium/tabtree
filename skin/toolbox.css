@@ -43,3 +43,11 @@
 #private-browsing-indicator-titlebar > .private-browsing-indicator {
 	height: 26px; /* 28px by default - breaks our 26px navbar */
 }
+
+/* When Firefox prior to version 42.0+ is no longer in use, this will be removed */
+
+hbox.toolbarbutton-badge::after { /* since Firefox 42.0+ it's a <label> element */
+	padding: 1px;
+	top: 0;
+	right: 0;
+}
