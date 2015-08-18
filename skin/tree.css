@@ -118,3 +118,20 @@
 setting[pref="extensions.tabtree.dblclick"][value="false"] + setting[pref="extensions.tabtree.delay"] {
   visibility: collapse;
 }
+
+/* Tab search box */
+
+#tt-quicksearchbox {
+  transition-property: visibility, margin-bottom;
+  transition-duration: 0s, .2s;
+  transition-timing-function: linear, ease-in-out;
+}
+
+#tt-quicksearchbox[collapsed="true"] {
+  margin-bottom: -22px; /* approximately */
+  transition-delay: .2s, 0s;
+}
+
+#tt-toolbox { /* needed for #tt-quicksearchbox not to overlap weirdly when sliding out when the tab search box position is at the top */
+  position: relative;
+}

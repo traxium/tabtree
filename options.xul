@@ -22,4 +22,11 @@
             <radio value="1" label="&position.right;"/>
         </radiogroup>
     </setting>
+    <setting type="radio" pref="extensions.tabtree.search-position" title="&search-position.title;" desc="&search-position.desc;">
+        <radiogroup>
+            <radio value="0" label="&search-position.top;"/>
+            <radio value="1" label="&search-position.bottom;"/>
+        </radiogroup>
+    </setting>
+    <setting type="bool" pref="extensions.tabtree.search-autohide" title="&search-autohide.title;" desc="&search-autohide.desc;" />
 </vbox>

@@ -13,3 +13,9 @@
 <!ENTITY position.right "Right">
 <!ENTITY position.title "Position:">
 <!ENTITY position.desc "(&quot;Left&quot; by default)">
+<!ENTITY search-position.title "Tab search bar position:">
+<!ENTITY search-position.desc "(&quot;Top&quot; by default)">
+<!ENTITY search-position.top "Top">
+<!ENTITY search-position.bottom "Bottom">
+<!ENTITY search-autohide.title "Autohide tab search bar:">
+<!ENTITY search-autohide.desc "Ctrl+Shift+Alt+F brings it up (unchecked by default)">

@@ -68,6 +68,8 @@ function startup(data, reason)
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.dblclick', false); // setting default pref
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.delay', 0); // setting default pref
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.position', 0); // setting default pref // 0 - Left, 1 - Right
+	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.search-position', 0); // setting default pref // 0 - Top, 1 - Bottom
+	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.search-autohide', false); // setting default pref
 	
 	// migration code :
 	try {
@@ -199,6 +201,9 @@ var windowListener = {
 		aDOMWindow.gBrowser.tabContainer.removeEventListener("TabAttrModified", aDOMWindow.tt.toRemove.eventListeners.onTabAttrModified, false);
 		aDOMWindow.gBrowser.removeTabsProgressListener(aDOMWindow.tt.toRemove.tabsProgressListener);
 		aDOMWindow.removeEventListener("sizemodechange", aDOMWindow.tt.toRemove.eventListeners.onSizemodechange, false);
+		aDOMWindow.removeEventListener("keypress", aDOMWindow.tt.toRemove.eventListeners.onWindowKeyPress, false);
+		// it's probably already removed but "Calling removeEventListener() with arguments that do not identify any currently registered EventListener ... has no effect.":
+		aDOMWindow.document.querySelector('#appcontent').removeEventListener('mouseup', aDOMWindow.tt.toRemove.eventListeners.onAppcontentMouseUp, false);
 		// Restore default title bar buttons position (Minimize, Restore/Maximize, Close):
 		let titlebarButtonboxContainer = aDOMWindow.document.querySelector('#titlebar-buttonbox-container');
 		let titlebarContent = aDOMWindow.document.querySelector('#titlebar-content');
@@ -223,6 +228,7 @@ var windowListener = {
 			return;
 		}
 		let g = aDOMWindow.gBrowser;
+		let appcontent = aDOMWindow.document.querySelector('#appcontent');
 		aDOMWindow.tt = {
 			toRemove: {eventListeners: {}, prefsObserver: null, tabsProgressListener: null},
 			toRestore: {g: {}, TabContextMenu: {}, tabsintitlebar: true}
@@ -311,21 +317,11 @@ var windowListener = {
 			browser.appendChild(splitter);
 			browser.appendChild(sidebar);
 		} else {
-			browser.insertBefore(fullscrToggler, aDOMWindow.document.querySelector('#appcontent')); // don't forget to remove
-			browser.insertBefore(sidebar, aDOMWindow.document.querySelector('#appcontent')); // don't forget to remove
-			browser.insertBefore(splitter, aDOMWindow.document.querySelector('#appcontent'));
+			browser.insertBefore(fullscrToggler, appcontent);
+			browser.insertBefore(sidebar, appcontent);
+			browser.insertBefore(splitter, appcontent);
 		}
 
-		//////////////////// QUICK SEARCH BOX ////////////////////////////////////////////////////////////////////////
-		let quickSearchBox = aDOMWindow.document.createElement('textbox');
-		propsToSet = {
-			id: 'tt-quicksearchbox',
-			placeholder: stringBundle.GetStringFromName('tabs_quick_search') || 'Tabs quick search...' // the latter is just in case
-		};
-		Object.keys(propsToSet).forEach( (p)=>{quickSearchBox.setAttribute(p, propsToSet[p]);} );
-		sidebar.appendChild(quickSearchBox);
-		//////////////////// END QUICK SEARCH BOX /////////////////////////////////////////////////////////////////
-		
 		//////////////////// DROP INDICATOR ////////////////////////////////////////////////////////////////////////
 		let ind = aDOMWindow.document.getAnonymousElementByAttribute(aDOMWindow.gBrowser.tabContainer, 'anonid', 'tab-drop-indicator').cloneNode(true);
 		ind.removeAttribute('anonid');
@@ -339,7 +335,7 @@ var windowListener = {
 		
 		//////////////////// TOOLBOX /////////////////////////////////////////////////////////////////
 		/*
-		<toolbox>
+		<toolbox id="tt-toolbox">
 			<toolbar id="tt-toolbar">
 				<hbox align="start">
 					<img id="tt-drop-indicator" style="margin-top:-8px"/>
@@ -353,8 +349,9 @@ var windowListener = {
 		</toolbox>
 		*/
 		let toolbox = aDOMWindow.document.createElement('toolbox');
+		toolbox.id = 'tt-toolbox';
 		let toolbar = aDOMWindow.document.createElement('toolbar');
-		toolbar.setAttribute('id', 'tt-toolbar');
+		toolbar.id = 'tt-toolbar';
 		toolbar.appendChild(hboxForDropIndicator);
 		toolbox.appendChild(toolbar);
 		sidebar.appendChild(toolbox);
@@ -395,6 +392,21 @@ var windowListener = {
 		tree.appendChild(treechildren);
 		sidebar.appendChild(tree);
 		//////////////////// END TREE /////////////////////////////////////////////////////////////////
+
+		//////////////////// QUICK SEARCH BOX ////////////////////////////////////////////////////////////////////////
+		let quickSearchBox = aDOMWindow.document.createElement('textbox');
+		propsToSet = {
+			id: 'tt-quicksearchbox',
+			placeholder: stringBundle.GetStringFromName('tabs_quick_search') || 'Start typing to search for a tab' // the latter is just in case
+		};
+		Object.keys(propsToSet).forEach( (p)=>{quickSearchBox.setAttribute(p, propsToSet[p]);} );
+		if (Services.prefs.getIntPref('extensions.tabtree.search-position') === 1) {
+			sidebar.appendChild(quickSearchBox);
+		} else {
+			sidebar.insertBefore(quickSearchBox, sidebar.firstChild);
+		}
+		quickSearchBox.collapsed = Services.prefs.getBoolPref('extensions.tabtree.search-autohide');
+		//////////////////// END QUICK SEARCH BOX /////////////////////////////////////////////////////////////////
 
 		//////////////////// PANEL /////////////////////////////////////////////////////////////////////
 		let panel = aDOMWindow.document.createElement('panel');
@@ -450,6 +462,24 @@ var windowListener = {
 		sidebar.appendChild(pngsConnecting);
 		sidebar.appendChild(pngsLoading);
 		/////////////////////// END PSEUDO-ANIMATED PNG ////////////////////////////////////////////////////////////////
+
+		//////////////////// KEY ///////////////////////////////////////////////////////////////////////////////////////
+		// <key> element sucks (I couldn't make it to work with different keyboard layouts)
+		aDOMWindow.addEventListener('keypress', (aDOMWindow.tt.toRemove.eventListeners.onWindowKeyPress = function(keyboardEvent) {
+			if (keyboardEvent.ctrlKey && keyboardEvent.altKey && keyboardEvent.shiftKey && keyboardEvent.code == 'KeyF') {
+				quickSearchBox.collapsed = false;
+				quickSearchBox.focus();
+			}
+		}), false);
+		
+		aDOMWindow.tt.toRemove.eventListeners.onAppcontentMouseUp = function() {
+			quickSearchBox.collapsed = true;
+		};
+
+		if (Services.prefs.getBoolPref('extensions.tabtree.search-autohide')) {
+			appcontent.addEventListener('mouseup', aDOMWindow.tt.toRemove.eventListeners.onAppcontentMouseUp, false); // don't forget to remove
+		}
+		//////////////////// END KEY ///////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////// here we could load something before all tabs have been loaded and restored by SS ////////////////////////////////
 
@@ -827,6 +857,10 @@ var windowListener = {
 		aDOMWindow.tt.toRestore.g.addTab = g.addTab;
 		g.addTab = new Proxy(g.addTab, {
 			apply: function(target, thisArg, argumentsList) {
+				if (Services.prefs.getBoolPref('extensions.tabtree.search-autohide')) {
+					quickSearchBox.collapsed = true;
+				}
+				
 				// altering params.relatedToCurrent argument in order to ignore about:config insertRelatedAfterCurrent option:
 				if (argumentsList.length == 2 && typeof argumentsList[1] == "object" && !(argumentsList[1] instanceof Ci.nsIURI)) {
 					argumentsList[1].relatedToCurrent = false;
@@ -1022,7 +1056,7 @@ var windowListener = {
 			isSorted: function() { return false; },
 			isEditable: function(row, column) { return false; },
 			getRowProperties: function(row) {
-				if (quickSearchBox.value==='') {
+				if (quickSearchBox.value==='' || quickSearchBox.collapsed) {
 					return;
 				}
 				let tPos = row+tt.nPinned;
@@ -1344,8 +1378,12 @@ var windowListener = {
 
 		tree.onkeydown = quickSearchBox.onkeydown = function(keyboardEvent) {
 			if (keyboardEvent.key=='Escape') {
-				quickSearchBox.value = '';
-				tree.treeBoxObject.invalidate();
+				if (Services.prefs.getBoolPref('extensions.tabtree.search-autohide')) {
+					quickSearchBox.collapsed = true;
+				} else {
+					quickSearchBox.value = '';
+					tree.treeBoxObject.invalidate();
+				}
 			}
 		};
 		
@@ -1555,13 +1593,29 @@ var windowListener = {
 								browser.appendChild(splitter);
 								browser.appendChild(sidebar);
 							} else {
-								browser.insertBefore(fullscrToggler, aDOMWindow.document.querySelector('#appcontent'));
-								browser.insertBefore(sidebar, aDOMWindow.document.querySelector('#appcontent'));
-								browser.insertBefore(splitter, aDOMWindow.document.querySelector('#appcontent'));
+								browser.insertBefore(fullscrToggler, appcontent);
+								browser.insertBefore(sidebar, appcontent);
+								browser.insertBefore(splitter, appcontent);
 							}
 							tree.view = view;
 							tree.treeBoxObject.scrollToRow(firstVisibleRow);
 							tt.redrawToolbarbuttons();
+							break;
+						case 'extensions.tabtree.search-autohide':
+							let prefAutohide = Services.prefs.getBoolPref('extensions.tabtree.search-autohide');
+							quickSearchBox.collapsed = prefAutohide;
+							if (prefAutohide) {
+								appcontent.addEventListener('mouseup', aDOMWindow.tt.toRemove.eventListeners.onAppcontentMouseUp, false); // don't forget to remove
+							} else {
+								appcontent.removeEventListener('mouseup', aDOMWindow.tt.toRemove.eventListeners.onAppcontentMouseUp, false);
+							}
+							break;
+						case 'extensions.tabtree.search-position':
+							if (Services.prefs.getIntPref('extensions.tabtree.search-position') === 1) {
+								sidebar.appendChild(quickSearchBox);
+							} else {
+								sidebar.insertBefore(quickSearchBox, sidebar.firstChild);
+							}
 							break;
 						case 'extensions.tabtree.treelines':
 							tree.setAttribute('treelines', Services.prefs.getBoolPref('extensions.tabtree.treelines').toString());

@@ -7,11 +7,11 @@
      xmlns:em="http://www.mozilla.org/2004/em-rdf#">
   <Description about="urn:mozilla:install-manifest">
     <em:id>TabsTree@traxium</em:id>
-    <em:version>1.1.2</em:version>
+    <em:version>1.1.4</em:version>
     <em:name>Tab Tree</em:name>
     <em:description>Tabs how they must be.</em:description>
     <em:creator>Sergey Zelentsov</em:creator>
-    <em:homepageURL>https://addons.mozilla.org/en-US/firefox/addon/tab-tree/</em:homepageURL>
+    <em:homepageURL>https://github.com/traxium/tabtree</em:homepageURL>
     <em:type>2</em:type>
     <em:bootstrap>true</em:bootstrap>
     <em:targetApplication>
@@ -29,7 +29,7 @@
         <em:name>Tab Tree</em:name>
         <em:description>Tabs how they must be.</em:description>
         <em:creator>Sergey Zelentsov</em:creator>
-        <em:homepageURL>https://addons.mozilla.org/en-US/firefox/addon/tab-tree/</em:homepageURL>
+        <em:homepageURL>https://github.com/traxium/tabtree</em:homepageURL>
         <em:translator>Sergey Zelentsov</em:translator>
       </Description>
     </em:localized>
@@ -39,7 +39,7 @@
         <em:name>Tab Tree</em:name>
         <em:description>Делает вкладки такими, какими они и должны быть.</em:description>
         <em:creator>Зеленцов Сергей</em:creator>
-        <em:homepageURL>https://addons.mozilla.org/ru/firefox/addon/tab-tree/</em:homepageURL>
+        <em:homepageURL>https://github.com/traxium/tabtree</em:homepageURL>
         <em:translator>Sergey Zelentsov</em:translator>
       </Description>
     </em:localized>
