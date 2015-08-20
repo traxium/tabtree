@@ -132,6 +132,13 @@ setting[pref="extensions.tabtree.dblclick"][value="false"] + setting[pref="exten
   transition-delay: .2s, 0s;
 }
 
-#tt-toolbox { /* needed for #tt-quicksearchbox not to overlap weirdly when sliding out when the tab search box position is at the top */
-  position: relative;
+#tt-quicksearchbox .textbox-input {
+  text-overflow: ellipsis;
+  transition-delay: .2s;
+  transition-property: visibility;
+}
+
+#tt-quicksearchbox[collapsed="true"] .textbox-input {
+  visibility: collapse;
+  transition-delay: 0s;
 }
