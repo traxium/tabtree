@@ -3,11 +3,6 @@
  * Copyright (C) 2015 Sergey Zelentsov <crayfishexterminator@gmail.com>
  */
 
-#TabsToolbar {
-	margin-top: 27px; /* hack in order to TabsInTitlebar._update(true) to work properly (fires 'if (tabAndMenuHeight > titlebarContentHeight)') */
-	visibility: collapse;
-}
-
 #nav-bar {
 	height: 27px;
 }

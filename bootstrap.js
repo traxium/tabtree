@@ -20,6 +20,7 @@ const ss = Cc["@mozilla.org/browser/sessionstore;1"].getService(Ci.nsISessionSto
 const sss = Cc["@mozilla.org/content/style-sheet-service;1"].getService(Ci.nsIStyleSheetService);
 var stringBundle = Services.strings.createBundle('chrome://tabtree/locale/global.properties?' + Math.random()); // Randomize URI to work around bug 719376
 var menuVisible;
+var prefsObserver;
 
 //noinspection JSUnusedGlobalSymbols
 function startup(data, reason)
@@ -70,6 +71,7 @@ function startup(data, reason)
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.position', 0); // setting default pref // 0 - Left, 1 - Right
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.search-position', 0); // setting default pref // 0 - Top, 1 - Bottom
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.search-autohide', false); // setting default pref
+	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.show-default-tabs', false); // hidden pref for test purposes
 	
 	// migration code :
 	try {
@@ -82,6 +84,27 @@ function startup(data, reason)
 	} catch (e) {
 	}
 	// - end migration code // don't forget to delete when v1.1.0 isn't in use anymore
+
+	let uriTabsToolbar = Services.io.newURI("chrome://tabtree/skin/tt-TabsToolbar.css", null, null);
+	if (!Services.prefs.getBoolPref('extensions.tabtree.show-default-tabs')) {
+		sss.loadAndRegisterSheet(uriTabsToolbar, sss.AUTHOR_SHEET);
+	}
+	//noinspection JSUnusedGlobalSymbols
+	Services.prefs.addObserver('extensions.tabtree.', (prefsObserver = {
+		observe: function(subject, topic, data) {
+			if (topic == 'nsPref:changed') {
+				switch (data) {
+					case 'extensions.tabtree.show-default-tabs':
+						if (Services.prefs.getBoolPref('extensions.tabtree.show-default-tabs')) {
+							sss.unregisterSheet(uriTabsToolbar, sss.AUTHOR_SHEET);
+						} else {
+							sss.loadAndRegisterSheet(uriTabsToolbar, sss.AUTHOR_SHEET);
+						}
+						break;
+				}
+			}
+		}
+	}), false); // don't forget to remove // there must be only one pref observer for all Firefox windows for sss prefs
 	
 	windowListener.register();
 }
@@ -99,6 +122,10 @@ function shutdown(aData, aReason)
 	if( sss.sheetRegistered(uri, sss.AUTHOR_SHEET) ) {
 		sss.unregisterSheet(uri, sss.AUTHOR_SHEET);
 	}
+	uri = Services.io.newURI("chrome://tabtree/skin/tt-TabsToolbar.css", null, null);
+	if( sss.sheetRegistered(uri, sss.AUTHOR_SHEET) ) {
+		sss.unregisterSheet(uri, sss.AUTHOR_SHEET);
+	}
 
 	if (ssHack.SessionStoreInternal.initializeWindow) { // Fix for Firefox 41+
 		ssHack.SessionStoreInternal.initializeWindow = ssOrig;
@@ -107,6 +134,8 @@ function shutdown(aData, aReason)
 	}
 
 	CustomizableUI.setToolbarVisibility('toolbar-menubar', menuVisible); // restoring menu visibility(in all windows)
+
+	Services.prefs.removeObserver('extensions.tabtree.', prefsObserver); // sss related prefs
 	
 	windowListener.unregister();
 }
@@ -145,7 +174,7 @@ var windowListener = {
 		ss.setWindowValue(aDOMWindow, 'tt-width', sidebar.width); // Remember the width of 'tt-sidebar'
 		// Remember the first visible row of the <tree id="tt">:
 		ss.setWindowValue(aDOMWindow, 'tt-first-visible-row', aDOMWindow.document.querySelector('#tt').treeBoxObject.getFirstVisibleRow().toString());
-		Services.prefs.removeObserver('extensions.tabtree.treelines', aDOMWindow.tt.toRemove.prefsObserver); // it can also be removed in 'unloadFromWindow'
+		Services.prefs.removeObserver('extensions.tabtree.', aDOMWindow.tt.toRemove.prefsObserver); // it can also be removed in 'unloadFromWindow'
 	},
 	
 	onWindowTitleChange: function (aXULWindow, aNewTitle) {},
@@ -214,7 +243,7 @@ var windowListener = {
 			aDOMWindow.document.documentElement.removeAttribute("tabsintitlebar"); // show native titlebar
 		}
 		aDOMWindow.TabsInTitlebar._update(true); // It is needed to recalculate negative 'margin-bottom' for 'titlebar' and 'margin-bottom' for 'titlebarContainer'
-		Services.prefs.removeObserver('extensions.tabtree.treelines', aDOMWindow.tt.toRemove.prefsObserver); // it could be already removed in 'onCloseWindow'
+		Services.prefs.removeObserver('extensions.tabtree.', aDOMWindow.tt.toRemove.prefsObserver); // it could be already removed in 'onCloseWindow'
 		
 		delete aDOMWindow.tt;
 	},
@@ -1101,25 +1130,27 @@ var windowListener = {
 			},
 			canDrop: function(index, orientation, dataTransfer) {
 				let tPos = index + tt.nPinned;
-				let sourceTab = dataTransfer.mozGetDataAt(aDOMWindow.TAB_DROP_TYPE, 0); // undefined for links
+				let draggedTab = dataTransfer.mozGetDataAt(aDOMWindow.TAB_DROP_TYPE, 0); // undefined for links
 
-				// for leaves:
-				if ( dataTransfer.mozTypesAt(0)[0] === aDOMWindow.TAB_DROP_TYPE
-						&& sourceTab != g.tabs[tPos] // can't drop on yourself
-						&& !tt.hasAnyChildren(sourceTab._tPos) ) {
-					return true;
-				}
-
-				// for branches:
-				if (dataTransfer.mozTypesAt(0)[0] === aDOMWindow.TAB_DROP_TYPE && sourceTab != g.tabs[tPos]) {
-					let i;
-					for (i=sourceTab._tPos+1; i<g.tabs.length; ++i) {
-						if (tt.levelInt(i)<=tt.levelInt(sourceTab)) {
-							break;
-						}
-					}
-					if (tPos<sourceTab._tPos || tPos>=i) {
+				if (draggedTab.parentNode == g.tabContainer) { // if it's the same window
+					// for leaves:
+					if (dataTransfer.mozTypesAt(0)[0] === aDOMWindow.TAB_DROP_TYPE
+                            && draggedTab != g.tabs[tPos] // can't drop on yourself
+                            && !tt.hasAnyChildren(draggedTab._tPos)) {
 						return true;
+					}
+
+					// for branches:
+					if (dataTransfer.mozTypesAt(0)[0] === aDOMWindow.TAB_DROP_TYPE && draggedTab != g.tabs[tPos]) {
+						let i;
+						for (i = draggedTab._tPos + 1; i < g.tabs.length; ++i) {
+							if (tt.levelInt(i) <= tt.levelInt(draggedTab)) {
+								break;
+							}
+						}
+						if (tPos < draggedTab._tPos || tPos >= i) {
+							return true;
+						}
 					}
 				}
 				
@@ -1626,7 +1657,6 @@ var windowListener = {
 							tree.treeBoxObject.invalidate();
 							break;
 					}
-
 				}
 			}
 		}), false); // don't forget to remove // it can be removed in 'onCloseWindow' or in 'unloadFromWindow'(upon addon shutdown)
@@ -1667,6 +1697,16 @@ var windowListener = {
 						}, false);
 					}
 				}
+			}
+		}); // don't forget to restore
+
+		aDOMWindow.tt.toRestore.g.replaceTabWithWindow = g.replaceTabWithWindow;
+		g.replaceTabWithWindow =  new Proxy(g.replaceTabWithWindow, { // "Move to New Window" tab context menu command, by default it keeps 'ttLevel'
+			apply: function(target, thisArg, argumentsList) {
+				let tab = argumentsList[0];
+				ss.setTabValue(tab, 'ttLevel', '0');
+				ss.deleteTabValue(tab, 'ttSS'); // just in case, nothing happens if there is no 'ttSS'
+				return target.apply(thisArg, argumentsList);
 			}
 		}); // don't forget to restore
 		
