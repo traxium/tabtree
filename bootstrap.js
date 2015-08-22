@@ -27,7 +27,7 @@ function startup(data, reason)
 {
 	let uri = Services.io.newURI("chrome://tabtree/skin/tree.css", null, null);
 	sss.loadAndRegisterSheet(uri, sss.AUTHOR_SHEET);
-	uri = Services.io.newURI("chrome://tabtree/skin/toolbox.css", null, null);
+	uri = Services.io.newURI("chrome://tabtree/skin/tt-navbar-private.css", null, null);
 	sss.loadAndRegisterSheet(uri, sss.AUTHOR_SHEET);
 
 	//	// Why do we use Proxy here? Let's see the chain how SS works:
@@ -72,6 +72,7 @@ function startup(data, reason)
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.search-position', 0); // setting default pref // 0 - Top, 1 - Bottom
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.search-autohide', false); // setting default pref
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.show-default-tabs', false); // hidden pref for test purposes
+	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.navbar-style', 1); // 0 - None, 1 - Thin, 2 - Medium (round), 3 - Medium (square)
 	
 	// migration code :
 	try {
@@ -89,11 +90,42 @@ function startup(data, reason)
 	if (!Services.prefs.getBoolPref('extensions.tabtree.show-default-tabs')) {
 		sss.loadAndRegisterSheet(uriTabsToolbar, sss.AUTHOR_SHEET);
 	}
+	let uriNav1Css = Services.io.newURI("chrome://tabtree/skin/tt-navbar-1.css", null, null);
+	let uriNav2Css = Services.io.newURI("chrome://tabtree/skin/tt-navbar-2.css", null, null);
+	let uriNav3Css = Services.io.newURI("chrome://tabtree/skin/tt-navbar-3.css", null, null);
+	switch (Services.prefs.getIntPref('extensions.tabtree.navbar-style')) {
+		case 1: // load Thin style
+			sss.loadAndRegisterSheet(uriNav1Css, sss.AUTHOR_SHEET);
+			break;
+		case 2: // load Medium (round) style
+			sss.loadAndRegisterSheet(uriNav2Css, sss.AUTHOR_SHEET);
+			break;
+		case 3: // load Medium (square) style
+			sss.loadAndRegisterSheet(uriNav3Css, sss.AUTHOR_SHEET);
+			break;
+	}
 	//noinspection JSUnusedGlobalSymbols
 	Services.prefs.addObserver('extensions.tabtree.', (prefsObserver = {
 		observe: function(subject, topic, data) {
 			if (topic == 'nsPref:changed') {
 				switch (data) {
+					case 'extensions.tabtree.navbar-style':
+						// unload all styles for a start:
+						if (sss.sheetRegistered(uriNav1Css, sss.AUTHOR_SHEET)) sss.unregisterSheet(uriNav1Css, sss.AUTHOR_SHEET);
+						if (sss.sheetRegistered(uriNav1Css, sss.AUTHOR_SHEET)) sss.unregisterSheet(uriNav2Css, sss.AUTHOR_SHEET);
+						if (sss.sheetRegistered(uriNav1Css, sss.AUTHOR_SHEET)) sss.unregisterSheet(uriNav3Css, sss.AUTHOR_SHEET);
+						switch (Services.prefs.getIntPref('extensions.tabtree.navbar-style')) {
+							case 1: // load Thin style
+								sss.loadAndRegisterSheet(uriNav1Css, sss.AUTHOR_SHEET);
+								break;
+							case 2: // load Medium (round) style
+								sss.loadAndRegisterSheet(uriNav2Css, sss.AUTHOR_SHEET);
+								break;
+							case 3: // load Medium (square) style
+								sss.loadAndRegisterSheet(uriNav3Css, sss.AUTHOR_SHEET);
+								break;
+						}
+						break;
 					case 'extensions.tabtree.show-default-tabs':
 						if (Services.prefs.getBoolPref('extensions.tabtree.show-default-tabs')) {
 							sss.unregisterSheet(uriTabsToolbar, sss.AUTHOR_SHEET);
@@ -114,18 +146,19 @@ function shutdown(aData, aReason)
 {
 	if (aReason == APP_SHUTDOWN) return;
 
-	let uri = Services.io.newURI("chrome://tabtree/skin/tree.css", null, null);
-	if( sss.sheetRegistered(uri, sss.AUTHOR_SHEET) ) {
-		sss.unregisterSheet(uri, sss.AUTHOR_SHEET);
-	}
-	uri = Services.io.newURI("chrome://tabtree/skin/toolbox.css", null, null);
-	if( sss.sheetRegistered(uri, sss.AUTHOR_SHEET) ) {
-		sss.unregisterSheet(uri, sss.AUTHOR_SHEET);
-	}
-	uri = Services.io.newURI("chrome://tabtree/skin/tt-TabsToolbar.css", null, null);
-	if( sss.sheetRegistered(uri, sss.AUTHOR_SHEET) ) {
-		sss.unregisterSheet(uri, sss.AUTHOR_SHEET);
-	}
+	[
+		"chrome://tabtree/skin/tree.css",
+		"chrome://tabtree/skin/tt-navbar-private.css",
+		"chrome://tabtree/skin/tt-TabsToolbar.css",
+		"chrome://tabtree/skin/tt-navbar-1.css",
+		"chrome://tabtree/skin/tt-navbar-2.css",
+		"chrome://tabtree/skin/tt-navbar-3.css"
+	].forEach(function(x) {
+		let uri = Services.io.newURI(x, null, null);
+		if (sss.sheetRegistered(uri, sss.AUTHOR_SHEET)) {
+			sss.unregisterSheet(uri, sss.AUTHOR_SHEET);
+		}
+	});
 
 	if (ssHack.SessionStoreInternal.initializeWindow) { // Fix for Firefox 41+
 		ssHack.SessionStoreInternal.initializeWindow = ssOrig;

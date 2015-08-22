@@ -1,0 +1,13 @@
+/*
+ * This file is part of Tab Tree,
+ * Copyright (C) 2015 Sergey Zelentsov <crayfishexterminator@gmail.com>
+ */
+
+/* Private browsing */
+
+#nav-bar #private-browsing-indicator-titlebar {
+	position: static; /* absolute by default - overlaps with Minimize, Restore, Close buttons */
+}
+
+/* Box-shadow */
+
