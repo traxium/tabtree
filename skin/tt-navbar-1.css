@@ -113,7 +113,7 @@ window:not([chromehidden~="toolbar"]) #urlbar-wrapper {
 	padding-left: 0 !important;
 }
 
-.toolbarbutton-badge-stack {
+.toolbarbutton-badge-stack { /* there is no such a class in Firefox prior to version 42.0 */
 	padding-bottom: 1px !important;
 }
 
@@ -122,6 +122,10 @@ window:not([chromehidden~="toolbar"]) #urlbar-wrapper {
 }
 
 /* When Firefox prior to version 42.0+ is no longer in use, this will be removed */
+
+.toolbarbutton-badge-container { /* I think that since Firefox 42.0+ it's replaced with ".toolbarbutton-badge-stack" */
+	padding-bottom: 1px !important;
+}
 
 hbox.toolbarbutton-badge::after { /* since Firefox 42.0+ it's a <label> element */
 	padding: 1px;

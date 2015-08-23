@@ -98,39 +98,7 @@ window:not([chromehidden~="toolbar"]) #urlbar-wrapper {
 
 /* ****************************************************************************************************************** */
 
-/* without this rule there are cases when #nav-bar is thinner than needed */
-/* for example in a private  window in Firefox 40.0.2 */
-#urlbar-container {
-	padding-top: 1px !important;
-	padding-bottom: 1px !important;
-}
-
-#nav-bar .toolbarbutton-1:not([type=menu-button]),
-#nav-bar .toolbarbutton-1 > .toolbarbutton-menubutton-button,
-#nav-bar .toolbarbutton-1 > .toolbarbutton-menubutton-dropmarker {
-	padding-top: 0 !important;
-	padding-bottom: 0 !important;
-}
-
-#back-button {
-	padding-left: 1px !important;
-}
-
-/*.toolbarbutton-badge-stack { /!* there is no such a class in Firefox prior to version 42.0 *!/*/ /* superfluous */
-	/*padding-top: 3px !important;*/
-	/*padding-bottom: 3px !important;*/
-/*}*/
-
-#private-browsing-indicator-titlebar > .private-browsing-indicator {
-	height: 26px; /* 28px by default - breaks our 26px navbar */
-}
-
 /* When Firefox prior to version 42.0+ is no longer in use, this will be removed */
-
-/*.toolbarbutton-badge-container { /!* I think that since Firefox 42.0+ it's replaced with ".toolbarbutton-badge-stack" *!/*/  /* superfluous */
-	/*padding-top: 3px !important;*/
-	/*padding-bottom: 3px !important;*/
-/*}*/
 
 hbox.toolbarbutton-badge::after { /* since Firefox 42.0+ it's a <label> element */
 	padding: 1px;
