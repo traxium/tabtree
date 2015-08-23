@@ -118,7 +118,7 @@ window:not([chromehidden~="toolbar"]) #urlbar-wrapper {
 }
 
 #private-browsing-indicator-titlebar > .private-browsing-indicator {
-	height: 25px; /* 28px by default - breaks our 26px navbar */
+	height: 24px; /* 28px by default - #nav-bar height is 24px (Windows 7 & 8 with default styles) or 26px (Windows XP with default styles) */
 }
 
 /* When Firefox prior to version 42.0+ is no longer in use, this will be removed */

@@ -5,9 +5,6 @@
 
 /* Private browsing */
 
-#nav-bar #private-browsing-indicator-titlebar {
+#nav-bar #private-browsing-indicator-titlebar { /* by default it's on #titlebar (not on #nav-bar) */
 	position: static; /* absolute by default - overlaps with Minimize, Restore, Close buttons */
 }
-
-/* Box-shadow */
-
