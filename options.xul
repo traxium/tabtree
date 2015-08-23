@@ -29,4 +29,17 @@
         </radiogroup>
     </setting>
     <setting type="bool" pref="extensions.tabtree.search-autohide" title="&search-autohide.title;" desc="&search-autohide.desc;" />
+    <setting type="menulist" pref="extensions.tabtree.navbar-style" title="&navbar-style.title;" desc="&navbar-style.desc;">
+        <menulist>
+            <menupopup>
+                <menuitem value="0" label="&navbar-style.0;"/>
+                <menuseparator />
+                <menuitem value="1" label="&navbar-style.1;"/>
+                <menuitem value="2" label="&navbar-style.2;"/>
+                <menuitem value="3" label="&navbar-style.3;"/>
+                <menuitem value="4" label="&navbar-style.4;"/>
+                <menuitem value="5" label="&navbar-style.5;"/>
+            </menupopup>
+        </menulist>
+    </setting>
 </vbox>

@@ -4,8 +4,8 @@
  */
 
 #urlbar-container {
-	padding-top: 1px !important;
-	padding-bottom: 1px !important;
+	padding-top: 2px !important;
+	padding-bottom: 2px !important;
 }
 
 #nav-bar .toolbarbutton-1:not([type=menu-button]),
@@ -16,7 +16,7 @@
 }
 
 #back-button {
-	padding-left: 1px !important;
+	padding-left: 2px !important;
 }
 
 /* When Firefox prior to version 42.0+ is no longer in use, this will be removed */

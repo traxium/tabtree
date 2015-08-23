@@ -19,3 +19,11 @@
 <!ENTITY search-position.bottom "Снизу">
 <!ENTITY search-autohide.title "Скрывать строку поиска вкладки:">
 <!ENTITY search-autohide.desc "Ctrl+Shift+Alt+F показывает её (не отмечено по умолчанию)">
+<!ENTITY navbar-style.title "Размер адресной строки:">
+<!ENTITY navbar-style.desc "Опция &quot;По умолчанию&quot; позволяет использовать сторонние стили (&quot;Самый маленький&quot; по умолчанию)">
+<!ENTITY navbar-style.0 "По умолчанию">
+<!ENTITY navbar-style.1 "Самый маленький">
+<!ENTITY navbar-style.2 "Маленький">
+<!ENTITY navbar-style.3 "Средний">
+<!ENTITY navbar-style.4 "Большой">
+<!ENTITY navbar-style.5 "Самый большой">

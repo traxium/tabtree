@@ -72,7 +72,7 @@ function startup(data, reason)
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.search-position', 0); // setting default pref // 0 - Top, 1 - Bottom
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.search-autohide', false); // setting default pref
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.show-default-tabs', false); // hidden pref for test purposes
-	// 0 - None, 1 - The Thinnest, 2 - Thin, 3 - Medium (round), 4 - Medium (square):
+	// 0 - None, 1 - The Smallest, 2 - Small, 3 - Medium, 4 - Big (round), 5 - The Biggest (round):
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.navbar-style', 1);
 	
 	// migration code :
@@ -95,18 +95,22 @@ function startup(data, reason)
 	let uriNav2Css = Services.io.newURI("chrome://tabtree/skin/tt-navbar-2.css", null, null);
 	let uriNav3Css = Services.io.newURI("chrome://tabtree/skin/tt-navbar-3.css", null, null);
 	let uriNav4Css = Services.io.newURI("chrome://tabtree/skin/tt-navbar-4.css", null, null);
+	let uriNav5Css = Services.io.newURI("chrome://tabtree/skin/tt-navbar-5.css", null, null);
 	switch (Services.prefs.getIntPref('extensions.tabtree.navbar-style')) {
-		case 1: // load The Thinnest style
+		case 1: // load The Thinnest (square) style
 			sss.loadAndRegisterSheet(uriNav1Css, sss.AUTHOR_SHEET);
 			break;
-		case 2: // load Thin style
+		case 2: // load Thin (square) style
 			sss.loadAndRegisterSheet(uriNav2Css, sss.AUTHOR_SHEET);
 			break;
-		case 3: // load Medium (round) style
+		case 3: // load Medium (square) style
 			sss.loadAndRegisterSheet(uriNav3Css, sss.AUTHOR_SHEET);
 			break;
-		case 4: // load Medium (square) style
+		case 4: // load Big (round) style
 			sss.loadAndRegisterSheet(uriNav4Css, sss.AUTHOR_SHEET);
+			break;
+		case 5: // load The Biggest (round) style
+			sss.loadAndRegisterSheet(uriNav5Css, sss.AUTHOR_SHEET);
 			break;
 	}
 	//noinspection JSUnusedGlobalSymbols
@@ -120,18 +124,22 @@ function startup(data, reason)
 						if (sss.sheetRegistered(uriNav2Css, sss.AUTHOR_SHEET)) sss.unregisterSheet(uriNav2Css, sss.AUTHOR_SHEET);
 						if (sss.sheetRegistered(uriNav3Css, sss.AUTHOR_SHEET)) sss.unregisterSheet(uriNav3Css, sss.AUTHOR_SHEET);
 						if (sss.sheetRegistered(uriNav4Css, sss.AUTHOR_SHEET)) sss.unregisterSheet(uriNav4Css, sss.AUTHOR_SHEET);
+						if (sss.sheetRegistered(uriNav5Css, sss.AUTHOR_SHEET)) sss.unregisterSheet(uriNav5Css, sss.AUTHOR_SHEET);
 						switch (Services.prefs.getIntPref('extensions.tabtree.navbar-style')) {
-							case 1: // load The Thinnest style
+							case 1: // load The Thinnest (square) style
 								sss.loadAndRegisterSheet(uriNav1Css, sss.AUTHOR_SHEET);
 								break;
-							case 2: // load Thin style
+							case 2: // load Thin (square) style
 								sss.loadAndRegisterSheet(uriNav2Css, sss.AUTHOR_SHEET);
 								break;
-							case 3: // load Medium (round) style
+							case 3: // load Medium (square) style
 								sss.loadAndRegisterSheet(uriNav3Css, sss.AUTHOR_SHEET);
 								break;
-							case 4: // load Medium (square) style
+							case 4: // load Big (round) style
 								sss.loadAndRegisterSheet(uriNav4Css, sss.AUTHOR_SHEET);
+								break;
+							case 5: // load The Biggest (round) style
+								sss.loadAndRegisterSheet(uriNav5Css, sss.AUTHOR_SHEET);
 								break;
 						}
 						break;
@@ -162,7 +170,8 @@ function shutdown(aData, aReason)
 		"chrome://tabtree/skin/tt-navbar-1.css",
 		"chrome://tabtree/skin/tt-navbar-2.css",
 		"chrome://tabtree/skin/tt-navbar-3.css",
-		"chrome://tabtree/skin/tt-navbar-4.css"
+		"chrome://tabtree/skin/tt-navbar-4.css",
+		"chrome://tabtree/skin/tt-navbar-5.css",
 	].forEach(function(x) {
 		let uri = Services.io.newURI(x, null, null);
 		if (sss.sheetRegistered(uri, sss.AUTHOR_SHEET)) {
