@@ -5,6 +5,17 @@
 
 /* Private browsing */
 
+/* 6490 */
+/* Bug 1008183: We're intentionally using the titlebar asset here for fullscreen
+ * mode, since the tabstrip "mimics" the titlebar in that case with its own
+ * min/max/close window buttons.
+ */
+#private-browsing-indicator-titlebar > .private-browsing-indicator,
+#main-window[inFullscreen] #TabsToolbar > .private-browsing-indicator {
+	height: 18px; /* 20px default height causes a little disturbance in W8 */
+	background-size: 100% 100%;
+}
+
 /* 6515 */
 @media (-moz-os-version: windows-xp) {
 	@media not all and (-moz-windows-classic) {
