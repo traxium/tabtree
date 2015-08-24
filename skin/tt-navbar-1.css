@@ -3,6 +3,8 @@
  * Copyright (C) 2015 Sergey Zelentsov <crayfishexterminator@gmail.com>
  */
 
+/* This style provides 24px #nav-bar height (for Windows 7 & 8 with default styles) or 26px (for Windows XP with default styles) */
+
 /* From devedition.css */
 
 /* 216 */
@@ -117,8 +119,13 @@ window:not([chromehidden~="toolbar"]) #urlbar-wrapper {
 	padding-bottom: 1px !important;
 }
 
-#private-browsing-indicator-titlebar > .private-browsing-indicator {
-	height: 24px; /* 28px by default - #nav-bar height is 24px (Windows 7 & 8 with default styles) or 26px (Windows XP with default styles) */
+@media (-moz-os-version: windows-xp) {
+	@media not all and (-moz-windows-classic) {
+		#nav-bar #private-browsing-indicator-titlebar > .private-browsing-indicator {
+			height: 23px; /* prevent the smallest navbar from stretching */ /* 25px is enough */
+			background-size: 100% 100%; /* looks a little better */
+		}
+	}
 }
 
 /* When Firefox prior to version 42.0+ is no longer in use, this will be removed */

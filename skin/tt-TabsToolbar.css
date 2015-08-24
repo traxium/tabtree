@@ -3,6 +3,10 @@
  * Copyright (C) 2015 Sergey Zelentsov <crayfishexterminator@gmail.com>
  */
 
+window[tabsintitlebar="true"][sizemode="maximized"] #toolbar-menubar {
+	padding-bottom: 1px; /* padding that causes #toolbar-menubar to change its height (from 19px to 18px) in Windows 7 at a window opening */
+}
+
 #TabsToolbar {
 	margin-top: 27px; /* hack in order to TabsInTitlebar._update(true) to work properly (fires 'if (tabAndMenuHeight > titlebarContentHeight)') */
 	visibility: collapse;

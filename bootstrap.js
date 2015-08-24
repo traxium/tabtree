@@ -19,7 +19,6 @@ var ssOrig;
 const ss = Cc["@mozilla.org/browser/sessionstore;1"].getService(Ci.nsISessionStore);
 const sss = Cc["@mozilla.org/content/style-sheet-service;1"].getService(Ci.nsIStyleSheetService);
 var stringBundle = Services.strings.createBundle('chrome://tabtree/locale/global.properties?' + Math.random()); // Randomize URI to work around bug 719376
-var menuVisible;
 var prefsObserver;
 
 //noinspection JSUnusedGlobalSymbols
@@ -185,8 +184,6 @@ function shutdown(aData, aReason)
 		ssHack.SessionStoreInternal.onLoad = ssOrig;
 	}
 
-	CustomizableUI.setToolbarVisibility('toolbar-menubar', menuVisible); // restoring menu visibility(in all windows)
-
 	Services.prefs.removeObserver('extensions.tabtree.', prefsObserver); // sss related prefs
 	
 	windowListener.unregister();
@@ -273,6 +270,10 @@ var windowListener = {
 			fullscrToggler.parentNode.removeChild(fullscrToggler);
 			let panel = aDOMWindow.document.querySelector('#tt-panel');
 			panel.parentNode.removeChild(panel);
+			let titlebarButtonsClone = aDOMWindow.document.querySelector('#titlebar-buttonbox-container.tt-clone');
+			if (titlebarButtonsClone && titlebarButtonsClone.parentNode !== null) { // if it exists
+				titlebarButtonsClone.parentNode.removeChild(titlebarButtonsClone);
+			}
 		}
 		
 		Object.keys(aDOMWindow.tt.toRestore.g).forEach( (x)=>{aDOMWindow.gBrowser[x] = aDOMWindow.tt.toRestore.g[x];} );
@@ -296,6 +297,7 @@ var windowListener = {
 		}
 		aDOMWindow.TabsInTitlebar._update(true); // It is needed to recalculate negative 'margin-bottom' for 'titlebar' and 'margin-bottom' for 'titlebarContainer'
 		Services.prefs.removeObserver('extensions.tabtree.', aDOMWindow.tt.toRemove.prefsObserver); // it could be already removed in 'onCloseWindow'
+		aDOMWindow.tt.toRemove._menuObserver.disconnect();
 		
 		delete aDOMWindow.tt;
 	},
@@ -311,39 +313,79 @@ var windowListener = {
 		let g = aDOMWindow.gBrowser;
 		let appcontent = aDOMWindow.document.querySelector('#appcontent');
 		aDOMWindow.tt = {
-			toRemove: {eventListeners: {}, prefsObserver: null, tabsProgressListener: null},
+			toRemove: {eventListeners: {}, prefsObserver: null, tabsProgressListener: null, _menuObserver: null},
 			toRestore: {g: {}, TabContextMenu: {}, tabsintitlebar: true}
 		};
 
-		if (menuVisible === undefined) { // we have to remember menu visibility only once
-			menuVisible = aDOMWindow.document.querySelector('#toolbar-menubar').getAttribute('autohide') != 'true'; // remember menu visibility until restart
-			CustomizableUI.setToolbarVisibility('toolbar-menubar', false); // hiding menu(in all windows) in case there are users who don't know how to do that
-		}
-		
 		// remember 'tabsintitlebar' attr before beginning to interact with it // default is 'true':
 		aDOMWindow.tt.toRestore.tabsintitlebar = aDOMWindow.document.documentElement.getAttribute('tabsintitlebar')=='true';
 
 		//////////////////// TITLE BAR STANDARD BUTTONS (Minimize, Restore/Maximize, Close) ////////////////////////////
 		// We can't use 'window.load' event here, because it always shows windowState==='STATE_NORMAL' even when the actual state is 'STATE_MAXIMIZED'
 		let navBar = aDOMWindow.document.querySelector('#nav-bar');
-		let titlebarButtonboxContainer = aDOMWindow.document.querySelector('#titlebar-buttonbox-container');
-		//let titlebarContent = aDOMWindow.document.querySelector('#titlebar-content'); // already here
+		// Now we have elements with the same id:
+		let titlebarButtonsClone = aDOMWindow.document.querySelector('#titlebar-buttonbox-container').cloneNode(true);
+		titlebarButtonsClone.classList.add('tt-clone'); // add a class to distinguish the elements with the same id
 		let windowControls = aDOMWindow.document.querySelector('#window-controls');
+		let menu = aDOMWindow.document.querySelector('#toolbar-menubar');
 		switch (aDOMWindow.windowState) {
 			case aDOMWindow.STATE_MAXIMIZED:
-				navBar.appendChild(titlebarButtonboxContainer);
-				aDOMWindow.document.documentElement.setAttribute("tabsintitlebar", "true"); // hide native titlebar
-				aDOMWindow.updateTitlebarDisplay();
+				if (Services.prefs.getBoolPref('browser.tabs.drawInTitlebar')) {
+					if (menu.getAttribute('autohide') == 'true' && menu.hasAttribute('inactive')) {
+						navBar.appendChild(titlebarButtonsClone);
+						aDOMWindow.document.documentElement.setAttribute("tabsintitlebar", "true"); // hide native titlebar
+						aDOMWindow.updateTitlebarDisplay();
+					}
+				}
 				break;
 			case aDOMWindow.STATE_NORMAL:
 				aDOMWindow.document.documentElement.removeAttribute("tabsintitlebar"); // show native titlebar
 				aDOMWindow.updateTitlebarDisplay();
-				//titlebarContent.appendChild(titlebarButtonboxContainer); // already here
 				break;
 			case aDOMWindow.STATE_FULLSCREEN:
 				navBar.appendChild(windowControls);
 				break;
 		}
+
+		aDOMWindow.addEventListener('sizemodechange', (aDOMWindow.tt.toRemove.eventListeners.onSizemodechange = function(event) {
+			switch (aDOMWindow.windowState) {
+				case aDOMWindow.STATE_MAXIMIZED:
+					if (Services.prefs.getBoolPref('browser.tabs.drawInTitlebar')) {
+						if (menu.getAttribute('autohide') == 'true' && menu.hasAttribute('inactive')) {
+							navBar.appendChild(titlebarButtonsClone);
+							aDOMWindow.document.documentElement.setAttribute("tabsintitlebar", "true"); // hide native titlebar
+							aDOMWindow.updateTitlebarDisplay();
+						}
+					}
+					break;
+				case aDOMWindow.STATE_NORMAL:
+					aDOMWindow.document.documentElement.removeAttribute("tabsintitlebar"); // show native toolbar
+					if (titlebarButtonsClone.parentNode !== null) { // if it exists
+						navBar.removeChild(titlebarButtonsClone);
+					}
+					aDOMWindow.updateTitlebarDisplay();
+					break;
+				case aDOMWindow.STATE_FULLSCREEN:
+					navBar.appendChild(windowControls);
+					break;
+			}
+		}), false); // don't forget to remove
+
+		(aDOMWindow.tt.toRemove._menuObserver = new aDOMWindow.MutationObserver(function(aMutations) {
+			for (let mutation of aMutations) {
+				if (mutation.attributeName == 'inactive' || mutation.attributeName == 'autohide') {
+					if (Services.prefs.getBoolPref('browser.tabs.drawInTitlebar') && aDOMWindow.windowState==aDOMWindow.STATE_MAXIMIZED
+						&& mutation.target.getAttribute('autohide')=='true' && mutation.target.hasAttribute('inactive')) {
+						navBar.appendChild(titlebarButtonsClone);
+					} else {
+						if (titlebarButtonsClone.parentNode !== null) { // if it exists
+							navBar.removeChild(titlebarButtonsClone);
+						}
+					}
+					return;
+				}
+			}
+		})).observe(menu, {attributes: true}); // don't forget to remove
 		//////////////////// END TITLE BAR STANDARD BUTTONS (Minimize, Restore/Maximize, Close) ////////////////////////
 
 		let propsToSet;
@@ -1617,30 +1659,6 @@ var windowListener = {
 			}
 		}), false); // don't forget to remove
 		
-		aDOMWindow.addEventListener('sizemodechange', (aDOMWindow.tt.toRemove.eventListeners.onSizemodechange = function(event) {
-			let window = event.target;
-			let navBar = aDOMWindow.document.querySelector('#nav-bar');
-			let titlebarButtonboxContainer = aDOMWindow.document.querySelector('#titlebar-buttonbox-container');
-			let titlebarContent = aDOMWindow.document.querySelector('#titlebar-content');
-			let windowControls = aDOMWindow.document.querySelector('#window-controls');
-			switch (window.windowState) {
-				case window.STATE_MAXIMIZED:
-					navBar.appendChild(titlebarButtonboxContainer);
-					aDOMWindow.document.documentElement.setAttribute("tabsintitlebar", "true"); // hide native titlebar
-					aDOMWindow.updateTitlebarDisplay();
-					break;
-				case window.STATE_NORMAL:
-					titlebarContent.appendChild(titlebarButtonboxContainer);
-					aDOMWindow.document.documentElement.removeAttribute("tabsintitlebar"); // show native toolbar
-					aDOMWindow.updateTitlebarDisplay();
-					break;
-				case window.STATE_FULLSCREEN:
-					titlebarContent.appendChild(titlebarButtonboxContainer);
-					navBar.appendChild(windowControls);
-					break;
-			}
-		}), false); // don't forget to remove
-
 		// Middle click to close a tab
 		tree.addEventListener('click', function onMiddleClick(event) {
 			if (event.button === 1) { // middle click
@@ -1653,10 +1671,20 @@ var windowListener = {
 		}, false);
 
 		//noinspection JSUnusedGlobalSymbols
-		Services.prefs.addObserver('extensions.tabtree.', (aDOMWindow.tt.toRemove.prefsObserver = {
+		Services.prefs.addObserver('', (aDOMWindow.tt.toRemove.prefsObserver = {
 			observe: function(subject, topic, data) {
 				if (topic == 'nsPref:changed') {
 					switch (data) {
+						case 'browser.tabs.drawInTitlebar':
+							if (Services.prefs.getBoolPref('browser.tabs.drawInTitlebar') && aDOMWindow.windowState==aDOMWindow.STATE_MAXIMIZED
+								&& menu.getAttribute('autohide')=='true' && menu.hasAttribute('inactive')) {
+								navBar.appendChild(titlebarButtonsClone);
+							} else {
+								if (titlebarButtonsClone.parentNode !== null) { // if it exists
+									navBar.removeChild(titlebarButtonsClone);
+								}
+							}
+							break;
 						case 'extensions.tabtree.dblclick':
 							if (Services.prefs.getBoolPref('extensions.tabtree.dblclick')) {
 								tree.removeEventListener('click', onClickFast, false);
@@ -1724,7 +1752,7 @@ var windowListener = {
 			tree.treeBoxObject.ensureRowIsVisible(g.mCurrentTab._tPos - tt.nPinned);
 		}
 		tt.redrawToolbarbuttons();
-		aDOMWindow.TabsInTitlebar._update(true);
+		//aDOMWindow.TabsInTitlebar._update(true); // already called by Firefox
 		
 		// the problem is that at Firefox startup at this point tab.hasAttribute('image') is always 'false'
 		aDOMWindow.tt.toRestore.g.setIcon = g.setIcon;
