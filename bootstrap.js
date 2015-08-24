@@ -73,6 +73,7 @@ function startup(data, reason)
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.show-default-tabs', false); // hidden pref for test purposes
 	// 0 - None, 1 - The Smallest, 2 - Small, 3 - Medium, 4 - Big (round), 5 - The Biggest (round):
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.navbar-style', 1);
+	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.flst', true); // focus last selected tab after closing a current tab
 	
 	// migration code :
 	try {
@@ -1463,10 +1464,12 @@ var windowListener = {
 		aDOMWindow.tt.toRestore.g.removeTab = g.removeTab;
 		g.removeTab =  new Proxy(g.removeTab, { // for FLST after closing tab AND for nullifying 'browser.tabs.animate' about:config pref
 			apply: function(target, thisArg, argumentsList) {
-				let tab = argumentsList[0];
-				if (g.mCurrentTab === tab) {
-					let recentlyUsedTabs = Array.filter(g.tabs, (tab) => !tab.closing).sort((tab1, tab2) => tab2.lastAccessed - tab1.lastAccessed);
-					g.selectedTab = recentlyUsedTabs[0]===g.mCurrentTab ? recentlyUsedTabs[1] : recentlyUsedTabs[0];
+				if (Services.prefs.getBoolPref('extensions.tabtree.flst')) {
+					let tab = argumentsList[0];
+					if (g.mCurrentTab === tab) {
+						let recentlyUsedTabs = Array.filter(g.tabs, (tab) => !tab.closing).sort((tab1, tab2) => tab2.lastAccessed - tab1.lastAccessed);
+						g.selectedTab = recentlyUsedTabs[0] === g.mCurrentTab ? recentlyUsedTabs[1] : recentlyUsedTabs[0];
+					}
 				}
 				if (argumentsList[1] && argumentsList[1].animate) { // nullifying 'browser.tabs.animate' about:config pref
 					// after disabling animation tabs are closed really faster, It can be seen with the naked eye
