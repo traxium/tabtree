@@ -46,8 +46,12 @@
   background-color: rgb(218, 226, 250);
 }
 
-#tt-treechildren:-moz-tree-cell-text(hover) {
-  text-decoration: underline;
+@media (-moz-os-version: windows-xp) { /* there was a complaint in a user review on AMO about underlining (presumably in W7/8) */
+  @media not all and (-moz-windows-classic) {
+    #tt-treechildren:-moz-tree-cell-text(hover) {
+      text-decoration: underline;
+    }
+  }
 }
 
 /* Cancelling default style for 'selected' rows (not the current row) */
