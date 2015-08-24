@@ -27,3 +27,7 @@
 <!ENTITY navbar-style.3 "Medium">
 <!ENTITY navbar-style.4 "Big">
 <!ENTITY navbar-style.5 "The biggest">
+<!ENTITY drawInTitlebar.title "Hide the OS native titlebar when Firefox is maximized:">
+<!ENTITY drawInTitlebar.desc "It's &quot;browser.tabs.drawInTitlebar&quot; in about:config (checked by default)">
+<!ENTITY flst.title "FLST after closing a current tab:">
+<!ENTITY flst.desc "FLST means &quot;focus last selected tab&quot; (checked by default)">

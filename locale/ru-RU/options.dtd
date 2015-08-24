@@ -27,3 +27,7 @@
 <!ENTITY navbar-style.3 "Средний">
 <!ENTITY navbar-style.4 "Большой">
 <!ENTITY navbar-style.5 "Самый большой">
+<!ENTITY drawInTitlebar.title "Скрывать строку заголовка окна при развёрнутом Firefox:">
+<!ENTITY drawInTitlebar.desc "Эта опция всего лишь переключает &quot;browser.tabs.drawInTitlebar&quot; в about:config (отмечено по умолчанию)">
+<!ENTITY flst.title "Переходить на последнюю выделенную вкладку после закрытия текущей вкладки (FLST):">
+<!ENTITY flst.desc "(отмечено по умолчанию)">
