@@ -274,6 +274,10 @@ var windowListener = {
 			if (titlebarButtonsClone && titlebarButtonsClone.parentNode !== null) { // if it exists
 				titlebarButtonsClone.parentNode.removeChild(titlebarButtonsClone);
 			}
+			let windowControlsClone = aDOMWindow.document.querySelector('#tt-window-controls-clone');
+			if (windowControlsClone && windowControlsClone.parentNode !== null) { // if it exists
+				windowControlsClone.parentNode.removeChild(windowControlsClone);
+			}
 		}
 		
 		Object.keys(aDOMWindow.tt.toRestore.g).forEach( (x)=>{aDOMWindow.gBrowser[x] = aDOMWindow.tt.toRestore.g[x];} );
@@ -326,7 +330,9 @@ var windowListener = {
 		// Now we have elements with the same id:
 		let titlebarButtonsClone = aDOMWindow.document.querySelector('#titlebar-buttonbox-container').cloneNode(true);
 		titlebarButtonsClone.classList.add('tt-clone'); // add a class to distinguish the elements with the same id
-		let windowControls = aDOMWindow.document.querySelector('#window-controls');
+		let windowControlsClone = aDOMWindow.document.querySelector('#window-controls').cloneNode(true);
+		windowControlsClone.id = 'tt-window-controls-clone'; // change id to distinguish the new element
+		windowControlsClone.hidden = false;
 		let menu = aDOMWindow.document.querySelector('#toolbar-menubar');
 		switch (aDOMWindow.windowState) {
 			case aDOMWindow.STATE_MAXIMIZED:
@@ -343,13 +349,16 @@ var windowListener = {
 				aDOMWindow.updateTitlebarDisplay();
 				break;
 			case aDOMWindow.STATE_FULLSCREEN:
-				navBar.appendChild(windowControls);
+				navBar.appendChild(windowControlsClone);
 				break;
 		}
 
 		aDOMWindow.addEventListener('sizemodechange', (aDOMWindow.tt.toRemove.eventListeners.onSizemodechange = function(event) {
 			switch (aDOMWindow.windowState) {
 				case aDOMWindow.STATE_MAXIMIZED:
+					if (windowControlsClone.parentNode !== null) { // if windowControlsClone exists
+						navBar.removeChild(windowControlsClone);
+					}
 					if (Services.prefs.getBoolPref('browser.tabs.drawInTitlebar')) {
 						if (menu.getAttribute('autohide') == 'true' && menu.hasAttribute('inactive')) {
 							navBar.appendChild(titlebarButtonsClone);
@@ -359,6 +368,9 @@ var windowListener = {
 					}
 					break;
 				case aDOMWindow.STATE_NORMAL:
+					if (windowControlsClone.parentNode !== null) { // if windowControlsClone exists
+						navBar.removeChild(windowControlsClone);
+					}
 					aDOMWindow.document.documentElement.removeAttribute("tabsintitlebar"); // show native toolbar
 					if (titlebarButtonsClone.parentNode !== null) { // if it exists
 						navBar.removeChild(titlebarButtonsClone);
@@ -366,7 +378,10 @@ var windowListener = {
 					aDOMWindow.updateTitlebarDisplay();
 					break;
 				case aDOMWindow.STATE_FULLSCREEN:
-					navBar.appendChild(windowControls);
+					if (titlebarButtonsClone.parentNode !== null) { // if it exists
+						navBar.removeChild(titlebarButtonsClone);
+					}
+					navBar.appendChild(windowControlsClone);
 					break;
 			}
 		}), false); // don't forget to remove
