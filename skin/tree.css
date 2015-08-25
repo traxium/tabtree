@@ -129,6 +129,7 @@ setting[pref="extensions.tabtree.dblclick"][value="false"] + setting[pref="exten
   transition-property: visibility, margin-bottom;
   transition-duration: 0s, .2s;
   transition-timing-function: linear, ease-in-out;
+  margin: 0; /* W8 fix */
 }
 
 #tt-quicksearchbox[collapsed="true"] {
