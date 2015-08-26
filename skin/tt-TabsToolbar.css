@@ -3,7 +3,7 @@
  * Copyright (C) 2015 Sergey Zelentsov <crayfishexterminator@gmail.com>
  */
 
-window[tabsintitlebar="true"][sizemode="maximized"] #toolbar-menubar {
+window[tabsintitlebar="true"][sizemode="maximized"] #toolbar-menubar { /* [tabsintitlebar="true"] is only on Windows */
 	padding-bottom: 1px; /* padding that causes #toolbar-menubar to change its height (from 19px to 18px) in Windows 7 at a window opening */
 }
 

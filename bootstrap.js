@@ -302,7 +302,10 @@ var windowListener = {
 		}
 		aDOMWindow.TabsInTitlebar._update(true); // It is needed to recalculate negative 'margin-bottom' for 'titlebar' and 'margin-bottom' for 'titlebarContainer'
 		Services.prefs.removeObserver('extensions.tabtree.', aDOMWindow.tt.toRemove.prefsObserver); // it could be already removed in 'onCloseWindow'
-		aDOMWindow.tt.toRemove._menuObserver.disconnect();
+
+		if (Services.appinfo.OS == 'WINNT') { // all Windows despite name 'WINNT' 
+			aDOMWindow.tt.toRemove._menuObserver.disconnect();
+		}
 		
 		delete aDOMWindow.tt;
 	},
@@ -327,39 +330,23 @@ var windowListener = {
 
 		//////////////////// TITLE BAR STANDARD BUTTONS (Minimize, Restore/Maximize, Close) ////////////////////////////
 		// We can't use 'window.load' event here, because it always shows windowState==='STATE_NORMAL' even when the actual state is 'STATE_MAXIMIZED'
-		let navBar = aDOMWindow.document.querySelector('#nav-bar');
+
 		// Now we have elements with the same id:
-		let titlebarButtonsClone = aDOMWindow.document.querySelector('#titlebar-buttonbox-container').cloneNode(true);
-		titlebarButtonsClone.classList.add('tt-clone'); // add a class to distinguish the elements with the same id
+		let titlebarButtons = aDOMWindow.document.querySelector('#titlebar-buttonbox-container'); // it's present only on Windows
+		let titlebarButtonsClone;
+		if (titlebarButtons) { // it's present only on Windows
+			titlebarButtonsClone = aDOMWindow.document.querySelector('#titlebar-buttonbox-container').cloneNode(true);
+			titlebarButtonsClone.classList.add('tt-clone'); // add a class to distinguish the elements with the same id
+		}
+		let menu = aDOMWindow.document.querySelector('#toolbar-menubar');
+		let navBar = aDOMWindow.document.querySelector('#nav-bar');
 		let windowControlsClone = aDOMWindow.document.querySelector('#window-controls').cloneNode(true);
 		windowControlsClone.id = 'tt-window-controls-clone'; // change id to distinguish the new element
 		windowControlsClone.hidden = false;
-		let menu = aDOMWindow.document.querySelector('#toolbar-menubar');
-		switch (aDOMWindow.windowState) {
-			case aDOMWindow.STATE_MAXIMIZED:
-				if (Services.prefs.getBoolPref('browser.tabs.drawInTitlebar')) {
-					if (menu.getAttribute('autohide') == 'true' && menu.hasAttribute('inactive')) {
-						navBar.appendChild(titlebarButtonsClone);
-						aDOMWindow.document.documentElement.setAttribute("tabsintitlebar", "true"); // hide native titlebar
-						aDOMWindow.updateTitlebarDisplay();
-					}
-				}
-				break;
-			case aDOMWindow.STATE_NORMAL:
-				aDOMWindow.document.documentElement.removeAttribute("tabsintitlebar"); // show native titlebar
-				aDOMWindow.updateTitlebarDisplay();
-				break;
-			case aDOMWindow.STATE_FULLSCREEN:
-				navBar.appendChild(windowControlsClone);
-				break;
-		}
 
-		aDOMWindow.addEventListener('sizemodechange', (aDOMWindow.tt.toRemove.eventListeners.onSizemodechange = function(event) {
+		if (Services.appinfo.OS == 'WINNT') {
 			switch (aDOMWindow.windowState) {
 				case aDOMWindow.STATE_MAXIMIZED:
-					if (windowControlsClone.parentNode !== null) { // if windowControlsClone exists
-						navBar.removeChild(windowControlsClone);
-					}
 					if (Services.prefs.getBoolPref('browser.tabs.drawInTitlebar')) {
 						if (menu.getAttribute('autohide') == 'true' && menu.hasAttribute('inactive')) {
 							navBar.appendChild(titlebarButtonsClone);
@@ -369,39 +356,84 @@ var windowListener = {
 					}
 					break;
 				case aDOMWindow.STATE_NORMAL:
-					if (windowControlsClone.parentNode !== null) { // if windowControlsClone exists
-						navBar.removeChild(windowControlsClone);
-					}
-					aDOMWindow.document.documentElement.removeAttribute("tabsintitlebar"); // show native toolbar
-					if (titlebarButtonsClone.parentNode !== null) { // if it exists
-						navBar.removeChild(titlebarButtonsClone);
-					}
+					aDOMWindow.document.documentElement.removeAttribute("tabsintitlebar"); // show native titlebar
 					aDOMWindow.updateTitlebarDisplay();
 					break;
 				case aDOMWindow.STATE_FULLSCREEN:
-					if (titlebarButtonsClone.parentNode !== null) { // if it exists
-						navBar.removeChild(titlebarButtonsClone);
-					}
 					navBar.appendChild(windowControlsClone);
 					break;
 			}
-		}), false); // don't forget to remove
 
-		(aDOMWindow.tt.toRemove._menuObserver = new aDOMWindow.MutationObserver(function(aMutations) {
-			for (let mutation of aMutations) {
-				if (mutation.attributeName == 'inactive' || mutation.attributeName == 'autohide') {
-					if (Services.prefs.getBoolPref('browser.tabs.drawInTitlebar') && aDOMWindow.windowState==aDOMWindow.STATE_MAXIMIZED
-						&& mutation.target.getAttribute('autohide')=='true' && mutation.target.hasAttribute('inactive')) {
-						navBar.appendChild(titlebarButtonsClone);
-					} else {
+			aDOMWindow.addEventListener('sizemodechange', (aDOMWindow.tt.toRemove.eventListeners.onSizemodechange = function(event) {
+				switch (aDOMWindow.windowState) {
+					case aDOMWindow.STATE_MAXIMIZED:
+						if (windowControlsClone.parentNode !== null) { // if windowControlsClone exists
+							navBar.removeChild(windowControlsClone);
+						}
+						if (Services.prefs.getBoolPref('browser.tabs.drawInTitlebar')) {
+							if (menu.getAttribute('autohide') == 'true' && menu.hasAttribute('inactive')) {
+								navBar.appendChild(titlebarButtonsClone);
+								aDOMWindow.document.documentElement.setAttribute("tabsintitlebar", "true"); // hide native titlebar
+								aDOMWindow.updateTitlebarDisplay();
+							}
+						}
+						break;
+					case aDOMWindow.STATE_NORMAL:
+						if (windowControlsClone.parentNode !== null) { // if windowControlsClone exists
+							navBar.removeChild(windowControlsClone);
+						}
+						aDOMWindow.document.documentElement.removeAttribute("tabsintitlebar"); // show native toolbar
 						if (titlebarButtonsClone.parentNode !== null) { // if it exists
 							navBar.removeChild(titlebarButtonsClone);
 						}
-					}
-					return;
+						aDOMWindow.updateTitlebarDisplay();
+						break;
+					case aDOMWindow.STATE_FULLSCREEN:
+						if (titlebarButtonsClone.parentNode !== null) { // if it exists
+							navBar.removeChild(titlebarButtonsClone);
+						}
+						navBar.appendChild(windowControlsClone);
+						break;
 				}
+			}), false); // removed in unloadFromWindow()
+
+			(aDOMWindow.tt.toRemove._menuObserver = new aDOMWindow.MutationObserver(function(aMutations) {
+				for (let mutation of aMutations) {
+					if (mutation.attributeName == 'inactive' || mutation.attributeName == 'autohide') {
+						if (Services.prefs.getBoolPref('browser.tabs.drawInTitlebar') && aDOMWindow.windowState==aDOMWindow.STATE_MAXIMIZED
+							&& mutation.target.getAttribute('autohide')=='true' && mutation.target.hasAttribute('inactive')) {
+							navBar.appendChild(titlebarButtonsClone);
+						} else {
+							if (titlebarButtonsClone.parentNode !== null) { // if it exists
+								navBar.removeChild(titlebarButtonsClone);
+							}
+						}
+						return;
+					}
+				}
+			})).observe(menu, {attributes: true}); // removed in unloadFromWindow()
+		} else { // Linux/Mac OS
+			// here we are concerned only with STATE_FULLSCREEN:
+			switch (aDOMWindow.windowState) {
+				case aDOMWindow.STATE_FULLSCREEN:
+					navBar.appendChild(windowControlsClone);
+					break;
 			}
-		})).observe(menu, {attributes: true}); // don't forget to remove
+
+			aDOMWindow.addEventListener('sizemodechange', (aDOMWindow.tt.toRemove.eventListeners.onSizemodechange = function(event) {
+				switch (aDOMWindow.windowState) {
+					case aDOMWindow.STATE_MAXIMIZED:
+					case aDOMWindow.STATE_NORMAL:
+						if (windowControlsClone.parentNode !== null) { // if windowControlsClone exists
+							navBar.removeChild(windowControlsClone);
+						}
+						break;
+					case aDOMWindow.STATE_FULLSCREEN:
+						navBar.appendChild(windowControlsClone);
+						break;
+				}
+			}), false); // removed in unloadFromWindow()
+		}
 		//////////////////// END TITLE BAR STANDARD BUTTONS (Minimize, Restore/Maximize, Close) ////////////////////////
 
 		let propsToSet;
@@ -1694,14 +1726,16 @@ var windowListener = {
 				if (topic == 'nsPref:changed') {
 					switch (data) {
 						case 'browser.tabs.drawInTitlebar':
-							if (Services.prefs.getBoolPref('browser.tabs.drawInTitlebar') && aDOMWindow.windowState==aDOMWindow.STATE_MAXIMIZED
-								&& menu.getAttribute('autohide')=='true' && menu.hasAttribute('inactive')) {
-								navBar.appendChild(titlebarButtonsClone);
-							} else {
-								if (titlebarButtonsClone.parentNode !== null) { // if it exists
-									navBar.removeChild(titlebarButtonsClone);
+							if (Services.appinfo.OS == 'WINNT') {
+								if (Services.prefs.getBoolPref('browser.tabs.drawInTitlebar') && aDOMWindow.windowState == aDOMWindow.STATE_MAXIMIZED
+									&& menu.getAttribute('autohide') == 'true' && menu.hasAttribute('inactive')) {
+									navBar.appendChild(titlebarButtonsClone);
+								} else {
+									if (titlebarButtonsClone.parentNode !== null) { // if it exists
+										navBar.removeChild(titlebarButtonsClone);
+									}
 								}
-							}
+							} // else do nothing
 							break;
 						case 'extensions.tabtree.dblclick':
 							if (Services.prefs.getBoolPref('extensions.tabtree.dblclick')) {
