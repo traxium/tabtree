@@ -3,6 +3,38 @@
  * Copyright (C) 2015 Sergey Zelentsov <crayfishexterminator@gmail.com>
  */
 
+/* Linux fix */
+
+/* ****************************************************************************************************************** */
+/* 255 */
+#nav-bar {
+	margin-top: 0px !important;
+	border-top: medium none !important;
+	border-bottom: medium none !important;
+	border-radius: 0px !important;
+	/*box-shadow: 0 -1px var(--chrome-nav-bar-separator-color) !important;*/
+	/*background-image: none !important;*/
+}
+
+/* 265 */
+#nav-bar-customization-target, #nav-bar {
+	padding-top: 0px;
+	padding-bottom: 0px;
+}
+
+/* 673 */
+:-moz-any(#TabsToolbar, #nav-bar) .toolbarbutton-1 > .toolbarbutton-menubutton-dropmarker {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+/* 2741 */
+#bookmarks-menu-button[cui-areatype="toolbar"] > .toolbarbutton-menubutton-dropmarker > .dropmarker-icon {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+/* ****************************************************************************************************************** */
+
 #urlbar-container {
 	padding-top: 1px !important;
 	padding-bottom: 1px !important;

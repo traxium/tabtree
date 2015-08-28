@@ -100,6 +100,22 @@ window:not([chromehidden~="toolbar"]) #urlbar-wrapper {
 
 /* ****************************************************************************************************************** */
 
+/* Linux fix */
+
+/* ****************************************************************************************************************** */
+/* 673 */
+:-moz-any(#TabsToolbar, #nav-bar) .toolbarbutton-1 > .toolbarbutton-menubutton-dropmarker {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+/* 2741 */
+#bookmarks-menu-button[cui-areatype="toolbar"] > .toolbarbutton-menubutton-dropmarker > .dropmarker-icon {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+/* ****************************************************************************************************************** */
+
 /* without this rule there are cases when #nav-bar is thinner than needed */
 /* for example in a private  window in Firefox 40.0.2 */
 #urlbar-container {
@@ -122,6 +138,10 @@ window:not([chromehidden~="toolbar"]) #urlbar-wrapper {
 	/*padding-top: 3px !important;*/
 	/*padding-bottom: 3px !important;*/
 /*}*/
+
+.toolbarbutton-badge { /* Firefox 43.0 fix */
+	margin-top: -4px !important;
+}
 
 @media (-moz-os-version: windows-xp) {
 	@media not all and (-moz-windows-classic) {

@@ -98,6 +98,34 @@ window:not([chromehidden~="toolbar"]) #urlbar-wrapper {
 
 /* ****************************************************************************************************************** */
 
+/* Linux fix */
+
+/* ****************************************************************************************************************** */
+/* 673 */
+:-moz-any(#TabsToolbar, #nav-bar) .toolbarbutton-1 > .toolbarbutton-menubutton-dropmarker {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+/* 2741 */
+#bookmarks-menu-button[cui-areatype="toolbar"] > .toolbarbutton-menubutton-dropmarker > .dropmarker-icon {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+#urlbar-container {
+	padding-top: 3px !important;
+	padding-bottom: 3px !important;
+}
+
+#nav-bar .toolbarbutton-1:not([type=menu-button]),
+#nav-bar .toolbarbutton-1 > .toolbarbutton-menubutton-button,
+#nav-bar .toolbarbutton-1 > .toolbarbutton-menubutton-dropmarker {
+	padding-top: 0 !important;
+	padding-bottom: 0 !important;
+}
+/* ****************************************************************************************************************** */
+
 #back-button {
 	padding-left: 3px !important;
 }

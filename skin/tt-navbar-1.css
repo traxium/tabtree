@@ -100,6 +100,22 @@ window:not([chromehidden~="toolbar"]) #urlbar-wrapper {
 
 /* ****************************************************************************************************************** */
 
+/* Linux fix */
+
+/* ****************************************************************************************************************** */
+ /*673 */
+:-moz-any(#TabsToolbar, #nav-bar) .toolbarbutton-1 > .toolbarbutton-menubutton-dropmarker {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+ /*2741 */
+#bookmarks-menu-button[cui-areatype="toolbar"] > .toolbarbutton-menubutton-dropmarker > .dropmarker-icon {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+/* ****************************************************************************************************************** */
+
 #nav-bar {
 	-moz-box-align: start;
 }
@@ -119,6 +135,10 @@ window:not([chromehidden~="toolbar"]) #urlbar-wrapper {
 	padding-bottom: 1px !important;
 }
 
+.toolbarbutton-badge { /* Firefox 43.0 fix */
+	margin-top: -4px !important;
+}
+
 @media (-moz-os-version: windows-xp) {
 	@media not all and (-moz-windows-classic) {
 		#nav-bar #private-browsing-indicator-titlebar > .private-browsing-indicator {
@@ -130,8 +150,10 @@ window:not([chromehidden~="toolbar"]) #urlbar-wrapper {
 
 /* When Firefox prior to version 42.0+ is no longer in use, this will be removed */
 
-.toolbarbutton-badge-container { /* I think that since Firefox 42.0+ it's replaced with ".toolbarbutton-badge-stack" */
-	padding-bottom: 1px !important;
+@media (-moz-os-version: windows-xp), (-moz-os-version: windows-vista), (-moz-os-version: windows-win7), (-moz-os-version: windows-win8), (-moz-os-version: windows-win10) {
+	.toolbarbutton-badge-container { /* I think that since Firefox 42.0+ it's replaced with ".toolbarbutton-badge-stack" */
+		padding-bottom: 1px !important;
+	}
 }
 
 hbox.toolbarbutton-badge::after { /* since Firefox 42.0+ it's a <label> element */
