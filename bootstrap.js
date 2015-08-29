@@ -269,8 +269,6 @@ var windowListener = {
 			sidebar.parentNode.removeChild(sidebar);
 			let fullscrToggler = aDOMWindow.document.querySelector('#tt-fullscr-toggler');
 			fullscrToggler.parentNode.removeChild(fullscrToggler);
-			let panel = aDOMWindow.document.querySelector('#tt-panel');
-			panel.parentNode.removeChild(panel);
 			let titlebarButtonsClone = aDOMWindow.document.querySelector('#titlebar-buttonbox-container.tt-clone');
 			if (titlebarButtonsClone && titlebarButtonsClone.parentNode !== null) { // if it exists
 				titlebarButtonsClone.parentNode.removeChild(titlebarButtonsClone);
@@ -579,41 +577,41 @@ var windowListener = {
 		quickSearchBox.collapsed = Services.prefs.getBoolPref('extensions.tabtree.search-autohide');
 		//////////////////// END QUICK SEARCH BOX /////////////////////////////////////////////////////////////////
 
-		//////////////////// PANEL /////////////////////////////////////////////////////////////////////
-		let panel = aDOMWindow.document.createElement('panel');
-		panel.setAttribute('id', 'tt-panel');
-		panel.setAttribute('style', 'opacity: 0.8');
-		aDOMWindow.document.querySelector('#mainPopupSet').appendChild(panel); // don't forget to delete
-		//////////////////// END PANEL /////////////////////////////////////////////////////////////////
-
-		//////////////////// FEEDBACK TREE /////////////////////////////////////////////////////////////////////
-		let treeFeedback = aDOMWindow.document.createElement('tree');
+		//////////////////// DRAG FEEDBACK TREE ////////////////////////////////////////////////////////////////////////
+		let dragFeedbackTree = aDOMWindow.document.createElement('tree');
 		/*
-		 * <tree id="tt-tree-feedback" flex="1" seltype="single" treelines="true" seltype="single">
+		 * <tree id="tt-feedback" seltype="single" treelines="true/false" hidecolumnpicker="true">
 		 * 	<treecols>
-		 * 		<treecol primary="true" flex="1"/>
+		 * 		<treecol primary="true" flex="1" hideheader="true" />
 		 * 	</treecols>
 		 * 	<treechildren/>
 		 * </tree>
 		 */
-		treeFeedback.setAttribute('id', 'tt-tree-feedback');
-		treeFeedback.setAttribute('flex', '1');
-		treeFeedback.setAttribute('seltype', 'single');
-		treeFeedback.setAttribute('treelines', Services.prefs.getBoolPref('extensions.tabtree.treelines').toString());
-		treeFeedback.setAttribute('hidecolumnpicker', 'true');
-		let treecolsFeedback = aDOMWindow.document.createElement('treecols');
-		let treecolFeedback = aDOMWindow.document.createElement('treecol');
-		treecolFeedback.setAttribute('flex', '1');
-		treecolFeedback.setAttribute('primary', 'true');
-		treecolFeedback.setAttribute('hideheader', 'true');
-		let treechildrenFeedback = aDOMWindow.document.createElement('treechildren');
-		treechildrenFeedback.setAttribute('id', 'tt-treechildren-feedback');
-		treecolsFeedback.appendChild(treecolFeedback);
-		treeFeedback.appendChild(treecolsFeedback);
-		treeFeedback.appendChild(treechildrenFeedback);
+		dragFeedbackTree.setAttribute('id', 'tt-feedback');
+		//dragFeedbackTree.setAttribute('flex', '1');
+		dragFeedbackTree.setAttribute('seltype', 'single');
+		dragFeedbackTree.setAttribute('treelines', Services.prefs.getBoolPref('extensions.tabtree.treelines').toString());
+		dragFeedbackTree.setAttribute('hidecolumnpicker', 'true');
+		let treecolsDragFeedback = aDOMWindow.document.createElement('treecols');
+		let treecolDragFeedback = aDOMWindow.document.createElement('treecol');
+		treecolDragFeedback.setAttribute('flex', '1');
+		treecolDragFeedback.setAttribute('primary', 'true');
+		treecolDragFeedback.setAttribute('hideheader', 'true');
+		let treechildrenDragFeedback = aDOMWindow.document.createElement('treechildren');
+		treechildrenDragFeedback.setAttribute('id', 'tt-treechildren-feedback');
+		treecolsDragFeedback.appendChild(treecolDragFeedback);
+		dragFeedbackTree.appendChild(treecolsDragFeedback);
+		dragFeedbackTree.appendChild(treechildrenDragFeedback);
 
-		panel.appendChild(treeFeedback);
-		//////////////////// END FEEDBACK TREE /////////////////////////////////////////////////////////////////
+		// I don't know why but it doesn't work without a container (in that case <tree> always has 0 rows):
+		let dragFeedbackTreeContainer = aDOMWindow.document.createElement('vbox');
+		// It's all to work around Firefox bug #1199669 (I can't use <panel> element here):
+		dragFeedbackTreeContainer.style.position = 'fixed'; // I don't know why but 'absolute' doesn't work
+		dragFeedbackTreeContainer.style.left = '-9999px';
+
+        dragFeedbackTreeContainer.appendChild(dragFeedbackTree);
+        sidebar.appendChild(dragFeedbackTreeContainer);
+		//////////////////// END DRAG FEEDBACK TREE ////////////////////////////////////////////////////////////////////
 
 		/////////////////////////// PSEUDO-ANIMATED PNG ////////////////////////////////////////////////////////////////
 		// my way to force Firefox to cache images. Otherwise they would be loaded upon the first request (a tab load/refresh) and it wouldn't look smooth:
@@ -931,82 +929,73 @@ var windowListener = {
 			// "may result in an "internet shortcut" // from tabbrowser.xml
 			event.dataTransfer.mozSetDataAt("text/x-moz-text-internal", tab.linkedBrowser.currentURI.spec, 0);
 
-			if (1 || tt.hasAnyChildren(tab._tPos)) { // remove "1" to use default feedback image
-				panel.addEventListener('popupshown', function onPopupShown() {
-					panel.removeEventListener('popupshown', onPopupShown);
-
-					//noinspection JSUnusedGlobalSymbols
-					treeFeedback.treeBoxObject.view = {
-						numStart: tab._tPos,
-						numEnd: tt.lastDescendantPos(tab._tPos),
-						treeBox: null,
-						selection: null,
-						setTree: function (treeBox) {
-							this.treeBox = treeBox;
-						},
-						get rowCount() {
-							return this.numEnd - this.numStart + 1;
-						},
-						getCellText: function (row, column) {
-							let tPos = row + this.numStart;
-							return ' ' + g.tabs[tPos].label;
-						},
-						getImageSrc: function (row, column) {
-							let tPos = row + this.numStart;
-							return g.tabs[tPos].image;
-						}, // or null to hide icons or /g.getIcon(g.tabs[row])/
-						isContainer: function (row) {
-							return true;
-						}, // drop can be performed only on containers
-						isContainerOpen: function (row) {
-							return true;
-						},
-						isContainerEmpty: function (row) {
-							let tPos = row + this.numStart;
-							return !tt.hasAnyChildren(tPos);
-						},
-						getLevel: function (row) {
-							let tPos = row + this.numStart;
-							return parseInt(ss.getTabValue(g.tabs[tPos], 'ttLevel'));
-						},
-						isSeparator: function (row) {
-							return false;
-						},
-						isSorted: function () {
-							return false;
-						},
-						isEditable: function (row, column) {
-							return false;
-						},
-						getParentIndex: function (row) {
-							if (this.getLevel(row) == 0) return -1;
-							for (let t = row - 1; t >= 0; --t) {
-								if (this.getLevel(t) < this.getLevel(row)) return t; // && this.isContainerEmpty(t)
-							}
-							return -1;
-						},
-						hasNextSibling: function (row, after) {
-							let thisLevel = this.getLevel(row);
-							for (let t = after + 1; t < this.rowCount; t++) {
-								let nextLevel = this.getLevel(t);
-								if (nextLevel == thisLevel) return true;
-								if (nextLevel < thisLevel) break;
-							}
-							return false;
-						},
-						toggleOpenState: function (row) {
-							//this.treeBox.invalidateRow(row);
+			if (1 || tt.hasAnyChildren(tab._tPos)) { // remove "1" to use default feedback image for a single row
+				//noinspection JSUnusedGlobalSymbols
+				dragFeedbackTree.treeBoxObject.view = {
+					numStart: tab._tPos,
+					numEnd: tt.lastDescendantPos(tab._tPos),
+					treeBox: null,
+					selection: null,
+					setTree: function (treeBox) {
+						this.treeBox = treeBox;
+					},
+					get rowCount() {
+						return this.numEnd - this.numStart + 1;
+					},
+					getCellText: function (row, column) {
+						let tPos = row + this.numStart;
+						return ' ' + g.tabs[tPos].label;
+					},
+					getImageSrc: function (row, column) {
+						let tPos = row + this.numStart;
+						return g.tabs[tPos].image;
+					}, // or null to hide icons or /g.getIcon(g.tabs[row])/
+					isContainer: function (row) {
+						return true;
+					}, // drop can be performed only on containers
+					isContainerOpen: function (row) {
+						return true;
+					},
+					isContainerEmpty: function (row) {
+						let tPos = row + this.numStart;
+						return !tt.hasAnyChildren(tPos);
+					},
+					getLevel: function (row) {
+						let tPos = row + this.numStart;
+						return parseInt(ss.getTabValue(g.tabs[tPos], 'ttLevel'));
+					},
+					isSeparator: function (row) {
+						return false;
+					},
+					isSorted: function () {
+						return false;
+					},
+					isEditable: function (row, column) {
+						return false;
+					},
+					getParentIndex: function (row) {
+						if (this.getLevel(row) == 0) return -1;
+						for (let t = row - 1; t >= 0; --t) {
+							if (this.getLevel(t) < this.getLevel(row)) return t; // && this.isContainerEmpty(t)
 						}
-					};
-					let borderTopWidth = parseInt( aDOMWindow.getComputedStyle(treeFeedback).getPropertyValue('border-top-width') );
-					let borderBottomWidth = parseInt( aDOMWindow.getComputedStyle(treeFeedback).getPropertyValue('border-bottom-width') );
-					let treeFeedbackHeight = treeFeedback.treeBoxObject.rowHeight * treeFeedback.treeBoxObject.view.rowCount;
-					panel.height = treeFeedbackHeight + borderTopWidth + borderBottomWidth;
-				}); // treeFeedback.treeBoxObject.view = {
-				panel.width = aDOMWindow.document.querySelector('#tt-sidebar').width;
-				let borderLeftWidth = parseInt( aDOMWindow.getComputedStyle(tree).getPropertyValue('border-left-width') );
-				let marginLeft = parseInt( aDOMWindow.getComputedStyle(tree).getPropertyValue('margin-left') );
-				event.dataTransfer.setDragImage(panel, event.clientX-(tree.boxObject.x-borderLeftWidth-marginLeft)+1, -20); // I don't know why "+1"
+						return -1;
+					},
+					hasNextSibling: function (row, after) {
+						let thisLevel = this.getLevel(row);
+						for (let t = after + 1; t < this.rowCount; t++) {
+							let nextLevel = this.getLevel(t);
+							if (nextLevel == thisLevel) return true;
+							if (nextLevel < thisLevel) break;
+						}
+						return false;
+					}
+				};
+				dragFeedbackTree.style.width = tree.getBoundingClientRect().width + 'px';
+				let borderTopWidth = parseFloat( aDOMWindow.getComputedStyle(dragFeedbackTree).getPropertyValue('border-top-width') );
+				let borderBottomWidth = parseFloat( aDOMWindow.getComputedStyle(dragFeedbackTree).getPropertyValue('border-bottom-width') );
+				let dragFeedbackTreeHeight = dragFeedbackTree.treeBoxObject.rowHeight * dragFeedbackTree.treeBoxObject.view.rowCount;
+				dragFeedbackTree.style.height = dragFeedbackTreeHeight + borderTopWidth + borderBottomWidth + 'px';
+				event.dataTransfer.setDragImage(dragFeedbackTree, event.clientX-tree.getBoundingClientRect().x, -20);
 			}
 			// uncomment if you always want to highlight 'gBrowser.mCurrentTab':
 			//g.mCurrentTab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(g.mCurrentTab._tPos - tt.nPinned); // NEW
@@ -1272,26 +1261,26 @@ var windowListener = {
 			},
 			canDrop: function(index, orientation, dataTransfer) {
 				let tPos = index + tt.nPinned;
-				let draggedTab = dataTransfer.mozGetDataAt(aDOMWindow.TAB_DROP_TYPE, 0); // undefined for links
 
-				if (draggedTab.parentNode == g.tabContainer) { // if it's the same window
-					// for leaves:
-					if (dataTransfer.mozTypesAt(0)[0] === aDOMWindow.TAB_DROP_TYPE
-                            && draggedTab != g.tabs[tPos] // can't drop on yourself
-                            && !tt.hasAnyChildren(draggedTab._tPos)) {
-						return true;
-					}
-
-					// for branches:
-					if (dataTransfer.mozTypesAt(0)[0] === aDOMWindow.TAB_DROP_TYPE && draggedTab != g.tabs[tPos]) {
-						let i;
-						for (i = draggedTab._tPos + 1; i < g.tabs.length; ++i) {
-							if (tt.levelInt(i) <= tt.levelInt(draggedTab)) {
-								break;
-							}
-						}
-						if (tPos < draggedTab._tPos || tPos >= i) {
+				if (dataTransfer.mozTypesAt(0)[0] === aDOMWindow.TAB_DROP_TYPE) { // TAB_DROP_TYPE should be always at [0]
+					let draggedTab = dataTransfer.mozGetDataAt(aDOMWindow.TAB_DROP_TYPE, 0); // undefined for links
+					if (draggedTab.parentNode == g.tabContainer) { // if it's the same window
+						// for leaves:
+						if (draggedTab != g.tabs[tPos] && !tt.hasAnyChildren(draggedTab._tPos)) { // can't be dropped on itself
 							return true;
+						}
+
+						// for branches:
+						if (draggedTab != g.tabs[tPos]) {
+							let i;
+							for (i = draggedTab._tPos + 1; i < g.tabs.length; ++i) {
+								if (tt.levelInt(i) <= tt.levelInt(draggedTab)) {
+									break;
+								}
+							}
+							if (tPos < draggedTab._tPos || tPos >= i) {
+								return true;
+							}
 						}
 					}
 				}
@@ -1782,7 +1771,7 @@ var windowListener = {
 							break;
 						case 'extensions.tabtree.treelines':
 							tree.setAttribute('treelines', Services.prefs.getBoolPref('extensions.tabtree.treelines').toString());
-							treeFeedback.setAttribute('treelines', Services.prefs.getBoolPref('extensions.tabtree.treelines').toString());
+							dragFeedbackTree.setAttribute('treelines', Services.prefs.getBoolPref('extensions.tabtree.treelines').toString());
 							let hack = tree.style.borderStyle; // hack to force to redraw 'treelines'
 							tree.style.borderStyle = 'none';
 							tree.style.borderStyle = hack;
