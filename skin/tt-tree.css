@@ -1,0 +1,136 @@
+/*
+ * This file is part of Tab Tree,
+ * Copyright (C) 2015 Sergey Zelentsov <crayfishexterminator@gmail.com>
+ */
+
+/********************************* chrome://browser/skin/places/places.css adaptation *********************************/
+#tt,
+#tt-feedback {
+	margin: 0;
+}
+
+#tt-treechildren::-moz-tree-cell-text(hover),
+#tt-treechildren-feedback::-moz-tree-cell-text(hover) {
+	text-decoration: underline;
+}
+
+/* Style Places sidebars as Vista media collection */
+@media not all and (-moz-os-version: windows-xp) {
+	@media (-moz-windows-default-theme) {
+		#tt-treechildren::-moz-tree-cell-text(hover),
+		#tt-treechildren-feedback::-moz-tree-cell-text(hover) {
+			text-decoration: none;
+		}
+	}
+}
+
+@media (-moz-windows-default-theme) {
+	#tt-treechildren,
+	#tt-treechildren-feedback {
+		background-color: #eef3fa;
+	}
+}
+
+#tt-treechildren::-moz-tree-image,
+#tt-treechildren-feedback::-moz-tree-image {
+	list-style-image: url(chrome://mozapps/skin/places/defaultFavicon.png);
+	padding-right: 2px;
+	margin: 0 2px;
+	width: 16px;
+	height: 16px;
+}
+/**********************************************************************************************************************/
+
+/* Highlighting unloaded tabs */
+
+#tt-treechildren::-moz-tree-image(pending-grayout) {
+	opacity: .6;
+}
+
+#tt-treechildren::-moz-tree-cell-text(pending-grayout) {
+	opacity: .76;
+}
+
+#tt-treechildren::-moz-tree-cell-text(pending-highlight) {
+	color: Highlight;
+}
+
+/************************************** chrome://global/skin/tree.css adaptation **************************************/
+#tt-treechildren::-moz-tree-row(dropOn),
+#tt-treechildren-feedback::-moz-tree-row(dropOn) {
+	background-color: Highlight; /* makes Linux look like Windows, It's -moz-tree-cell-text instead of -moz-tree-row on Linux */
+}
+
+#tt-treechildren::-moz-tree-cell-text(primary, dropOn),
+#tt-treechildren-feedback::-moz-tree-cell-text(primary, dropOn) {
+	color: HighlightText;  /* to override (pending-highlight) color */
+}
+
+#tt-treechildren::-moz-tree-row(selected),
+#tt-treechildren-feedback::-moz-tree-row(selected) {
+	background-color: Highlight;
+}
+
+#tt-treechildren::-moz-tree-cell-text(selected),
+#tt-treechildren-feedback::-moz-tree-cell-text(selected) {
+	color: HighlightText;
+}
+
+#tt-treechildren::-moz-tree-twisty,
+#tt-treechildren-feedback::-moz-tree-twisty {
+	padding: 0;
+	width: 0; /* The image's width is 9 pixels */
+	-moz-appearance: none; /* Linux fix */
+}
+
+#tt-treechildren::-moz-tree-twisty(open),
+#tt-treechildren-feedback::-moz-tree-twisty(open) {
+	width: 0; /* The image's width is 9 pixels */
+	-moz-appearance: none; /* Linux fix */
+}
+
+#tt-treechildren::-moz-tree-row(current),
+#tt-treechildren-feedback::-moz-tree-row(current) {
+	border: 1px dotted Highlight;
+}
+
+#tt-treechildren::-moz-tree-line(selected),
+#tt-treechildren-feedback::-moz-tree-line(selected) {
+	border: 1px dotted HighlightText;
+}
+/**********************************************************************************************************************/
+
+#tt-treechildren::-moz-tree-row(dropOn),
+#tt-treechildren::-moz-tree-row(dropBefore),
+#tt-treechildren::-moz-tree-row(dropAfter) {
+	border: 1px dashed Highlight;
+}
+
+#tt-treechildren::-moz-tree-row(quickSearch) {
+	border: 1px solid #EF0FFF; /* default Firefox color for "Highlight all" option in <findbar> */
+}
+
+/* Tab search box */
+
+#tt-quicksearchbox {
+	transition-property: visibility, margin-bottom;
+	transition-duration: 0s, .2s;
+	transition-timing-function: linear, ease-in-out;
+	margin: 0; /* W8 fix */
+}
+
+#tt-quicksearchbox[collapsed="true"] {
+	margin-bottom: -22px; /* approximately */
+	transition-delay: .2s, 0s;
+}
+
+#tt-quicksearchbox .textbox-input {
+	text-overflow: ellipsis;
+	transition-delay: .2s;
+	transition-property: visibility;
+}
+
+#tt-quicksearchbox[collapsed="true"] .textbox-input {
+	visibility: collapse;
+	transition-delay: 0s;
+}

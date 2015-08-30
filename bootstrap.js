@@ -24,9 +24,13 @@ var prefsObserver;
 //noinspection JSUnusedGlobalSymbols
 function startup(data, reason)
 {
-	let uri = Services.io.newURI("chrome://tabtree/skin/tree.css", null, null);
+	let uri = Services.io.newURI("chrome://tabtree/skin/tt-tree.css", null, null);
+	sss.loadAndRegisterSheet(uri, sss.AUTHOR_SHEET);
+	uri = Services.io.newURI("chrome://tabtree/skin/tt-other.css", null, null);
 	sss.loadAndRegisterSheet(uri, sss.AUTHOR_SHEET);
 	uri = Services.io.newURI("chrome://tabtree/skin/tt-navbar-private.css", null, null);
+	sss.loadAndRegisterSheet(uri, sss.AUTHOR_SHEET);
+	uri = Services.io.newURI("chrome://tabtree/skin/tt-options.css", null, null);
 	sss.loadAndRegisterSheet(uri, sss.AUTHOR_SHEET);
 
 	//	// Why do we use Proxy here? Let's see the chain how SS works:
@@ -164,8 +168,10 @@ function shutdown(aData, aReason)
 	if (aReason == APP_SHUTDOWN) return;
 
 	[
-		"chrome://tabtree/skin/tree.css",
+		"chrome://tabtree/skin/tt-tree.css",
+		"chrome://tabtree/skin/tt-other.css",
 		"chrome://tabtree/skin/tt-navbar-private.css",
+		"chrome://tabtree/skin/tt-options.css",
 		"chrome://tabtree/skin/tt-TabsToolbar.css",
 		"chrome://tabtree/skin/tt-navbar-1.css",
 		"chrome://tabtree/skin/tt-navbar-2.css",
@@ -1668,7 +1674,7 @@ var windowListener = {
 			tab.pinned ? tt.redrawToolbarbuttons() : tree.treeBoxObject.invalidateRow(tab._tPos - tt.nPinned);
 		}), false); // don't forget to remove
 
-		// but it can be easily corrected it:
+		// but it can be easily corrected:
 		//noinspection JSUnusedGlobalSymbols
 		g.addTabsProgressListener((aDOMWindow.tt.toRemove.tabsProgressListener = {
 			onStateChange: function(/*nsIDOMXULElement*/ aBrowser, /*nsIWebProgress*/ aWebProgress, /*nsIRequest*/ aRequest, /*unsigned long*/ aStateFlags, /*nsresult*/ aStatus) {

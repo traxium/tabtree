@@ -1,0 +1,35 @@
+/*
+ * This file is part of Tab Tree,
+ * Copyright (C) 2015 Sergey Zelentsov <crayfishexterminator@gmail.com>
+ */
+
+/* Other */
+
+#tt-drop-indicator {
+	pointer-events: none; /* preventing the arrow flickering when mouse pointer goes over that arrow and that arrow overlaps 'toolbar' */
+}
+
+/* Full screen mode */
+
+#tt-toolbar[moz-collapsed="true"] { /* do not collapse in fullscreen mode*/
+	visibility: visible;
+}
+
+#tt-fullscr-toggler {
+	width: 1px;
+	background: transparent;
+}
+
+#main-window:not([inFullscreen]) #tt-fullscr-toggler {
+	display: none;
+}
+
+#main-window[inFullscreen] #tt-sidebar,
+#main-window[inFullscreen] #tt-splitter {
+	visibility: collapse;
+}
+
+#main-window[inFullscreen] #tt-fullscr-toggler:hover ~ #tt-sidebar, /* "~" is necessary when tabtree.position = 1 */
+#main-window[inFullscreen] #tt-sidebar:hover {
+	visibility: visible;
+}

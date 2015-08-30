@@ -1,0 +1,25 @@
+/*
+ * This file is part of Tab Tree,
+ * Copyright (C) 2015 Sergey Zelentsov <crayfishexterminator@gmail.com>
+ */
+
+setting[pref="extensions.tabtree.dblclick"][value="false"] + setting[pref="extensions.tabtree.delay"] {
+	visibility: collapse;
+}
+
+/* Hide this option on Linux */
+
+setting[pref="browser.tabs.drawInTitlebar"] { 
+	visibility: collapse;
+}
+
+@media
+(-moz-os-version: windows-xp),
+(-moz-os-version: windows-vista),
+(-moz-os-version: windows-win7),
+(-moz-os-version: windows-win8),
+(-moz-os-version: windows-win10) {
+	setting[pref="browser.tabs.drawInTitlebar"] {
+		visibility: visible;
+	}
+}
