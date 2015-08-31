@@ -76,7 +76,7 @@ function startup(data, reason)
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.search-autohide', false); // setting default pref
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.show-default-tabs', false); // hidden pref for test purposes
 	// 0 - None, 1 - The Smallest, 2 - Small, 3 - Medium, 4 - Big (round), 5 - The Biggest (round):
-	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.navbar-style', 1);
+	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.navbar-style', Services.appinfo.OS=='Darwin' ? 0 : 1); // until Mac support is done
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.flst', true); // focus last selected tab after closing a current tab
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.highlight-unread-tabs', false);
 	
