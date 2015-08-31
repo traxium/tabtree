@@ -14,6 +14,7 @@
             <radio value="2" label="&highlight-unloaded-tabs.highlight;"/>
         </radiogroup>
     </setting>
+    <setting type="bool" pref="extensions.tabtree.highlight-unread-tabs" title="&highlight-unread-tabs.title;" desc="&highlight-unread-tabs.desc;" />
     <setting type="bool" pref="extensions.tabtree.dblclick" title="&dblclick.title;" desc="&dblclick.desc;" onpreferencechanged="this.setAttribute('value', this.value.toString());" />
     <setting type="integer" pref="extensions.tabtree.delay" title="&delay.title;" desc="&delay.desc;" />
     <setting type="radio" pref="extensions.tabtree.position" title="&position.title;" desc="&position.desc;">

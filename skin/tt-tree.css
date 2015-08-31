@@ -58,7 +58,7 @@
 /* Highlighting unread tabs */
 
 #tt-treechildren::-moz-tree-cell-text(unread) {
-	color: #ee0000;
+	color: #bb0000;
 }
 
 /************************************** chrome://global/skin/tree.css adaptation **************************************/

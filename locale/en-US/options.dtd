@@ -5,6 +5,8 @@
 <!ENTITY highlight-unloaded-tabs.no "no">
 <!ENTITY highlight-unloaded-tabs.grayout "gray out">
 <!ENTITY highlight-unloaded-tabs.highlight "highlight">
+<!ENTITY highlight-unread-tabs.title "Highlight unread tabs:">
+<!ENTITY highlight-unread-tabs.desc "(unchecked by default)">
 <!ENTITY dblclick.title "Double click to close a tab">
 <!ENTITY dblclick.desc "Only recommended if you don't have a mouse with a wheel (unchecked by default)">
 <!ENTITY delay.title "Double click delay (milliseconds)">

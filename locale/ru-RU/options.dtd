@@ -5,6 +5,8 @@
 <!ENTITY highlight-unloaded-tabs.no "нет">
 <!ENTITY highlight-unloaded-tabs.grayout "отображать тусклыми">
 <!ENTITY highlight-unloaded-tabs.highlight "подсветить другим цветом">
+<!ENTITY highlight-unread-tabs.title "Подсвечивать непрочитанные вкладки:">
+<!ENTITY highlight-unread-tabs.desc "(не отмечено по умолчанию)">
 <!ENTITY dblclick.title "Закрытие вкладки по двойному щелчку мыши">
 <!ENTITY dblclick.desc "Рекомендуется включать эту настройку, только если у вас нет мышки (не отмечено по умочанию)">
 <!ENTITY delay.title "Задержка для двойного клика (миллисекунды)">
