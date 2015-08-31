@@ -55,6 +55,12 @@
 	color: Highlight;
 }
 
+/* Highlighting unread tabs */
+
+#tt-treechildren::-moz-tree-cell-text(unread) {
+	color: #ee0000;
+}
+
 /************************************** chrome://global/skin/tree.css adaptation **************************************/
 #tt-treechildren::-moz-tree-row(dropOn),
 #tt-treechildren-feedback::-moz-tree-row(dropOn) {

@@ -78,6 +78,7 @@ function startup(data, reason)
 	// 0 - None, 1 - The Smallest, 2 - Small, 3 - Medium, 4 - Big (round), 5 - The Biggest (round):
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.navbar-style', 1);
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.flst', true); // focus last selected tab after closing a current tab
+	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.highlight-unread-tabs', false);
 	
 	// migration code :
 	try {
@@ -1237,19 +1238,25 @@ var windowListener = {
 				}
 			},
 			getCellProperties: function(row, col) {
-				let pref = Services.prefs.getIntPref('extensions.tabtree.highlight-unloaded-tabs');
-				if (pref === 0) {
-					return;
-				}
 				let tPos = row+tt.nPinned;
-				if (g.tabs[tPos].hasAttribute('pending')) {
-					switch (pref) {
+				let prefPending = Services.prefs.getIntPref('extensions.tabtree.highlight-unloaded-tabs');
+				let prefUnread = Services.prefs.getBoolPref('extensions.tabtree.highlight-unread-tabs');
+				let a = [];
+
+				if (prefPending && g.tabs[tPos].hasAttribute('pending')) {
+					switch (prefPending) {
 						case 1:
-							return 'pending-grayout';
+							a.push('pending-grayout');
+							break;
 						case 2:
-							return 'pending-highlight';
+							a.push('pending-highlight');
+							break;
 					}
 				}
+				if (prefUnread && g.tabs[tPos].hasAttribute('unread')) {
+					a.push('unread');
+				}
+				return a.join(' ');
 			},
 			//getColumnProperties: function(colid,col,props){} // props parameter is obsolete since Gecko 22
 			getParentIndex: function(row) {
@@ -1748,6 +1755,9 @@ var windowListener = {
 							}
 							break;
 						case 'extensions.tabtree.highlight-unloaded-tabs':
+							tree.treeBoxObject.invalidate();
+							break;
+						case 'extensions.tabtree.highlight-unread-tabs':
 							tree.treeBoxObject.invalidate();
 							break;
 						case 'extensions.tabtree.position':
