@@ -416,7 +416,13 @@ var windowListener = {
 					}
 				}
 			})).observe(menu, {attributes: true}); // removed in unloadFromWindow()
-		} else { // Linux/Mac OS
+		} else if (Services.appinfo.OS == 'Darwin') { // Mac
+			// here we just always force a native titlebar
+			// it's probably possible to move minimize/maximize/close buttons to #nav-bar
+			// but it would probably look ugly therefore we just mimic Safari
+			aDOMWindow.document.documentElement.removeAttribute("tabsintitlebar"); // show a native titlebar like in Safari
+			aDOMWindow.updateTitlebarDisplay();
+		} else { // Linux
 			// here we are concerned only with STATE_FULLSCREEN:
 			switch (aDOMWindow.windowState) {
 				case aDOMWindow.STATE_FULLSCREEN:

@@ -7,7 +7,7 @@ setting[pref="extensions.tabtree.dblclick"][value="false"] + setting[pref="exten
 	visibility: collapse;
 }
 
-/* Hide this option on Linux */
+/* Hide this option on Linux & Mac */
 
 setting[pref="browser.tabs.drawInTitlebar"] { 
 	visibility: collapse;
