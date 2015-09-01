@@ -1608,7 +1608,11 @@ var windowListener = {
 		let onClickFast = function(event) {
 			if (event.button === 0) { // the left button click
 				let idx = tree.treeBoxObject.getRowAt(event.clientX, event.clientY);
-				if (idx != -1) {
+				if  (idx === -1) { // double click the empty area
+					if (event.detail === 2) {
+						aDOMWindow.BrowserOpenNewTabOrWindow(event);
+					}
+				} else {
 					let tPos = idx + tt.nPinned;
 					g.selectTabAtIndex(tPos);
 				}
@@ -1617,7 +1621,11 @@ var windowListener = {
 		let onClickSlow = function f(event) { // and also double click
 			if (event.button === 0) { // the left button click
 				let idx = tree.treeBoxObject.getRowAt(event.clientX, event.clientY);
-				if (idx != -1) {
+				if  (idx === -1) { // double click the empty area
+					if (event.detail === 2) {
+						aDOMWindow.BrowserOpenNewTabOrWindow(event);
+					}
+				} else {
 					let tPos = idx + tt.nPinned;
 					if (event.detail == 1) {
 						f.timer = aDOMWindow.setTimeout(function(){g.selectTabAtIndex(tPos);}, Services.prefs.getIntPref('extensions.tabtree.delay'));
@@ -1633,15 +1641,6 @@ var windowListener = {
 		} else {
 			tree.addEventListener('click', onClickFast, false);
 		}
-		
-		tree.addEventListener('dblclick', function(event) {
-			if (event.button === 0) { // the left button click
-				let idx = tree.treeBoxObject.getRowAt(event.clientX, event.clientY);
-				if (idx === -1) {
-					aDOMWindow.BrowserOpenNewTabOrWindow(event);
-				}
-			}
-		}, false);
         
 		g.tabContainer.addEventListener("TabMove", (aDOMWindow.tt.toRemove.eventListeners.onTabMove = function(event) {
 			let tab = event.target;
