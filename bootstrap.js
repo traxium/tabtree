@@ -337,9 +337,9 @@ var windowListener = {
 		// We can't use 'window.load' event here, because it always shows windowState==='STATE_NORMAL' even when the actual state is 'STATE_MAXIMIZED'
 
 		// Now we have elements with the same id:
-		let titlebarButtons = aDOMWindow.document.querySelector('#titlebar-buttonbox-container'); // it's present only on Windows
+		let titlebarButtons = aDOMWindow.document.querySelector('#titlebar-buttonbox-container'); // it's present only on Windows and Mac
 		let titlebarButtonsClone;
-		if (titlebarButtons) { // it's present only on Windows
+		if (titlebarButtons && Services.appinfo.OS == 'WINNT') { // it's present only on Windows and Mac
 			titlebarButtonsClone = aDOMWindow.document.querySelector('#titlebar-buttonbox-container').cloneNode(true);
 			titlebarButtonsClone.classList.add('tt-clone'); // add a class to distinguish the elements with the same id
 		}
@@ -931,6 +931,27 @@ var windowListener = {
 				if (g.tabs[tPos].label.toLowerCase().indexOf(txt)!=-1 || url.toLowerCase().indexOf(txt)!=-1) { // 'url.toLowerCase()' may be replaced by 'url'
 					return true;
 				}
+			},
+			
+			getCellProps: function(tPos) {
+				let prefPending = Services.prefs.getIntPref('extensions.tabtree.highlight-unloaded-tabs');
+				let prefUnread = Services.prefs.getBoolPref('extensions.tabtree.highlight-unread-tabs');
+				let ret = '';
+
+				if (prefPending && g.tabs[tPos].hasAttribute('pending')) {
+					switch (prefPending) {
+						case 1:
+							ret += ' pending-grayout';
+							break;
+						case 2:
+							ret += ' pending-highlight';
+							break;
+					}
+				}
+				if (prefUnread && g.tabs[tPos].hasAttribute('unread')) {
+					ret += ' unread';
+				}
+				return ret;
 			}
 		}; // let tt = {
 
@@ -1239,24 +1260,7 @@ var windowListener = {
 			},
 			getCellProperties: function(row, col) {
 				let tPos = row+tt.nPinned;
-				let prefPending = Services.prefs.getIntPref('extensions.tabtree.highlight-unloaded-tabs');
-				let prefUnread = Services.prefs.getBoolPref('extensions.tabtree.highlight-unread-tabs');
-				let a = [];
-
-				if (prefPending && g.tabs[tPos].hasAttribute('pending')) {
-					switch (prefPending) {
-						case 1:
-							a.push('pending-grayout');
-							break;
-						case 2:
-							a.push('pending-highlight');
-							break;
-					}
-				}
-				if (prefUnread && g.tabs[tPos].hasAttribute('unread')) {
-					a.push('unread');
-				}
-				return a.join(' ');
+				return tt.getCellProps(tPos);
 			},
 			//getColumnProperties: function(colid,col,props){} // props parameter is obsolete since Gecko 22
 			getParentIndex: function(row) {
