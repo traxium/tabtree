@@ -33,3 +33,5 @@
 <!ENTITY drawInTitlebar.desc "Эта опция всего лишь переключает &quot;browser.tabs.drawInTitlebar&quot; в about:config (отмечено по умолчанию)">
 <!ENTITY flst.title "Переходить на последнюю выделенную вкладку после закрытия текущей вкладки (FLST):">
 <!ENTITY flst.desc "(отмечено по умолчанию)">
+<!ENTITY new-tab-button.title "Показывать кнопку для открытия новой вкладки:">
+<!ENTITY new-tab-button.desc "(отмечено по умолчанию)">

@@ -79,6 +79,7 @@ function startup(data, reason)
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.navbar-style', Services.appinfo.OS=='Darwin' ? 0 : 1); // until Mac support is done
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.flst', true); // focus last selected tab after closing a current tab
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.highlight-unread-tabs', false);
+	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.new-tab-button', true);
 	
 	// migration code :
 	try {
@@ -668,6 +669,7 @@ var windowListener = {
 		newTabContainer.id = 'tt-new-tab-button-container';
 		let newTab = aDOMWindow.document.createElement('toolbarbutton');
 		newTab.id = 'tt-new-tab-button';
+		newTab.collapsed = !Services.prefs.getBoolPref('extensions.tabtree.new-tab-button');
 		newTabContainer.appendChild(newTab);
 		sidebar.appendChild(newTabContainer);
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1789,6 +1791,9 @@ var windowListener = {
 							tree.view = view;
 							tree.treeBoxObject.scrollToRow(firstVisibleRow);
 							tt.redrawToolbarbuttons();
+							break;
+						case 'extensions.tabtree.new-tab-button':
+							newTab.collapsed = !Services.prefs.getBoolPref('extensions.tabtree.new-tab-button');
 							break;
 						case 'extensions.tabtree.search-autohide':
 							let prefAutohide = Services.prefs.getBoolPref('extensions.tabtree.search-autohide');
