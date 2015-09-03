@@ -662,6 +662,15 @@ var windowListener = {
 			appcontent.addEventListener('mouseup', aDOMWindow.tt.toRemove.eventListeners.onAppcontentMouseUp, false); // don't forget to remove
 		}
 		//////////////////// END KEY ///////////////////////////////////////////////////////////////////////////////////
+		
+		////////////////////////////////////////////// NEW TAB BUTTON //////////////////////////////////////////////////
+		let newTabContainer = aDOMWindow.document.createElement('vbox'); /* there is a problem with 'background-color' without a container*/
+		newTabContainer.id = 'tt-new-tab-button-container';
+		let newTab = aDOMWindow.document.createElement('toolbarbutton');
+		newTab.id = 'tt-new-tab-button';
+		newTabContainer.appendChild(newTab);
+		sidebar.appendChild(newTabContainer);
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////// here we could load something before all tabs have been loaded and restored by SS ////////////////////////////////
 

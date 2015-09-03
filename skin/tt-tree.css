@@ -140,3 +140,26 @@
 	visibility: collapse;
 	transition-delay: 0s;
 }
+
+/* New tab button */
+
+#tt-new-tab-button-container {
+	background-color: -moz-Dialog;
+}
+
+#tt-new-tab-button {
+	list-style-image: url(chrome://browser/skin/tabbrowser/newtab.png);
+	/*list-style-image: url(chrome://browser/skin/tabbrowser/newtab-inverted.png);*/
+	-moz-image-region: auto;
+}
+
+#tt-new-tab-button > .toolbarbutton-text {
+	display: none;
+}
+
+@media (min-resolution: 1.1dppx) {
+	#tt-new-tab-button {
+		list-style-image: url(chrome://browser/skin/tabbrowser/newtab@2x.png);
+		/*list-style-image: url(chrome://browser/skin/tabbrowser/newtab-inverted@2x.png);*/
+	}
+}
