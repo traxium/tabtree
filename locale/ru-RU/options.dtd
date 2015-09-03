@@ -35,3 +35,5 @@
 <!ENTITY flst.desc "(отмечено по умолчанию)">
 <!ENTITY new-tab-button.title "Показывать кнопку для открытия новой вкладки:">
 <!ENTITY new-tab-button.desc "(отмечено по умолчанию)">
+<!ENTITY close-tab-buttons.title "Показывать кнопки для закрытия вкладок:">
+<!ENTITY close-tab-buttons.desc "(отмечено по умолчанию)">

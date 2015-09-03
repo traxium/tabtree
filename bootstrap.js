@@ -80,6 +80,7 @@ function startup(data, reason)
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.flst', true); // focus last selected tab after closing a current tab
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.highlight-unread-tabs', false);
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.new-tab-button', true);
+	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.close-tab-buttons', true);
 	
 	// migration code :
 	try {
@@ -571,6 +572,7 @@ var windowListener = {
 		let treecol2 = aDOMWindow.document.createElement('treecol'); // <treecol>
 		treecol2.setAttribute('hideheader', 'true');
 		treecol2.id = 'tt-col-2';
+		treecol2.collapsed = !Services.prefs.getBoolPref('extensions.tabtree.close-tab-buttons');
 		let treechildren = aDOMWindow.document.createElement('treechildren'); // <treechildren id="tt-treechildren">
 		treechildren.setAttribute('id', 'tt-treechildren');
 		treecols.appendChild(treecol);
@@ -1786,6 +1788,9 @@ var windowListener = {
 									}
 								}
 							} // else do nothing
+							break;
+						case 'extensions.tabtree.close-tab-buttons':
+							treecol2.collapsed = !Services.prefs.getBoolPref('extensions.tabtree.close-tab-buttons');
 							break;
 						case 'extensions.tabtree.dblclick':
 							if (Services.prefs.getBoolPref('extensions.tabtree.dblclick')) {

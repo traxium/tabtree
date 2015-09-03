@@ -46,4 +46,5 @@
     <setting type="bool" pref="browser.tabs.drawInTitlebar" title="&drawInTitlebar.title;" desc="&drawInTitlebar.desc;" />
     <setting type="bool" pref="extensions.tabtree.flst" title="&flst.title;" desc="&flst.desc;" />
     <setting type="bool" pref="extensions.tabtree.new-tab-button" title="&new-tab-button.title;" desc="&new-tab-button.desc;" />
+    <setting type="bool" pref="extensions.tabtree.close-tab-buttons" title="&close-tab-buttons.title;" desc="&close-tab-buttons.desc;" />
 </vbox>
