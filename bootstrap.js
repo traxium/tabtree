@@ -1650,6 +1650,10 @@ var windowListener = {
 		} else {
 			tree.addEventListener('click', onClickFast, false);
 		}
+		
+		newTab.addEventListener('command', function(event) {
+			aDOMWindow.BrowserOpenNewTabOrWindow(event);
+		}, false);
         
 		g.tabContainer.addEventListener("TabMove", (aDOMWindow.tt.toRemove.eventListeners.onTabMove = function(event) {
 			let tab = event.target;
