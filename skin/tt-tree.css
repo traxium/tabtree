@@ -127,27 +127,13 @@
 }
 
 #tt-treechildren::-moz-tree-image(tt-close) {
-	list-style-image: url("chrome://global/skin/icons/close.png");
-	-moz-image-region: rect(0, 20px, 20px, 0);
+	list-style-image: url(chrome://tabtree/skin/close.png);
+	-moz-image-region: rect(0, 16px, 16px, 0);
 }
 
 #tt-treechildren::-moz-tree-image(tt-close, hover) {
-	list-style-image: url("chrome://global/skin/icons/close.png");
-	-moz-image-region: rect(0, 40px, 20px, 20px);
-}
-
-@media (-moz-os-version: windows-xp),
-(-moz-os-version: windows-vista),
-(-moz-os-version: windows-win7) {
-	#tt-treechildren::-moz-tree-image(tt-close) {
-		list-style-image: url("chrome://global/skin/icons/close.png");
-		-moz-image-region: rect(0, 16px, 16px, 0);
-	}
-	
-	#tt-treechildren::-moz-tree-image(tt-close, hover) {
-		list-style-image: url("chrome://global/skin/icons/close.png");
-		-moz-image-region: rect(0, 32px, 16px, 16px);
-	}
+	list-style-image: url(chrome://tabtree/skin/close.png);
+	-moz-image-region: rect(0, 32px, 16px, 16px);
 }
 
 /* Tab search box */
@@ -182,7 +168,7 @@
 }
 
 #tt-new-tab-button {
-	list-style-image: url(chrome://browser/skin/tabbrowser/newtab.png);
+	list-style-image: url(chrome://tabtree/skin/newtab.png);
 	/*list-style-image: url(chrome://browser/skin/tabbrowser/newtab-inverted.png);*/
 	-moz-image-region: auto;
 	padding: 0;
@@ -190,11 +176,4 @@
 
 #tt-new-tab-button > .toolbarbutton-text {
 	display: none;
-}
-
-@media (min-resolution: 1.1dppx) {
-	#tt-new-tab-button {
-		list-style-image: url(chrome://browser/skin/tabbrowser/newtab@2x.png);
-		/*list-style-image: url(chrome://browser/skin/tabbrowser/newtab-inverted@2x.png);*/
-	}
 }

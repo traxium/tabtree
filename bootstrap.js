@@ -1190,6 +1190,9 @@ var windowListener = {
 				return g.tabs.length-tt.nPinned;
 			},
 			getCellText: function(row, column) {
+				if (column.index === 1) {
+					return ''; // If a column consists only of an image, then the empty string is returned.
+				}
 				let tPos = row+tt.nPinned;
 				return ' ' + g.tabs[tPos].label;
 			},
