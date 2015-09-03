@@ -568,9 +568,13 @@ var windowListener = {
 			hideheader: 'true'
 		};
 		Object.keys(propsToSet).forEach( (p)=>{treecol.setAttribute(p, propsToSet[p]);} );
+		let treecol2 = aDOMWindow.document.createElement('treecol'); // <treecol>
+		treecol2.setAttribute('hideheader', 'true');
+		treecol2.id = 'tt-col-2';
 		let treechildren = aDOMWindow.document.createElement('treechildren'); // <treechildren id="tt-treechildren">
 		treechildren.setAttribute('id', 'tt-treechildren');
 		treecols.appendChild(treecol);
+		treecols.appendChild(treecol2);
 		tree.appendChild(treecols);
 		tree.appendChild(treechildren);
 		sidebar.appendChild(tree);
@@ -1190,6 +1194,10 @@ var windowListener = {
 				return ' ' + g.tabs[tPos].label;
 			},
 			getImageSrc: function(row, column) {
+				if (column.index === 1) {
+					return ''; // "If the empty string is returned, the ::moz-tree-image pseudoelement will be used."
+				}
+				
 				// Notice that when 'busy' attribute has already been removed the favicon can still be not loaded
 				let tPos = row+tt.nPinned;
 				let tab = g.tabs[tPos];
@@ -1252,6 +1260,10 @@ var windowListener = {
 				}
 			},
 			getCellProperties: function(row, col) {
+				if (col.index === 1) {
+					return 'tt-close';
+				}
+				
 				let tPos = row+tt.nPinned;
 				let ret = '';
 
@@ -1618,29 +1630,41 @@ var windowListener = {
 		
 		let onClickFast = function(event) {
 			if (event.button === 0) { // the left button click
-				let idx = tree.treeBoxObject.getRowAt(event.clientX, event.clientY);
-				if  (idx === -1) { // double click the empty area
-					if (event.detail === 2) {
+				let row = {};
+				let col = {};
+				tree.treeBoxObject.getCellAt(event.clientX, event.clientY, row, col, {});
+				if  (row.value === -1) { // click the empty area
+					if (event.detail === 2) { // double click
 						aDOMWindow.BrowserOpenNewTabOrWindow(event);
 					}
-				} else {
-					let tPos = idx + tt.nPinned;
-					g.selectTabAtIndex(tPos);
+				} else { // click a row
+					let tPos = row.value + tt.nPinned;
+					if (col.value.index === 1) {
+						g.removeTab(g.tabs[tPos]);
+					} else {
+						g.selectTabAtIndex(tPos);
+					}
 				}
 			}
 		};
 		let onClickSlow = function f(event) { // and also double click
 			if (event.button === 0) { // the left button click
-				let idx = tree.treeBoxObject.getRowAt(event.clientX, event.clientY);
-				if  (idx === -1) { // double click the empty area
-					if (event.detail === 2) {
+				let row = {};
+				let col = {};
+				tree.treeBoxObject.getCellAt(event.clientX, event.clientY, row, col, {});
+				if  (row.value === -1) { // click the empty area
+					if (event.detail === 2) { // double click
 						aDOMWindow.BrowserOpenNewTabOrWindow(event);
 					}
-				} else {
-					let tPos = idx + tt.nPinned;
-					if (event.detail == 1) {
-						f.timer = aDOMWindow.setTimeout(function(){g.selectTabAtIndex(tPos);}, Services.prefs.getIntPref('extensions.tabtree.delay'));
-					} else if (event.detail == 2) {
+				} else { // click a row
+					let tPos = row.value + tt.nPinned;
+					if (event.detail == 1) { // the first click - select a tab
+						if (col.value.index === 1) {
+							g.removeTab(g.tabs[tPos]);
+						} else {
+							f.timer = aDOMWindow.setTimeout(function(){g.selectTabAtIndex(tPos);}, Services.prefs.getIntPref('extensions.tabtree.delay'));
+						}
+					} else if (event.detail == 2) { // the second click - remove a tab
 						aDOMWindow.clearTimeout(f.timer);
 						g.removeTab(g.tabs[tPos]);
 					}

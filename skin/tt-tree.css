@@ -116,6 +116,40 @@
 	border: 1px solid #EF0FFF; /* default Firefox color for "Highlight all" option in <findbar> */
 }
 
+/* :::::: Close button icons ::::: */
+
+#tt-treechildren:-moz-tree-cell(tt-close),
+#tt-treechildren:-moz-tree-cell(tt-close-hover),
+#tt-treechildren:-moz-tree-image(tt-close),
+#tt-treechildren:-moz-tree-image(tt-close-hover) {
+	margin: 0;
+	padding: 0;
+}
+
+#tt-treechildren::-moz-tree-image(tt-close) {
+	list-style-image: url("chrome://global/skin/icons/close.png");
+	-moz-image-region: rect(0, 20px, 20px, 0);
+}
+
+#tt-treechildren::-moz-tree-image(tt-close, hover) {
+	list-style-image: url("chrome://global/skin/icons/close.png");
+	-moz-image-region: rect(0, 40px, 20px, 20px);
+}
+
+@media (-moz-os-version: windows-xp),
+(-moz-os-version: windows-vista),
+(-moz-os-version: windows-win7) {
+	#tt-treechildren::-moz-tree-image(tt-close) {
+		list-style-image: url("chrome://global/skin/icons/close.png");
+		-moz-image-region: rect(0, 16px, 16px, 0);
+	}
+	
+	#tt-treechildren::-moz-tree-image(tt-close, hover) {
+		list-style-image: url("chrome://global/skin/icons/close.png");
+		-moz-image-region: rect(0, 32px, 16px, 16px);
+	}
+}
+
 /* Tab search box */
 
 #tt-quicksearchbox {
@@ -151,6 +185,7 @@
 	list-style-image: url(chrome://browser/skin/tabbrowser/newtab.png);
 	/*list-style-image: url(chrome://browser/skin/tabbrowser/newtab-inverted.png);*/
 	-moz-image-region: auto;
+	padding: 0;
 }
 
 #tt-new-tab-button > .toolbarbutton-text {
