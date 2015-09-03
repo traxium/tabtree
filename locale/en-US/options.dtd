@@ -34,6 +34,6 @@
 <!ENTITY flst.title "FLST after closing a current tab:">
 <!ENTITY flst.desc "FLST means &quot;focus last selected tab&quot; (checked by default)">
 <!ENTITY new-tab-button.title "Show the &quot;Open a new tab (Ctrl+T)&quot; button:">
-<!ENTITY new-tab-button.desc "(checked by default)">
+<!ENTITY new-tab-button.desc "You can also double-click the empty area below the tabs to open a new tab (checked by default)">
 <!ENTITY close-tab-buttons.title "Show the &quot;Close tab&quot; buttons:">
-<!ENTITY close-tab-buttons.desc "(checked by default)">
+<!ENTITY close-tab-buttons.desc "You can also close a tab with the middle or wheel mouse button (or a dboule-click optionally) (checked by default)">
