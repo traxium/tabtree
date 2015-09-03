@@ -617,9 +617,13 @@ var windowListener = {
 		treecolDragFeedback.setAttribute('flex', '1');
 		treecolDragFeedback.setAttribute('primary', 'true');
 		treecolDragFeedback.setAttribute('hideheader', 'true');
+		let treecol2DragFeedback = aDOMWindow.document.createElement('treecol');
+		treecol2DragFeedback.setAttribute('hideheader', 'true');
+		treecol2DragFeedback.collapsed = !Services.prefs.getBoolPref('extensions.tabtree.close-tab-buttons');
 		let treechildrenDragFeedback = aDOMWindow.document.createElement('treechildren');
 		treechildrenDragFeedback.setAttribute('id', 'tt-treechildren-feedback');
 		treecolsDragFeedback.appendChild(treecolDragFeedback);
+		treecolsDragFeedback.appendChild(treecol2DragFeedback);
 		dragFeedbackTree.appendChild(treecolsDragFeedback);
 		dragFeedbackTree.appendChild(treechildrenDragFeedback);
 
@@ -960,6 +964,7 @@ var windowListener = {
 			event.dataTransfer.mozSetDataAt("text/x-moz-text-internal", tab.linkedBrowser.currentURI.spec, 0);
 
 			if (1 || tt.hasAnyChildren(tab._tPos)) { // remove "1" to use default feedback image for a single row
+				treecol2DragFeedback.collapsed = !Services.prefs.getBoolPref('extensions.tabtree.close-tab-buttons');
 				//noinspection JSUnusedGlobalSymbols
 				dragFeedbackTree.treeBoxObject.view = {
 					numStart: tab._tPos,
@@ -973,6 +978,9 @@ var windowListener = {
 						return this.numEnd - this.numStart + 1;
 					},
 					getCellText: function (row, column) {
+						if (column.index === 1) {
+							return '';
+						}
 						let tPos = row + this.numStart;
 						return ' ' + g.tabs[tPos].label;
 					},
@@ -1018,6 +1026,11 @@ var windowListener = {
 							if (nextLevel < thisLevel) break;
 						}
 						return false;
+					},
+					getCellProperties: function(row, col) {
+						if (col.index === 1) {
+							return 'tt-close';
+						}
 					}
 				};
 				dragFeedbackTree.style.width = tree.getBoundingClientRect().width + 'px';

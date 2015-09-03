@@ -119,14 +119,15 @@
 /* :::::: Close button icons ::::: */
 
 #tt-treechildren:-moz-tree-cell(tt-close),
-#tt-treechildren:-moz-tree-cell(tt-close-hover),
 #tt-treechildren:-moz-tree-image(tt-close),
-#tt-treechildren:-moz-tree-image(tt-close-hover) {
+#tt-treechildren-feedback:-moz-tree-cell(tt-close),
+#tt-treechildren-feedback:-moz-tree-image(tt-close) {
 	margin: 0;
 	padding: 0;
 }
 
-#tt-treechildren::-moz-tree-image(tt-close) {
+#tt-treechildren::-moz-tree-image(tt-close),
+#tt-treechildren-feedback::-moz-tree-image(tt-close) {
 	list-style-image: url(chrome://tabtree/skin/close.png);
 	-moz-image-region: rect(0, 16px, 16px, 0);
 }
