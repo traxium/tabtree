@@ -985,6 +985,9 @@ var windowListener = {
 						return ' ' + g.tabs[tPos].label;
 					},
 					getImageSrc: function (row, column) {
+						if (column.index === 1) {
+							return '';
+						}
 						let tPos = row + this.numStart;
 						return g.tabs[tPos].image;
 					}, // or null to hide icons or /g.getIcon(g.tabs[row])/
