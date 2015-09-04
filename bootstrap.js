@@ -72,7 +72,8 @@ function startup(data, reason)
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.dblclick', false); // setting default pref
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.delay', 0); // setting default pref
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.position', 0); // setting default pref // 0 - Left, 1 - Right
-	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.search-position', 0); // setting default pref // 0 - Top, 1 - Bottom
+	// setting default pref // 0 - Top, 1 - Bottom (before "New tab" button), 2 - Bottom (after "New tab" button):
+	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.search-position', 0);
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.search-autohide', false); // setting default pref
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.show-default-tabs', false); // hidden pref for test purposes
 	// 0 - None, 1 - The Smallest, 2 - Small, 3 - Medium, 4 - Big (round), 5 - The Biggest (round):
@@ -582,21 +583,6 @@ var windowListener = {
 		sidebar.appendChild(tree);
 		//////////////////// END TREE /////////////////////////////////////////////////////////////////
 
-		//////////////////// QUICK SEARCH BOX ////////////////////////////////////////////////////////////////////////
-		let quickSearchBox = aDOMWindow.document.createElement('textbox');
-		propsToSet = {
-			id: 'tt-quicksearchbox',
-			placeholder: stringBundle.GetStringFromName('tabs_quick_search') || 'Start typing to search for a tab' // the latter is just in case
-		};
-		Object.keys(propsToSet).forEach( (p)=>{quickSearchBox.setAttribute(p, propsToSet[p]);} );
-		if (Services.prefs.getIntPref('extensions.tabtree.search-position') === 1) {
-			sidebar.appendChild(quickSearchBox);
-		} else {
-			sidebar.insertBefore(quickSearchBox, sidebar.firstChild);
-		}
-		quickSearchBox.collapsed = Services.prefs.getBoolPref('extensions.tabtree.search-autohide');
-		//////////////////// END QUICK SEARCH BOX /////////////////////////////////////////////////////////////////
-
 		//////////////////// DRAG FEEDBACK TREE ////////////////////////////////////////////////////////////////////////
 		let dragFeedbackTree = aDOMWindow.document.createElement('tree');
 		/*
@@ -637,6 +623,36 @@ var windowListener = {
         sidebar.appendChild(dragFeedbackTreeContainer);
 		//////////////////// END DRAG FEEDBACK TREE ////////////////////////////////////////////////////////////////////
 
+		////////////////////////////////////////////// NEW TAB BUTTON //////////////////////////////////////////////////
+		let newTabContainer = aDOMWindow.document.createElement('vbox'); /* there is a problem with 'background-color' without a container*/
+		newTabContainer.id = 'tt-new-tab-button-container';
+		let newTab = aDOMWindow.document.createElement('toolbarbutton');
+		newTab.id = 'tt-new-tab-button';
+		newTab.collapsed = !Services.prefs.getBoolPref('extensions.tabtree.new-tab-button');
+		newTabContainer.appendChild(newTab);
+		sidebar.appendChild(newTabContainer);
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		//////////////////// QUICK SEARCH BOX ////////////////////////////////////////////////////////////////////////
+		let quickSearchBox = aDOMWindow.document.createElement('textbox');
+		propsToSet = {
+			id: 'tt-quicksearchbox',
+			placeholder: stringBundle.GetStringFromName('tabs_quick_search') || 'Start typing to search for a tab' // the latter is just in case
+		};
+		Object.keys(propsToSet).forEach( (p)=>{quickSearchBox.setAttribute(p, propsToSet[p]);} );
+		switch (Services.prefs.getIntPref('extensions.tabtree.search-position')) {
+			case 1:
+				sidebar.insertBefore(quickSearchBox, newTabContainer); // before "New tab" button
+				break;
+			case 2:
+				sidebar.appendChild(quickSearchBox); // after "New tab" button
+				break;
+			default:
+				sidebar.insertBefore(quickSearchBox, sidebar.firstChild);
+		}
+		quickSearchBox.collapsed = Services.prefs.getBoolPref('extensions.tabtree.search-autohide');
+		//////////////////// END QUICK SEARCH BOX /////////////////////////////////////////////////////////////////
+
 		/////////////////////////// PSEUDO-ANIMATED PNG ////////////////////////////////////////////////////////////////
 		// my way to force Firefox to cache images. Otherwise they would be loaded upon the first request (a tab load/refresh) and it wouldn't look smooth:
 		// I can't use a real animated PNG with <tree> element because it causes abnormally high CPU load
@@ -664,7 +680,7 @@ var windowListener = {
 				quickSearchBox.focus();
 			}
 		}), false);
-		
+
 		aDOMWindow.tt.toRemove.eventListeners.onAppcontentMouseUp = function() {
 			quickSearchBox.collapsed = true;
 		};
@@ -673,16 +689,6 @@ var windowListener = {
 			appcontent.addEventListener('mouseup', aDOMWindow.tt.toRemove.eventListeners.onAppcontentMouseUp, false); // don't forget to remove
 		}
 		//////////////////// END KEY ///////////////////////////////////////////////////////////////////////////////////
-		
-		////////////////////////////////////////////// NEW TAB BUTTON //////////////////////////////////////////////////
-		let newTabContainer = aDOMWindow.document.createElement('vbox'); /* there is a problem with 'background-color' without a container*/
-		newTabContainer.id = 'tt-new-tab-button-container';
-		let newTab = aDOMWindow.document.createElement('toolbarbutton');
-		newTab.id = 'tt-new-tab-button';
-		newTab.collapsed = !Services.prefs.getBoolPref('extensions.tabtree.new-tab-button');
-		newTabContainer.appendChild(newTab);
-		sidebar.appendChild(newTabContainer);
-		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////// here we could load something before all tabs have been loaded and restored by SS ////////////////////////////////
 
@@ -1853,10 +1859,15 @@ var windowListener = {
 							}
 							break;
 						case 'extensions.tabtree.search-position':
-							if (Services.prefs.getIntPref('extensions.tabtree.search-position') === 1) {
-								sidebar.appendChild(quickSearchBox);
-							} else {
-								sidebar.insertBefore(quickSearchBox, sidebar.firstChild);
+							switch (Services.prefs.getIntPref('extensions.tabtree.search-position')) {
+								case 1:
+									sidebar.insertBefore(quickSearchBox, newTabContainer); // before "New tab" button
+									break;
+								case 2:
+									sidebar.appendChild(quickSearchBox); // after "New tab" button
+									break;
+								default:
+									sidebar.insertBefore(quickSearchBox, sidebar.firstChild); // at the top
 							}
 							break;
 						case 'extensions.tabtree.treelines':
