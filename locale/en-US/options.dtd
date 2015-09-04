@@ -18,7 +18,8 @@
 <!ENTITY search-position.title "Tab search bar position:">
 <!ENTITY search-position.desc "(&quot;Top&quot; by default)">
 <!ENTITY search-position.top "Top">
-<!ENTITY search-position.bottom "Bottom">
+<!ENTITY search-position.bottom-before "Bottom (before the &quot;New tab&quot; button)">
+<!ENTITY search-position.bottom-after "Bottom (after the &quot;New tab&quot; button)">
 <!ENTITY search-autohide.title "Autohide tab search bar:">
 <!ENTITY search-autohide.desc "Ctrl+Shift+Alt+F brings it up (unchecked by default)">
 <!ENTITY navbar-style.title "Adress bar size:">

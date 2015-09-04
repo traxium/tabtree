@@ -18,7 +18,8 @@
 <!ENTITY search-position.title "Расположение строки поиска вкладки:">
 <!ENTITY search-position.desc "(&quot;Сверху&quot; по умолчанию)">
 <!ENTITY search-position.top "Сверху">
-<!ENTITY search-position.bottom "Снизу">
+<!ENTITY search-position.bottom-before "Снизу (перед кнопкой открытия новой вкладки)">
+<!ENTITY search-position.bottom-after "Снизу (после кнопки открытия новой вкладки)">
 <!ENTITY search-autohide.title "Скрывать строку поиска вкладки:">
 <!ENTITY search-autohide.desc "Ctrl+Shift+Alt+F показывает её (не отмечено по умолчанию)">
 <!ENTITY navbar-style.title "Размер адресной строки:">

@@ -23,11 +23,14 @@
             <radio value="1" label="&position.right;"/>
         </radiogroup>
     </setting>
-    <setting type="radio" pref="extensions.tabtree.search-position" title="&search-position.title;" desc="&search-position.desc;">
-        <radiogroup>
-            <radio value="0" label="&search-position.top;"/>
-            <radio value="1" label="&search-position.bottom;"/>
-        </radiogroup>
+    <setting type="menulist" pref="extensions.tabtree.search-position" title="&search-position.title;" desc="&search-position.desc;">
+        <menulist>
+            <menupopup>
+                <menuitem value="0" label="&search-position.top;"/>
+                <menuitem value="1" label="&search-position.bottom-before;"/>
+                <menuitem value="2" label="&search-position.bottom-after;"/>
+            </menupopup>
+        </menulist>
     </setting>
     <setting type="bool" pref="extensions.tabtree.search-autohide" title="&search-autohide.title;" desc="&search-autohide.desc;" />
     <setting type="menulist" pref="extensions.tabtree.navbar-style" title="&navbar-style.title;" desc="&navbar-style.desc;">
