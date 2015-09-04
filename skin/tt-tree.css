@@ -118,6 +118,14 @@
 
 /* :::::: Close button icons ::::: */
 
+#tt #tt-col-2 { /* assuming 17px scrollbar width */
+	width: 35px;
+}
+
+#tt[hidevscroll] #tt-col-2 {
+	width: 18px;
+}
+
 #tt-treechildren:-moz-tree-cell(tt-close),
 #tt-treechildren:-moz-tree-image(tt-close),
 #tt-treechildren-feedback:-moz-tree-cell(tt-close),
