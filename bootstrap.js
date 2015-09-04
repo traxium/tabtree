@@ -329,7 +329,7 @@ var windowListener = {
 		let g = aDOMWindow.gBrowser;
 		let appcontent = aDOMWindow.document.querySelector('#appcontent');
 		aDOMWindow.tt = {
-			toRemove: {eventListeners: {}, prefsObserver: null, tabsProgressListener: null, _menuObserver: null},
+			toRemove: {eventListeners: {}, prefsObserver: null, tabsProgressListener: null, _menuObserver: null, sidebarWidthObserver: null},
 			toRestore: {g: {}, TabContextMenu: {}, tabsintitlebar: true}
 		};
 
@@ -1935,6 +1935,15 @@ var windowListener = {
 				return target.apply(thisArg, argumentsList);
 			}
 		}); // don't forget to restore
+
+		(aDOMWindow.tt.toRemove.sidebarWidthObserver = new aDOMWindow.MutationObserver(function(aMutations) {
+			for (let mutation of aMutations) {
+				if (mutation.attributeName == 'width') {
+					ss.setWindowValue(aDOMWindow, 'tt-width', sidebar.width); // Remember the width of 'tt-sidebar'
+					return;
+				}
+			}
+		})).observe(sidebar, {attributes: true}); // it should be removed automatically when <vbox id="tt-sidebar"> is destroyed
 		
 	} // loadIntoWindow: function(aDOMWindow) {
 	
