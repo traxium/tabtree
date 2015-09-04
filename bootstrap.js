@@ -479,7 +479,7 @@ var windowListener = {
 		let sidebar = aDOMWindow.document.createElement('vbox');
 		propsToSet = {
 			id: 'tt-sidebar',
-			width: ss.getWindowValue(aDOMWindow, 'tt-width') || '200'
+			width: ss.getWindowValue(aDOMWindow, 'tt-width') || ss.getGlobalValue('tt-new-sidebar-width') || '200'
 			//persist: 'width' // It seems 'persist' attr doesn't work in bootstrap addons, I'll use SS instead
 		};
 		Object.keys(propsToSet).forEach( (p)=>{sidebar.setAttribute(p, propsToSet[p])} );
@@ -1936,10 +1936,12 @@ var windowListener = {
 			}
 		}); // don't forget to restore
 
+		ss.setGlobalValue('tt-new-sidebar-width', sidebar.width);
 		(aDOMWindow.tt.toRemove.sidebarWidthObserver = new aDOMWindow.MutationObserver(function(aMutations) {
 			for (let mutation of aMutations) {
 				if (mutation.attributeName == 'width') {
 					ss.setWindowValue(aDOMWindow, 'tt-width', sidebar.width); // Remember the width of 'tt-sidebar'
+					ss.setGlobalValue('tt-new-sidebar-width', sidebar.width);
 					return;
 				}
 			}
