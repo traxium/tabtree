@@ -627,8 +627,12 @@ var windowListener = {
 		let newTabContainer = aDOMWindow.document.createElement('vbox'); /* there is a problem with 'background-color' without a container*/
 		newTabContainer.id = 'tt-new-tab-button-container';
 		let newTab = aDOMWindow.document.createElement('toolbarbutton');
-		newTab.id = 'tt-new-tab-button';
+		newTab.classList.add('tt-new-tab-button');
 		newTab.collapsed = !Services.prefs.getBoolPref('extensions.tabtree.new-tab-button');
+		// <tooltip id="dynamic-shortcut-tooltip" onpopupshowing="UpdateDynamicShortcutTooltipText(this);"/>
+		// UpdateDynamicShortcutTooltipText uses 'id' and 'anonid' to provide the tooltip text:
+		newTab.setAttribute('anonid', 'tabs-newtab-button');
+		newTab.setAttribute('tooltip', 'dynamic-shortcut-tooltip');
 		newTabContainer.appendChild(newTab);
 		sidebar.appendChild(newTabContainer);
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////

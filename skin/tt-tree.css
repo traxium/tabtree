@@ -168,13 +168,13 @@
 	background-color: -moz-Dialog;
 }
 
-#tt-new-tab-button {
+.tt-new-tab-button {
 	list-style-image: url(chrome://tabtree/skin/newtab.png);
 	/*list-style-image: url(chrome://browser/skin/tabbrowser/newtab-inverted.png);*/
 	-moz-image-region: auto;
 	padding: 0;
 }
 
-#tt-new-tab-button > .toolbarbutton-text {
+.tt-new-tab-button > .toolbarbutton-text {
 	display: none;
 }
