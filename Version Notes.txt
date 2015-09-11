@@ -1,0 +1,16 @@
+Next
+- Persisting the tree width when opening a new window
+
+1.3.1
+- Fixed the bug when the scrollbar overlaps the close buttons
+
+1.3.1
+- Исправлена ошибка из-за которой полоса прокрутки закрывала кнопки закрытия вкладок
+
+1.3.0
+- The "New tab" and "Close tab" buttons (you can place the "tab search bar" before or after the "New tab" button)
+- Fixed the bug when a double-click didn't close the last tab (when this option was enabled in Tab Tree)
+
+1.3.0
+- Кнопки открытия и закрытия вкладок (строку поиска вкладок можно разместить перед и после кнопки открытия новой вкладки)
+- Исправлена ошибка из-за который двойным кликом нельзя было закрыть последнюю вкладку
