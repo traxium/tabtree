@@ -82,6 +82,7 @@ function startup(data, reason)
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.highlight-unread-tabs', false);
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.new-tab-button', true);
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.close-tab-buttons', true);
+	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.max-indent', -1); // -1 means no maximum indent level
 	
 	// migration code :
 	try {
@@ -1093,18 +1094,32 @@ var windowListener = {
 							ss.setTabValue(tab, 'ttLevel', '0');
 							tree.treeBoxObject.rowCountChanged(g.tabs.length-1 - tt.nPinned, 1); // our new tab is at index g.tabs.length-1
 						} else {
-							ss.setTabValue(tab, 'ttLevel', (parseInt(ss.getTabValue(oldTab, 'ttLevel')) + 1).toString());
+							let lvl = parseInt(ss.getTabValue(oldTab, 'ttLevel')) + 1;
+							let maxLvl = Services.prefs.getIntPref('extensions.tabtree.max-indent');
 							let i;
-							for (i = oldTab._tPos + 1; i < g.tabs.length - 1; ++i) { // the last is our new tab
-								if (parseInt(ss.getTabValue(g.tabs[i], 'ttLevel')) <= parseInt(ss.getTabValue(oldTab, 'ttLevel'))) {
-									g.moveTabTo(tab, i);
-									break;
+							if (maxLvl === -1 || lvl <= maxLvl) {
+								ss.setTabValue(tab, 'ttLevel', lvl.toString());
+								for (i = oldTab._tPos + 1; i < g.tabs.length - 1; ++i) { // the last is our new tab
+									if (parseInt(ss.getTabValue(g.tabs[i], 'ttLevel')) < lvl) {
+										g.moveTabTo(tab, i);
+										break;
+									}
+								}
+							} else {
+								ss.setTabValue(tab, 'ttLevel', maxLvl.toString());
+								for (i = oldTab._tPos + 1; i < g.tabs.length - 1; ++i) { // the last is our new tab
+									if (parseInt(ss.getTabValue(g.tabs[i], 'ttLevel')) < maxLvl) {
+										g.moveTabTo(tab, i);
+										break;
+									}
 								}
 							}
+
 							tree.treeBoxObject.rowCountChanged(i - tt.nPinned, 1);
 							// now we need to do something with a selected tree row(it has moved due to a newly added tab, it is not obvious why)
-							// it only needed if we opened a new tab in background and not from pinned tab:
+							// it only needed if we opened a new tab in background and not from a pinned tab:
 							tree.view.selection.select(oldTab._tPos - tt.nPinned);
+							tree.treeBoxObject.invalidate(); // it's really needed to correctly draw the nesting lines alongside the tree
 						}
 						tree.treeBoxObject.ensureRowIsVisible(tab._tPos - tt.nPinned);
 					}, true);
