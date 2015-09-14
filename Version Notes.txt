@@ -1,5 +1,15 @@
-Next
+1.3.3
+- Custom icons from the default tab bar (that becomes hidden) are automatically moved to the navigation bar and vice versa.
+
+1.3.2
 - Persisting the tree width when opening a new window
+- Maximum indent level when opening a child tab (optionally)
+- Changed a close tab button on a currently selected tab to provide better visibility
+
+1.3.2
+- При открытии нового окна сохраняется ширина дерева вкладок
+- Добавлен максимальный уровень вложенности вкладок (в опциях)
+- Изменена кнопка закрытия активной вкладки на более заметную
 
 1.3.1
 - Fixed the bug when the scrollbar overlaps the close buttons
