@@ -140,7 +140,7 @@
 	-moz-image-region: rect(0, 16px, 16px, 0);
 }
 
-#tt-treechildren::-moz-tree-image(tt-close, current) {
+#tt-treechildren::-moz-tree-image(tt-close, selected) {
 	list-style-image: url(chrome://tabtree/skin/close.png);
 	-moz-image-region: rect(0, 48px, 16px, 32px);
 }
