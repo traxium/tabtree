@@ -315,6 +315,7 @@ var windowListener = {
 		if (Services.appinfo.OS == 'WINNT') { // all Windows despite name 'WINNT' 
 			aDOMWindow.tt.toRemove._menuObserver.disconnect();
 		}
+		aDOMWindow.tt.toRemove.sidebarWidthObserver.disconnect();
 		
 		delete aDOMWindow.tt;
 	},
@@ -1960,7 +1961,7 @@ var windowListener = {
 					return;
 				}
 			}
-		})).observe(sidebar, {attributes: true}); // it should be removed automatically when <vbox id="tt-sidebar"> is destroyed
+		})).observe(sidebar, {attributes: true}); // removed in unloadFromWindow()
 		
 	} // loadIntoWindow: function(aDOMWindow) {
 	
