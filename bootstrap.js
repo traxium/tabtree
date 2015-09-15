@@ -164,20 +164,23 @@ function startup(data, reason)
 		}
 	}), false); // don't forget to remove // there must be only one pref observer for all Firefox windows for sss prefs
 
-	if (!ss.getGlobalValue('tt-saved-widgets')) {
-		let save = CustomizableUI.getWidgetIdsInArea('TabsToolbar');
-		save.forEach(function (x) {
-			switch (x) {
-				case 'tabbrowser-tabs':
-				case 'new-tab-button':
-				case 'alltabs-button':
-					CustomizableUI.removeWidgetFromArea(x);
-					break;
-				default:
-					CustomizableUI.addWidgetToArea(x, 'nav-bar');
-			}
-		});
-		ss.setGlobalValue('tt-saved-widgets', JSON.stringify(save));
+	try {
+		if (!ss.getGlobalValue('tt-saved-widgets')) {
+			let save = CustomizableUI.getWidgetIdsInArea('TabsToolbar');
+			save.forEach(function (x) {
+				switch (x) {
+					case 'tabbrowser-tabs':
+					case 'new-tab-button':
+					case 'alltabs-button':
+						CustomizableUI.removeWidgetFromArea(x);
+						break;
+					default:
+						CustomizableUI.addWidgetToArea(x, 'nav-bar');
+				}
+			});
+			ss.setGlobalValue('tt-saved-widgets', JSON.stringify(save));
+		}
+	} catch (e) {
 	}
 	
 	windowListener.register();
