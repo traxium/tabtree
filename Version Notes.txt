@@ -1,5 +1,14 @@
+1.3.4
+- Fixed the bug introduced in 1.3.3 when Tab Tree didn't appear after Firefox restart/shutdown
+
+1.3.4
+- Исправлена ошибка версии 1.3.3 из-за которой дерево вкладок не появлялось после перезагрузки/закрытия Firefox
+
 1.3.3
-- Custom icons from the default tab bar (that becomes hidden) are automatically moved to the navigation bar and vice versa.
+- Icons that were placed in the Tab Bar before the add-on installation are automatically moved to the Navigation Bar after the add-on installation and back after its removal.
+
+1.3.3
+- Значки дополнений и функций, которые были помещены в панель вкладок, автоматически перемещаются в панель навигации после установки аддона и возвращаются на место после его удаления.
 
 1.3.2
 - Persisting the tree width when opening a new window
