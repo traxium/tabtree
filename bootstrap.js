@@ -164,25 +164,6 @@ function startup(data, reason)
 		}
 	}), false); // don't forget to remove // there must be only one pref observer for all Firefox windows for sss prefs
 
-	try {
-		if (!ss.getGlobalValue('tt-saved-widgets')) {
-			let save = CustomizableUI.getWidgetIdsInArea('TabsToolbar');
-			save.forEach(function (x) {
-				switch (x) {
-					case 'tabbrowser-tabs':
-					case 'new-tab-button':
-					case 'alltabs-button':
-						CustomizableUI.removeWidgetFromArea(x);
-						break;
-					default:
-						CustomizableUI.addWidgetToArea(x, 'nav-bar');
-				}
-			});
-			ss.setGlobalValue('tt-saved-widgets', JSON.stringify(save));
-		}
-	} catch (e) {
-	}
-	
 	windowListener.register();
 }
 
@@ -365,6 +346,26 @@ var windowListener = {
 			toRestore: {g: {}, TabContextMenu: {}, tabsintitlebar: true}
 		};
 
+		if (!ss.getGlobalValue('tt-saved-widgets')) {
+			// "getWidgetIdsInArea" is called here (and not in startup()) because of
+			// "NB: will throw if called too early (before placements have been fetched) or if the area is not currently known to CustomizableUI."
+			let save = CustomizableUI.getWidgetIdsInArea('TabsToolbar');
+			save.forEach(function (x) {
+				switch (x) {
+					case 'tabbrowser-tabs':
+					case 'new-tab-button':
+					case 'alltabs-button':
+						// "If the widget cannot be removed from its area, or is not in any area, this will no-op."
+						CustomizableUI.removeWidgetFromArea(x);
+						break;
+					default:
+						// "If the widget cannot be removed from its original location, this will no-op."
+						CustomizableUI.addWidgetToArea(x, 'nav-bar');
+				}
+			});
+			ss.setGlobalValue('tt-saved-widgets', JSON.stringify(save));
+		}
+		
 		// remember 'tabsintitlebar' attr before beginning to interact with it // default is 'true':
 		aDOMWindow.tt.toRestore.tabsintitlebar = aDOMWindow.document.documentElement.getAttribute('tabsintitlebar')=='true';
 
@@ -1992,7 +1993,8 @@ var windowListener = {
 				}
 			}
 		})).observe(sidebar, {attributes: true}); // removed in unloadFromWindow()
+
+		//aDOMWindow.tt.ss = ss; // uncomment while debugging
 		
 	} // loadIntoWindow: function(aDOMWindow) {
-	
 }; // var windowListener = {
