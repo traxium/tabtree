@@ -35,6 +35,16 @@
     </em:localized>
     <em:localized>
       <Description>
+        <em:locale>fr</em:locale>
+        <em:name>Tab Tree</em:name>
+        <em:description>Les onglets comme ils devraient être.</em:description>
+        <em:creator>Sergey Zelentsov</em:creator>
+        <em:homepageURL>https://github.com/traxium/tabtree</em:homepageURL>
+        <em:translator>ariasuni</em:translator>
+      </Description>
+    </em:localized>
+    <em:localized>
+      <Description>
         <em:locale>ru</em:locale>
         <em:name>Tab Tree</em:name>
         <em:description>Делает вкладки такими, какими они и должны быть.</em:description>
