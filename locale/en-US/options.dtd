@@ -37,7 +37,7 @@
 <!ENTITY new-tab-button.title "Show the &quot;Open a new tab (Ctrl+T)&quot; button:">
 <!ENTITY new-tab-button.desc "You can also double-click the empty area below the tabs to open a new tab (checked by default)">
 <!ENTITY close-tab-buttons.title "Show the &quot;Close tab&quot; buttons:">
-<!ENTITY close-tab-buttons.desc "You can also close a tab with the middle or wheel mouse button (or a dboule-click optionally) (checked by default)">
+<!ENTITY close-tab-buttons.desc "You can also close a tab with the middle or wheel mouse button (or a double-click optionally) (checked by default)">
 <!ENTITY max-indent.title "Max tab indent level:">
 <!ENTITY max-indent.desc "When opening a tab. &quot;-1&quot; means there is no max level (&quot;-1&quot; by default)">
 <!ENTITY wheel.title "When scrolling over the tab tree:">
