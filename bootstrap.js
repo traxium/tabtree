@@ -72,7 +72,7 @@ function startup(data, reason)
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.dblclick', false); // setting default pref
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.delay', 0); // setting default pref
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.position', 0); // setting default pref // 0 - Left, 1 - Right
-	// setting default pref // 0 - Top, 1 - Bottom (before "New tab" button), 2 - Bottom (after "New tab" button):
+	// 0 - Top, 1 - Bottom (before "New tab" button), 2 - Bottom (after "New tab" button):
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.search-position', 0);
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.search-autohide', false); // setting default pref
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.show-default-tabs', false); // hidden pref for test purposes
@@ -83,6 +83,10 @@ function startup(data, reason)
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.new-tab-button', true);
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.close-tab-buttons', true);
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.max-indent', -1); // -1 means no maximum indent level
+	// 0 - "without Shift - ordinary scrolling, with Shift - changing selected tab"
+	// 1 - "without Shift - changing selected tab, with Shift - ordinary scrolling"
+	// 2 - "always ordinary scrolling" 3 - "always changing selected tab":
+	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.wheel', 0);
 	
 	// migration code :
 	try {
@@ -1705,6 +1709,28 @@ var windowListener = {
 				g.selectTabAtIndex(tPos);
 			}
 		}, false);
+
+		tree.addEventListener('wheel', function f(event) {
+			switch (Services.prefs.getIntPref('extensions.tabtree.wheel')) {
+				case 1: // without Shift - changing selected tab, with Shift - ordinary scrolling
+					if (event.shiftKey) return;
+					break;
+				case 2: // always ordinary scrolling
+					return;
+				case 3: // always changing selected tab
+					break;
+				default: // == case 0 // without Shift - ordinary scrolling, with Shift - changing selected tab
+					if (!event.shiftKey) return;
+			}
+			
+			if (event.deltaY < 0) { // wheel up
+				g.tabContainer.advanceSelectedTab(-1, true);
+				event.preventDefault();
+			} else if (event.deltaY > 0) { // wheel down
+				g.tabContainer.advanceSelectedTab(1, true);
+				event.preventDefault();
+			}
+		});
 		
 		let onClickFast = function(event) {
 			if (event.button === 0) { // the left button click

@@ -51,4 +51,14 @@
     <setting type="bool" pref="extensions.tabtree.new-tab-button" title="&new-tab-button.title;" desc="&new-tab-button.desc;" />
     <setting type="bool" pref="extensions.tabtree.close-tab-buttons" title="&close-tab-buttons.title;" desc="&close-tab-buttons.desc;" />
     <setting type="integer" min="-1" pref="extensions.tabtree.max-indent" title="&max-indent.title;" desc="&max-indent.desc;" />
+    <setting type="menulist" pref="extensions.tabtree.wheel" title="&wheel.title;" desc="&wheel.desc;">
+        <menulist>
+            <menupopup>
+                <menuitem value="0" label="&wheel.0;"/>
+                <menuitem value="1" label="&wheel.1;"/>
+                <menuitem value="2" label="&wheel.2;"/>
+                <menuitem value="3" label="&wheel.3;"/>
+            </menupopup>
+        </menulist>
+    </setting>
 </vbox>

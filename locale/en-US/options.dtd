@@ -40,3 +40,9 @@
 <!ENTITY close-tab-buttons.desc "You can also close a tab with the middle or wheel mouse button (or a dboule-click optionally) (checked by default)">
 <!ENTITY max-indent.title "Max tab indent level:">
 <!ENTITY max-indent.desc "When opening a tab. &quot;-1&quot; means there is no max level (&quot;-1&quot; by default)">
+<!ENTITY wheel.title "When scrolling over the tab tree:">
+<!ENTITY wheel.desc "(the first choice by default)">
+<!ENTITY wheel.0 "without Shift - ordinary scrolling, with Shift - changing selected tab">
+<!ENTITY wheel.1 "without Shift - changing selected tab, with Shift - ordinary scrolling">
+<!ENTITY wheel.2 "always ordinary scrolling">
+<!ENTITY wheel.3 "always change selected tab">
