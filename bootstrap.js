@@ -303,10 +303,15 @@ var windowListener = {
 			if (windowControlsClone && windowControlsClone.parentNode !== null) { // if it exists
 				windowControlsClone.parentNode.removeChild(windowControlsClone);
 			}
+			let menuItemCloseTree = aDOMWindow.document.querySelector('#tt-context-close-tree');
+			menuItemCloseTree.parentNode.removeChild(menuItemCloseTree);
+			let menuItemCloseChildren = aDOMWindow.document.querySelector('#tt-context-close-children');
+			menuItemCloseChildren.parentNode.removeChild(menuItemCloseChildren);
 		}
 		
 		Object.keys(aDOMWindow.tt.toRestore.g).forEach( (x)=>{aDOMWindow.gBrowser[x] = aDOMWindow.tt.toRestore.g[x];} );
-		Object.keys(aDOMWindow.tt.toRestore.TabContextMenu).forEach( (x)=>{aDOMWindow.TabContextMenu[x] = aDOMWindow.tt.toRestore.TabContextMenu[x];} ); // only 1 at the moment - 'updateContextMenu'
+		// only 1 at the moment - 'updateContextMenu':
+		Object.keys(aDOMWindow.tt.toRestore.TabContextMenu).forEach( (x)=>{aDOMWindow.TabContextMenu[x] = aDOMWindow.tt.toRestore.TabContextMenu[x];} );
 		aDOMWindow.gBrowser.tabContainer.removeEventListener("TabMove", aDOMWindow.tt.toRemove.eventListeners.onTabMove, false);
 		aDOMWindow.gBrowser.tabContainer.removeEventListener("TabSelect", aDOMWindow.tt.toRemove.eventListeners.onTabSelect, false);
 		aDOMWindow.gBrowser.tabContainer.removeEventListener("TabAttrModified", aDOMWindow.tt.toRemove.eventListeners.onTabAttrModified, false);
@@ -315,6 +320,7 @@ var windowListener = {
 		aDOMWindow.removeEventListener("keypress", aDOMWindow.tt.toRemove.eventListeners.onWindowKeyPress, false);
 		// it's probably already removed but "Calling removeEventListener() with arguments that do not identify any currently registered EventListener ... has no effect.":
 		aDOMWindow.document.querySelector('#appcontent').removeEventListener('mouseup', aDOMWindow.tt.toRemove.eventListeners.onAppcontentMouseUp, false);
+		aDOMWindow.document.querySelector('#tabContextMenu').removeEventListener("popupshowing", aDOMWindow.tt.toRemove.eventListeners.onPopupshowing, false);
 		// Restore default title bar buttons position (Minimize, Restore/Maximize, Close):
 		let titlebarButtonboxContainer = aDOMWindow.document.querySelector('#titlebar-buttonbox-container');
 		let titlebarContent = aDOMWindow.document.querySelector('#titlebar-content');
@@ -2019,6 +2025,45 @@ var windowListener = {
 				}
 			}
 		})).observe(sidebar, {attributes: true}); // removed in unloadFromWindow()
+
+		//////////////////// TAB CONTEXT MENU //////////////////////////////////////////////////////////////////////////
+		let tabContextMenu = aDOMWindow.document.querySelector('#tabContextMenu');
+		let menuItemCloseTree = aDOMWindow.document.createElement('menuitem'); // removed in unloadFromWindow()
+		menuItemCloseTree.id = 'tt-context-close-tree';
+		menuItemCloseTree.setAttribute('label', stringBundle.GetStringFromName('close_this_tree'));
+		menuItemCloseTree.addEventListener('command', function (event) {
+			let tab = aDOMWindow.TabContextMenu.contextTab;
+			let tPos = tab._tPos;
+			let lvl = ss.getTabValue(tab, 'ttLevel');
+			while (ss.getTabValue(g.tabs[tPos+1], 'ttLevel') > lvl) {
+				g.removeTab(g.tabs[tPos+1]);
+			}
+			g.removeTab(g.tabs[tPos]);
+		}, false);
+		let menuItemCloseChildren = aDOMWindow.document.createElement('menuitem'); // removed in unloadFromWindow()
+		menuItemCloseChildren.id = 'tt-context-close-children';
+		menuItemCloseChildren.setAttribute('label', stringBundle.GetStringFromName('close_children'));
+		menuItemCloseChildren.addEventListener('command', function (event) {
+			let tab = aDOMWindow.TabContextMenu.contextTab;
+			let tPos = tab._tPos;
+			let lvl = ss.getTabValue(tab, 'ttLevel');
+			while (ss.getTabValue(g.tabs[tPos+1], 'ttLevel') > lvl) {
+				g.removeTab(g.tabs[tPos+1]);
+			}
+		}, false);
+		tabContextMenu.insertBefore(menuItemCloseChildren, aDOMWindow.document.querySelector('#context_closeTab').nextSibling);
+		tabContextMenu.insertBefore(menuItemCloseTree, menuItemCloseChildren);
+		tabContextMenu.addEventListener('popupshowing', (aDOMWindow.tt.toRemove.eventListeners.onPopupshowing = function (event) {
+			let tab = aDOMWindow.TabContextMenu.contextTab;
+			if (tt.hasAnyChildren(tab._tPos)) {
+				menuItemCloseTree.hidden = false;
+				menuItemCloseChildren.hidden = false;
+			} else {
+				menuItemCloseTree.hidden = true;
+				menuItemCloseChildren.hidden = true;
+			}
+		}), false); // removed in unloadFromWindow()
+		//////////////////// END TAB CONTEXT MENU //////////////////////////////////////////////////////////////////////
 
 		//aDOMWindow.tt.ss = ss; // uncomment while debugging
 		
