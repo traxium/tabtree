@@ -1,0 +1,48 @@
+<!ENTITY treelines.title "Dessiner les lignes d’imbrication sur le côté de l’arbre:">
+<!ENTITY treelines.desc "Les lignes connectant les rangées filles aux rangées mères (coché par défaut)">
+<!ENTITY highlight-unloaded-tabs.title "Coloration des onglets non-chargés:">
+<!ENTITY highlight-unloaded-tabs.desc "Si vous utilisez l’option de Firefox &laquo;Ne pas charger les onglets tant qu'ils ne sont pas sélectionnés&raquo; (&laquo;non&raquo; par défaut)">
+<!ENTITY highlight-unloaded-tabs.no "non">
+<!ENTITY highlight-unloaded-tabs.grayout "grisage">
+<!ENTITY highlight-unloaded-tabs.highlight "surlignage">
+<!ENTITY highlight-unread-tabs.title "Colorer les onglets non-lus:">
+<!ENTITY highlight-unread-tabs.desc "(non-coché par défaut)">
+<!ENTITY dblclick.title "Double clic pour fermer un onglet">
+<!ENTITY dblclick.desc "Recommandé uniquement si vous n’avez pas une souris équipée d’une molette (non-coché par défaut)">
+<!ENTITY delay.title "Délai du double clic (millisecondes)">
+<!ENTITY delay.desc "En réalité, c’est le délai avant qu’un onglet sélectionné soit affiché. Mettez-le autour de 160 si vous ne voulez pas voir votre onglet changer pendant la fermeture de l’onglet (0 par défaut)">
+<!ENTITY position.left "Gauche">
+<!ENTITY position.right "Droite">
+<!ENTITY position.title "Position:">
+<!ENTITY position.desc "(&laquo;Gauche&raquo; par défaut)">
+<!ENTITY search-position.title "Position de la barre de recherche d’onglet:">
+<!ENTITY search-position.desc "(&laquo;En haut&raquo; par défaut)">
+<!ENTITY search-position.top "En haut">
+<!ENTITY search-position.bottom-before "En bas (avant le bouton &laquo;Nouvel onglet&raquo;)">
+<!ENTITY search-position.bottom-after "En bas (avant le bouton &laquo;Nouvel onglet&laquo;)">
+<!ENTITY search-autohide.title "Masquage automatique de la barre de recherche d’onglet:">
+<!ENTITY search-autohide.desc "Utilisez Ctrl+Shift+Alt+F pour la réafficher (non-coché par défaut)">
+<!ENTITY navbar-style.title "Taille de la barre d’adresse:">
+<!ENTITY navbar-style.desc "Sélectionnez &laquo;Valeur par défaut&raquo; pour utiliser un style tiers (&laquo;Le plus petit&raquo; par défaut)">
+<!ENTITY navbar-style.0 "Valeur par défaut">
+<!ENTITY navbar-style.1 "Le plus petit">
+<!ENTITY navbar-style.2 "Petit">
+<!ENTITY navbar-style.3 "Moyen">
+<!ENTITY navbar-style.4 "Grand">
+<!ENTITY navbar-style.5 "Le plus grand">
+<!ENTITY drawInTitlebar.title "Cacher la barre de titre native du système quand Firefox est maximisé:">
+<!ENTITY drawInTitlebar.desc "Option &laquo;browser.tabs.drawInTitlebar&raquo; dans about:config (coché par défaut)">
+<!ENTITY flst.title "FLST après la fermeture de l’onglet courant:">
+<!ENTITY flst.desc "FLST signifie &quot;sélection du dernier onglet actif&quot; (coché par défaut)">
+<!ENTITY new-tab-button.title "Montrer le bouton &laquo;Ouvrir un nouvel onglet (Ctrl+T)&raquo;:">
+<!ENTITY new-tab-button.desc "Vous pouvez aussi double-cliquer dans une zone vide en dessous des onglets pour ouvrir un nouvel onglet (coché par défaut)">
+<!ENTITY close-tab-buttons.title "Montrer le bouton &laquo;Fermer l'onglet&raquo;:">
+<!ENTITY close-tab-buttons.desc "Vous pouvez aussi fermer un onglet avec le button du milieu ou de la molette de la souris (ou un double clic en option) (coché par défaut)">
+<!ENTITY max-indent.title "Niveau max d’indentation des onglets:">
+<!ENTITY max-indent.desc "Lors de l’ouverture d’un onglet. &laquo;-1&raquo; signifie qu’il n’y a pas de niveau max (&laquo;-1&raquo; par défaut)">
+<!ENTITY wheel.title "Défilement sur l’arbre des onglets:">
+<!ENTITY wheel.desc "(premier choix par défaut)">
+<!ENTITY wheel.0 "Sans Maj - défiler normalement, avec Maj - changer l’onglet actif">
+<!ENTITY wheel.1 "Sans Maj - changer l’onglet actif, avec Maj- défiler normalement">
+<!ENTITY wheel.2 "toujours défiler normalement">
+<!ENTITY wheel.3 "toujours changer l’onglet actif">
