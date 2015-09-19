@@ -1,4 +1,4 @@
-<!ENTITY treelines.title "Pokazuj linie łączące karty wzdłóż drzewa:">
+<!ENTITY treelines.title "Pokazuj linie łączące karty wzdłuż drzewa:">
 <!ENTITY treelines.desc "Linie łączące karty podrzędne z kartą nadrzędną (domyślnie zaznaczone)">
 <!ENTITY highlight-unloaded-tabs.title "Podświetl niezaładowane karty:">
 <!ENTITY highlight-unloaded-tabs.desc "Gdy używasz opcji Firefoxa &quot;Nie wczytuj kart, dopóki nie zostały wybrane&quot; (Domyślnie &quot;Nie&quot;)">
