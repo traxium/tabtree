@@ -1,5 +1,5 @@
 <!ENTITY treelines.title "Pokazuj linie łączące karty wzdłóż drzewa:">
-<!ENTITY treelines.desc "Linie łączące pochodne karty z kartą główną (domyślnie zaznaczone)">
+<!ENTITY treelines.desc "Linie łączące karty podrzędne z kartą nadrzędną (domyślnie zaznaczone)">
 <!ENTITY highlight-unloaded-tabs.title "Podświetl niezaładowane karty:">
 <!ENTITY highlight-unloaded-tabs.desc "Gdy używasz opcji Firefoxa &quot;Nie wczytuj kart, dopóki nie zostały wybrane&quot; (Domyślnie &quot;Nie&quot;)">
 <!ENTITY highlight-unloaded-tabs.no "Nie">
@@ -7,8 +7,8 @@
 <!ENTITY highlight-unloaded-tabs.highlight "Podświetl">
 <!ENTITY highlight-unread-tabs.title "Podświetl nieprzeczytane karty:">
 <!ENTITY highlight-unread-tabs.desc "(Domyślnie odznaczone)">
-<!ENTITY dblclick.title "Podwójne kliknięcie, żeby zamknąć kartę">
-<!ENTITY dblclick.desc "Rekomendowane jedynie gdy nie masz myszy z kółkiem (domyślnie odznaczone)">
+<!ENTITY dblclick.title "Dwuklik, żeby zamknąć kartę">
+<!ENTITY dblclick.desc "Polecane jedynie gdy nie masz myszy z kółkiem (domyślnie odznaczone)">
 <!ENTITY delay.title "Odstęp dwukliku (w milisekundach)">
 <!ENTITY delay.desc "W rzeczywistości jest to odstęp, zanim wybrana karta zostanie pokazana. Wpisz 160, jeśli nie chcesz widzieć mignięcia kart przy zamykaniu (domyślnie 0)">
 <!ENTITY position.left "Lewo">
@@ -16,7 +16,7 @@
 <!ENTITY position.title "Pozycja:">
 <!ENTITY position.desc "(Domyślnie &quot;lewo&quot;)">
 <!ENTITY search-position.title "Pozycja wyszukiwarki kart:">
-<!ENTITY search-position.desc "(Domyślnie &quot;góra&quot;)">
+<!ENTITY search-position.desc "(Domyślnie &quot;Góra&quot;)">
 <!ENTITY search-position.top "Góra">
 <!ENTITY search-position.bottom-before "Dół (przed przyciskiem &quot;Nowa karta&quot;)">
 <!ENTITY search-position.bottom-after "Dół (po przycisku &quot;Nowa karta&quot;)">
@@ -34,8 +34,8 @@
 <!ENTITY drawInTitlebar.desc "To &quot;browser.tabs.drawInTitlebar&quot; w about:config (domyślnie zaznaczony)">
 <!ENTITY flst.title "FLST po zamknięciu otwartej karty:">
 <!ENTITY flst.desc "FLST znaczy &quot;wróć do ostatniej zamkniętej kart (ang. focus last selected tab)&quot; (domyślnie zaznaczony)">
-<!ENTITY new-tab-button.title "Pokaż przycsk &quot;Otwórz nową kartę (Ctrl+T)&quot;:">
-<!ENTITY new-tab-button.desc "Możesz również użyć dwukliku na pustej przestrzeni poniżej kart, żeby otworzyć nową kartę. (domyślnie zaznaczony)">
+<!ENTITY new-tab-button.title "Pokaż przycisk &quot;Otwórz nową kartę (Ctrl+T)&quot;:">
+<!ENTITY new-tab-button.desc "Możesz również użyć dwukliku na pustej przestrzeni poniżej kart, żeby otworzyć nową kartę (domyślnie zaznaczony)">
 <!ENTITY close-tab-buttons.title "Pokaż przycisk &quot;Zamknij kartę&quot;:">
 <!ENTITY close-tab-buttons.desc "Możesz również użyć środkowego przycisku myszy albo wciśnąć kółko myszy (albo użyć dwukliku, jeśli zaznaczyłeś to w opcjach) (domyślnie zaznaczone)">
 <!ENTITY max-indent.title "Maksymalny poziom zagnieżdżenia:">
