@@ -89,6 +89,7 @@ function startup(data, reason)
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.wheel', 0);
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.search-jump', false); // jump to the first search match
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.search-jump-min-chars', 4); // min chars to jump
+	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.fullscreen-hide', true); // #18 hold the tab tree in full screen mode
 	
 	// migration code :
 	try {
@@ -1919,6 +1920,18 @@ var windowListener = {
 								tree.addEventListener('click', onClickFast, false);
 							}
 							break;
+						case 'extensions.tabtree.fullscreen-hide':
+							let pref = Services.prefs.getBoolPref('extensions.tabtree.fullscreen-hide');
+							if (pref) {
+								splitter.removeAttribute('style');
+								sidebar.removeAttribute('style');
+								fullscrToggler.removeAttribute('style');
+							} else {
+								splitter.style.visibility = 'visible';
+								sidebar.style.visibility = 'visible';
+								fullscrToggler.style.visibility = 'visible';
+							}
+							break;
 						case 'extensions.tabtree.highlight-unloaded-tabs':
 							prefPending = Services.prefs.getIntPref('extensions.tabtree.highlight-unloaded-tabs');
 							tree.treeBoxObject.invalidate();
@@ -1978,6 +1991,7 @@ var windowListener = {
 				}
 			}
 		}), false); // don't forget to remove // it can be removed in 'onCloseWindow' or in 'unloadFromWindow'(upon addon shutdown)
+		aDOMWindow.tt.toRemove.prefsObserver.observe(null, 'nsPref:changed', 'extensions.tabtree.fullscreen-hide');
 
 		tt.redrawToolbarbuttons(); // needed when addon is enabled from about:addons (not when firefox is being loaded)
 		tree.treeBoxObject.invalidate(); // just in case

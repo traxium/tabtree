@@ -63,4 +63,5 @@
             </menupopup>
         </menulist>
     </setting>
+    <setting type="bool" pref="extensions.tabtree.fullscreen-hide" title="&fullscreen-hide.title;" desc="&fullscreen-hide.desc;" />
 </vbox>
