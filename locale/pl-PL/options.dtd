@@ -46,3 +46,7 @@
 <!ENTITY wheel.1 "bez Shifta - zmiana wybranej karty, z Shiftem - normalne przewijanie">
 <!ENTITY wheel.2 "zawsze normalne przewijanie">
 <!ENTITY wheel.3 "zawsze zmienia wybranej karty">
+<!ENTITY search-jump.title "Tab search jumps to the first match:">
+<!ENTITY search-jump.desc "(unchecked by default)">
+<!ENTITY search-jump-min-chars.title "Min number of characters to jump:">
+<!ENTITY search-jump-min-chars.desc "(4 by default)">
