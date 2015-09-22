@@ -352,6 +352,9 @@ var windowListener = {
 		if (!browser) {
 			return;
 		}
+		if (aDOMWindow.tt) { // To fix bug #15 (Duplicate tree in private browsing mode)
+			return;
+		}
 		let g = aDOMWindow.gBrowser;
 		let appcontent = aDOMWindow.document.querySelector('#appcontent');
 		aDOMWindow.tt = {
