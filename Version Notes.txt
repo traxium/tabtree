@@ -2,17 +2,21 @@
 - Scrolling over the tab tree changes selected tab (optionally)
 - Added tab context menu commands: "Close this Tree" and "Close Children"
 - Tab Search jumps to the first match (optionally)
+- Added an option to not hide the tab panel in full screen mode
 - French translation
 - Polish translation
 - Improved the process of saving and restoring icons that were placed in the Tab Bar before the add-on installation
+- Fixed bug #15 (Duplicate tree in private browsing mode)
 
 1.3.5
 - Переключение вкладок колёсиком мышки (опционально)
 - Добавлены команды контекстного меню: "Закрыть это дерево" и "Закрыть дочерние вкладки"
 - Поиск вкладок автоматически переключает на первую найденную вкладку (опционально)
+- Опция для того, чтобы не скрывать панель вкладок в полноэкранном режиме
 - Французский язык
 - Польский язык
 - Улучшено поведение при автоматичкском перемещении иконок из стандартной панели вкладок
+- Исправлена ошибка #15 (Дублирование дерева вкладок при открытии приватного окна)
 
 1.3.4
 - Fixed the bug introduced in 1.3.3 when Tab Tree didn't appear after Firefox restart/shutdown
