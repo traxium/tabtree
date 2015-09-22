@@ -50,5 +50,5 @@
 <!ENTITY search-jump.desc "(unchecked by default)">
 <!ENTITY search-jump-min-chars.title "Min number of characters to jump:">
 <!ENTITY search-jump-min-chars.desc "(4 by default)">
-<!ENTITY fullscreen-hide.title "Show the tab tree in full screen:">
-<!ENTITY fullscreen-hide.desc "(checked by default)">
+<!ENTITY fullscreen-show.title "Show the tab tree in full screen:">
+<!ENTITY fullscreen-show.desc "(checked by default)">

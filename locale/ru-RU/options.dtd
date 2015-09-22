@@ -50,5 +50,5 @@
 <!ENTITY search-jump.desc "(не отмечено по умолчанию)">
 <!ENTITY search-jump-min-chars.title "Минимальной количество символов для переключения вкладки:">
 <!ENTITY search-jump-min-chars.desc "(4 по умолчанию)">
-<!ENTITY fullscreen-hide.title "Показывать панель вкладок в полноэкранном режиме:">
-<!ENTITY fullscreen-hide.desc "(не отмечено по умолчанию)">
+<!ENTITY fullscreen-show.title "Показывать панель вкладок в полноэкранном режиме:">
+<!ENTITY fullscreen-show.desc "(не отмечено по умолчанию)">
