@@ -7,12 +7,17 @@ setting[pref="extensions.tabtree.dblclick"][value="false"] + setting[pref="exten
 	visibility: collapse;
 }
 
+setting[pref="extensions.tabtree.search-jump"][value="false"] + setting[pref="extensions.tabtree.search-jump-min-chars"] {
+	visibility: collapse;
+}
+
 /* Hide this option on Linux & Mac */
 
 setting[pref="browser.tabs.drawInTitlebar"] { 
 	visibility: collapse;
 }
 
+/*noinspection CssInvalidMediaFeature*/
 @media
 (-moz-os-version: windows-xp),
 (-moz-os-version: windows-vista),

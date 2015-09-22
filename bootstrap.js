@@ -87,6 +87,8 @@ function startup(data, reason)
 	// 1 - "without Shift - changing selected tab, with Shift - ordinary scrolling"
 	// 2 - "always ordinary scrolling" 3 - "always changing selected tab":
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.wheel', 0);
+	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.search-jump', false); // jump to the first search match
+	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.search-jump-min-chars', 4); // min chars to jump
 	
 	// migration code :
 	try {
@@ -682,20 +684,17 @@ var windowListener = {
 
 		//////////////////// QUICK SEARCH BOX ////////////////////////////////////////////////////////////////////////
 		let quickSearchBox = aDOMWindow.document.createElement('textbox');
-		propsToSet = {
-			id: 'tt-quicksearchbox',
-			placeholder: stringBundle.GetStringFromName('tabs_quick_search') || 'Start typing to search for a tab' // the latter is just in case
-		};
-		Object.keys(propsToSet).forEach( (p)=>{quickSearchBox.setAttribute(p, propsToSet[p]);} );
+		quickSearchBox.id = 'tt-quicksearchbox';
+		quickSearchBox.setAttribute('placeholder', stringBundle.GetStringFromName('tabs_quick_search'));
 		switch (Services.prefs.getIntPref('extensions.tabtree.search-position')) {
-			case 1:
-				sidebar.insertBefore(quickSearchBox, newTabContainer); // before "New tab" button
-				break;
-			case 2:
-				sidebar.appendChild(quickSearchBox); // after "New tab" button
-				break;
-			default:
-				sidebar.insertBefore(quickSearchBox, sidebar.firstChild);
+		case 1:
+			sidebar.insertBefore(quickSearchBox, newTabContainer); // before "New tab" button
+			break;
+		case 2:
+			sidebar.appendChild(quickSearchBox); // after "New tab" button
+			break;
+		default: // case 0 // at the top
+			sidebar.insertBefore(quickSearchBox, sidebar.firstChild);
 		}
 		quickSearchBox.collapsed = Services.prefs.getBoolPref('extensions.tabtree.search-autohide');
 		//////////////////// END QUICK SEARCH BOX /////////////////////////////////////////////////////////////////
@@ -1668,6 +1667,20 @@ var windowListener = {
 		});
 
 		quickSearchBox.addEventListener('input', function(event) {
+			if (Services.prefs.getBoolPref('extensions.tabtree.search-jump')) {
+				let txt = quickSearchBox.value.toLowerCase();
+				if (txt.length >= Services.prefs.getIntPref('extensions.tabtree.search-jump-min-chars')) {
+					for (let tPos = g._numPinnedTabs; tPos < g.tabs.length; ++tPos) {
+						let url = g.browsers[tPos]._userTypedValue || g.browsers[tPos].contentDocument.URL || '';
+						// 'url.toLowerCase()' may be replaced by 'url':
+						if (g.tabs[tPos].label.toLowerCase().indexOf(txt) != -1 || url.toLowerCase().indexOf(txt) != -1) {
+							g.selectTabAtIndex(tPos);
+							quickSearchBox.focus();
+							break;
+						}
+					}
+				}
+			}
 			tree.treeBoxObject.invalidate();
 		}, false);
 

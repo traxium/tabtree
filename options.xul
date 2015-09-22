@@ -33,6 +33,8 @@
         </menulist>
     </setting>
     <setting type="bool" pref="extensions.tabtree.search-autohide" title="&search-autohide.title;" desc="&search-autohide.desc;" />
+    <setting type="bool" pref="extensions.tabtree.search-jump" title="&search-jump.title;" desc="&search-jump.desc;" onpreferencechanged="this.setAttribute('value', this.value.toString());" />
+    <setting type="integer" pref="extensions.tabtree.search-jump-min-chars" title="&search-jump-min-chars.title;" desc="&search-jump-min-chars.desc;" />
     <setting type="menulist" pref="extensions.tabtree.navbar-style" title="&navbar-style.title;" desc="&navbar-style.desc;">
         <menulist>
             <menupopup>

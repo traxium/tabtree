@@ -46,3 +46,7 @@
 <!ENTITY wheel.1 "Sans Maj - changer l’onglet actif, avec Maj- défiler normalement">
 <!ENTITY wheel.2 "toujours défiler normalement">
 <!ENTITY wheel.3 "toujours changer l’onglet actif">
+<!ENTITY search-jump.title "Tab search jumps to the first match:">
+<!ENTITY search-jump.desc "(unchecked by default)">
+<!ENTITY search-jump-min-chars.title "Min number of characters to jump:">
+<!ENTITY search-jump-min-chars.desc "(4 by default)">
