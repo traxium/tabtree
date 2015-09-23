@@ -1,7 +1,7 @@
 <!ENTITY treelines.title "Pokazuj linie łączące karty wzdłuż drzewa:">
 <!ENTITY treelines.desc "Linie łączące karty podrzędne z kartą nadrzędną (domyślnie zaznaczone)">
 <!ENTITY highlight-unloaded-tabs.title "Podświetl niezaładowane karty:">
-<!ENTITY highlight-unloaded-tabs.desc "Gdy używasz opcji Firefoxa &quot;Nie wczytuj kart, dopóki nie zostały wybrane&quot; (Domyślnie &quot;Nie&quot;)">
+<!ENTITY highlight-unloaded-tabs.desc "Gdy używasz opcji Firefox &quot;Nie wczytuj kart, dopóki nie zostały wybrane&quot; (Domyślnie &quot;Nie&quot;)">
 <!ENTITY highlight-unloaded-tabs.no "Nie">
 <!ENTITY highlight-unloaded-tabs.grayout "Zabarw na szaro">
 <!ENTITY highlight-unloaded-tabs.highlight "Podświetl">
@@ -23,7 +23,7 @@
 <!ENTITY search-autohide.title "Samoukrywanie się wyszukiwarki kart:">
 <!ENTITY search-autohide.desc "Ctrl+Shift+Alt+F sprawia, że się pojawia (Domyślnie odznaczone)">
 <!ENTITY navbar-style.title "Wielkość paska adresu:">
-<!ENTITY navbar-style.desc "Wybierz &quot;Użyj domyślnej&quot; żeby móc użyć stylu ze stron trzecih (&quot;Najmniejsza&quot; domyślnie)">
+<!ENTITY navbar-style.desc "Wybierz &quot;Użyj domyślnej&quot; żeby móc użyć stylu ze stron trzecich (&quot;Najmniejsza&quot; domyślnie)">
 <!ENTITY navbar-style.0 "Użyj domyślnej">
 <!ENTITY navbar-style.1 "Najmniejsza">
 <!ENTITY navbar-style.2 "Mała">
@@ -42,13 +42,13 @@
 <!ENTITY max-indent.desc "Przy otwieraniu karty. &quot;-1&quot; znaczy, że nie ma limitu zagnieżdżenia (&quot;-1&quot; domyślnie)">
 <!ENTITY wheel.title "Przy przewijaniu drzewa kart:">
 <!ENTITY wheel.desc "(Domyślnie pierwszy wybór)">
-<!ENTITY wheel.0 "bez Shifta - normalne przewijanie, z Shiftem - zmiana wybranej karty">
-<!ENTITY wheel.1 "bez Shifta - zmiana wybranej karty, z Shiftem - normalne przewijanie">
+<!ENTITY wheel.0 "bez Shifta - normalne przewijanie, z Shiftem - zmienia aktywną kartę">
+<!ENTITY wheel.1 "bez Shifta - zmienia aktywną kartę, z Shiftem - normalne przewijanie">
 <!ENTITY wheel.2 "zawsze normalne przewijanie">
-<!ENTITY wheel.3 "zawsze zmienia wybranej karty">
-<!ENTITY search-jump.title "Tab search jumps to the first match:">
-<!ENTITY search-jump.desc "(unchecked by default)">
-<!ENTITY search-jump-min-chars.title "Min number of characters to jump:">
-<!ENTITY search-jump-min-chars.desc "(4 by default)">
-<!ENTITY fullscreen-show.title "Show the tab tree in full screen:">
-<!ENTITY fullscreen-show.desc "(checked by default)">
+<!ENTITY wheel.3 "zawsze zmienia aktywną kartę">
+<!ENTITY search-jump.title "Wyszukiwarka kart przechodzi do pierwszego dopasowania:">
+<!ENTITY search-jump.desc "(domyślnie odznaczone)">
+<!ENTITY search-jump-min-chars.title "Minimalna liczba znaków do wykonania przejścia:">
+<!ENTITY search-jump-min-chars.desc "(domyślnie 4)">
+<!ENTITY fullscreen-show.title "Pokaż drzewa kart w trybie pełnoekranowym:">
+<!ENTITY fullscreen-show.desc "(domyślnie zaznaczone)">
