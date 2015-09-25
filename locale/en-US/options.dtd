@@ -22,7 +22,7 @@
 <!ENTITY search-position.bottom-after "Bottom (after the &quot;New tab&quot; button)">
 <!ENTITY search-autohide.title "Autohide tab search bar:">
 <!ENTITY search-autohide.desc "Ctrl+Shift+Alt+F brings it up (unchecked by default)">
-<!ENTITY navbar-style.title "Adress bar size:">
+<!ENTITY navbar-style.title "Address bar size:">
 <!ENTITY navbar-style.desc "Select &quot;Use default&quot; to use any third-party styles (&quot;The smallest&quot; by default)">
 <!ENTITY navbar-style.0 "Use default">
 <!ENTITY navbar-style.1 "The smallest">
