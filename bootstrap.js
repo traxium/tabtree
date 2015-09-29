@@ -586,6 +586,7 @@ var windowListener = {
 		toolbox.id = 'tt-toolbox';
 		let toolbar = aDOMWindow.document.createElement('toolbar');
 		toolbar.id = 'tt-toolbar';
+		toolbar.setAttribute('fullscreentoolbar', 'true');
 		toolbar.appendChild(hboxForDropIndicator);
 		toolbox.appendChild(toolbar);
 		sidebar.appendChild(toolbox);
@@ -2095,6 +2096,10 @@ var windowListener = {
 		//////////////////// END TAB CONTEXT MENU //////////////////////////////////////////////////////////////////////
 
 		//aDOMWindow.tt.ss = ss; // uncomment while debugging
+		//aDOMWindow.tt.quickSearchBox = quickSearchBox; // uncomment while debugging
+		//aDOMWindow.tt.tt = tree; // uncomment while debugging
+		//aDOMWindow.tt.treechildren = treechildren; // uncomment while debugging
+		//aDOMWindow.tt.tabContextMenu = tabContextMenu; // uncomment while debugging
 		
 	} // loadIntoWindow: function(aDOMWindow) {
 }; // var windowListener = {
