@@ -24,6 +24,10 @@
 	display: none;
 }
 
+#main-window[inFullscreen][inDOMFullscreen] #tt-fullscr-toggler {
+	visibility: collapse;
+}
+
 #main-window[inFullscreen] #tt-sidebar,
 #main-window[inFullscreen] #tt-splitter {
 	visibility: collapse;
