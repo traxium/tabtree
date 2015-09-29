@@ -17,6 +17,16 @@
 
 #tt-fullscr-toggler {
 	width: 1px;
+	background: black;
+}
+
+#main-window[inFullscreen] #fullscr-toggler:hover ~ #content-deck #tt-fullscr-toggler,
+#main-window[inFullscreen] #navigator-toolbox:hover ~ #content-deck #tt-fullscr-toggler,
+#main-window[inFullscreen] #appcontent:hover ~ #tt-fullscr-toggler {
+	background: black;
+}
+
+#main-window[inFullscreen] #appcontent ~ #tt-fullscr-toggler {
 	background: transparent;
 }
 
