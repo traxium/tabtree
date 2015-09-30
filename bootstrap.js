@@ -1009,6 +1009,21 @@ var windowListener = {
 				if (g.tabs[tPos].label.toLowerCase().indexOf(txt)!=-1 || url.toLowerCase().indexOf(txt)!=-1) { // 'url.toLowerCase()' may be replaced by 'url'
 					return true;
 				}
+			},
+			
+			forceReflow: function() {
+				// This function is needed to fix bug #12 (Browser chrome goes blank on some hardware when Firefox hardware acceleration is enabled)
+				sidebar.collapsed = true;
+				aDOMWindow.setTimeout(function () { sidebar.collapsed = false; }, 400);
+				let domWindowUtils = aDOMWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
+				aDOMWindow.setTimeout(function () { domWindowUtils.redraw(); }, 800);
+				// My way to force reflow:
+				aDOMWindow.document.documentElement.style.marginLeft = '-1px';
+				aDOMWindow.document.documentElement.style.paddingLeft = '1px';
+				aDOMWindow.setTimeout(function () {
+					aDOMWindow.document.documentElement.style.marginLeft = '';
+					aDOMWindow.document.documentElement.style.paddingLeft = '';
+				}, 500);
 			}
 		}; // let tt = {
 
@@ -1957,6 +1972,7 @@ var windowListener = {
 							tree.view = view;
 							tree.treeBoxObject.scrollToRow(firstVisibleRow);
 							tt.redrawToolbarbuttons();
+							tt.forceReflow(); // fixes bug #12
 							break;
 						case 'extensions.tabtree.new-tab-button':
 							newTab.collapsed = !Services.prefs.getBoolPref('extensions.tabtree.new-tab-button');
@@ -2008,6 +2024,7 @@ var windowListener = {
 		}
 		tt.redrawToolbarbuttons();
 		//aDOMWindow.TabsInTitlebar._update(true); // already called by Firefox
+		tt.forceReflow(); // fixes bug #12
 		
 		// the problem is that at Firefox startup at this point tab.hasAttribute('image') is always 'false'
 		aDOMWindow.tt.toRestore.g.setIcon = g.setIcon;
@@ -2100,6 +2117,8 @@ var windowListener = {
 		//aDOMWindow.tt.tt = tree; // uncomment while debugging
 		//aDOMWindow.tt.treechildren = treechildren; // uncomment while debugging
 		//aDOMWindow.tt.tabContextMenu = tabContextMenu; // uncomment while debugging
+		//aDOMWindow.tt.sidebar = sidebar; // uncomment while debugging
+		//aDOMWindow.tt.customizer = aDOMWindow.document.getElementById("customization-container"); // uncomment while debugging
 		
 	} // loadIntoWindow: function(aDOMWindow) {
 }; // var windowListener = {
