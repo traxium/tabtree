@@ -324,16 +324,12 @@ var windowListener = {
 		// it's probably already removed but "Calling removeEventListener() with arguments that do not identify any currently registered EventListener ... has no effect.":
 		aDOMWindow.document.querySelector('#appcontent').removeEventListener('mouseup', aDOMWindow.tt.toRemove.eventListeners.onAppcontentMouseUp, false);
 		aDOMWindow.document.querySelector('#tabContextMenu').removeEventListener("popupshowing", aDOMWindow.tt.toRemove.eventListeners.onPopupshowing, false);
-		// Restore default title bar buttons position (Minimize, Restore/Maximize, Close):
-		let titlebarButtonboxContainer = aDOMWindow.document.querySelector('#titlebar-buttonbox-container');
-		let titlebarContent = aDOMWindow.document.querySelector('#titlebar-content');
-		titlebarContent.appendChild(titlebarButtonboxContainer);
 		if (aDOMWindow.tt.toRestore.tabsintitlebar) { // restoring 'tabsintitlebar' attr
 			aDOMWindow.document.documentElement.setAttribute("tabsintitlebar", "true"); // hide native titlebar
 		} else {
 			aDOMWindow.document.documentElement.removeAttribute("tabsintitlebar"); // show native titlebar
 		}
-		aDOMWindow.TabsInTitlebar._update(true); // It is needed to recalculate negative 'margin-bottom' for 'titlebar' and 'margin-bottom' for 'titlebarContainer'
+		aDOMWindow.TabsInTitlebar.updateAppearance(true); // It is needed to recalculate negative 'margin-bottom' for 'titlebar' and 'margin-bottom' for 'titlebarContainer'
 		Services.prefs.removeObserver('extensions.tabtree.', aDOMWindow.tt.toRemove.prefsObserver); // it could be already removed in 'onCloseWindow'
 
 		if (Services.appinfo.OS == 'WINNT') { // all Windows despite name 'WINNT' 
