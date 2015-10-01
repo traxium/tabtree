@@ -1,3 +1,13 @@
+1.3.6
+- Improved fullscreen mode support (especially in fullscreen video players like Youtube)
+- Fixed the bug with collapsed pinned tabs while Firefox is in fullscreen mode (introduced in Firefox 40+)
+- Partly (or fully) fixed bug #12 (Blank chrome on some hardware when Firefox hardware acceleration is enabled)
+
+1.3.6
+- Улучшена поддержка полноэкранного режима
+- Исправлена ошибка с исчезновением закреплённых вкладок (появилась в Firefox 40+)
+- Частично (а может быть и полностью) исправлена ошибка #12 (Артефакты на некоторых видеокартах при включенном аппаратном ускорении в настройках Firefox)
+
 1.3.5
 - Scrolling over the tab tree changes selected tab (optionally)
 - Added tab context menu commands: "Close this Tree" and "Close Children"
