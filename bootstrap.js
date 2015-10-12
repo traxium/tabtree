@@ -472,6 +472,8 @@ var windowListener = {
 			aDOMWindow.document.documentElement.removeAttribute("tabsintitlebar"); // show a native titlebar like in Safari
 			aDOMWindow.updateTitlebarDisplay();
 		} else { // Linux
+		    // Set tab position to buttom to fix compatibility with certain extensions
+		    navBar.setAttribute('default-tabs-position', 'bottom')
 			// here we are concerned only with STATE_FULLSCREEN:
 			switch (aDOMWindow.windowState) {
 				case aDOMWindow.STATE_FULLSCREEN:
