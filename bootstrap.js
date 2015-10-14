@@ -302,6 +302,10 @@ var windowListener = {
 			if (titlebarButtonsClone && titlebarButtonsClone.parentNode !== null) { // if it exists
 				titlebarButtonsClone.parentNode.removeChild(titlebarButtonsClone);
 			}
+			let titlebarButtonboxContainer = aDOMWindow.document.querySelector('#titlebar-buttonbox-container');
+			if (titlebarButtonboxContainer) {
+				titlebarButtonboxContainer.style.marginRight = ''; // Beyond Australis compatibility
+			}
 			let windowControlsClone = aDOMWindow.document.querySelector('#tt-window-controls-clone');
 			if (windowControlsClone && windowControlsClone.parentNode !== null) { // if it exists
 				windowControlsClone.parentNode.removeChild(windowControlsClone);
@@ -403,6 +407,9 @@ var windowListener = {
 					if (Services.prefs.getBoolPref('browser.tabs.drawInTitlebar')) {
 						if (menu.getAttribute('autohide') == 'true' && menu.hasAttribute('inactive')) {
 							navBar.appendChild(titlebarButtonsClone);
+							// It can't be plain ".collapsed = true" because it would affect ".updateTitlebarDisplay()"
+							// and consequently "aDOMWindow.TabsInTitlebar.updateAppearance(true);" margin calculations:
+							titlebarButtons.style.marginRight = '-9999px'; // Beyond Australis compatibility
 							aDOMWindow.document.documentElement.setAttribute("tabsintitlebar", "true"); // hide native titlebar
 							aDOMWindow.updateTitlebarDisplay();
 						}
@@ -426,6 +433,7 @@ var windowListener = {
 						if (Services.prefs.getBoolPref('browser.tabs.drawInTitlebar')) {
 							if (menu.getAttribute('autohide') == 'true' && menu.hasAttribute('inactive')) {
 								navBar.appendChild(titlebarButtonsClone);
+								titlebarButtons.style.marginRight = '-9999px'; // Beyond Australis compatibility
 								aDOMWindow.document.documentElement.setAttribute("tabsintitlebar", "true"); // hide native titlebar
 								aDOMWindow.updateTitlebarDisplay();
 							}
@@ -438,12 +446,14 @@ var windowListener = {
 						aDOMWindow.document.documentElement.removeAttribute("tabsintitlebar"); // show native toolbar
 						if (titlebarButtonsClone.parentNode !== null) { // if it exists
 							navBar.removeChild(titlebarButtonsClone);
+							titlebarButtons.style.marginRight = ''; // Beyond Australis compatibility
 						}
 						aDOMWindow.updateTitlebarDisplay();
 						break;
 					case aDOMWindow.STATE_FULLSCREEN:
 						if (titlebarButtonsClone.parentNode !== null) { // if it exists
 							navBar.removeChild(titlebarButtonsClone);
+							titlebarButtons.style.marginRight = ''; // Beyond Australis compatibility
 						}
 						navBar.appendChild(windowControlsClone);
 						break;
@@ -453,13 +463,19 @@ var windowListener = {
 			(aDOMWindow.tt.toRemove._menuObserver = new aDOMWindow.MutationObserver(function(aMutations) {
 				for (let mutation of aMutations) {
 					if (mutation.attributeName == 'inactive' || mutation.attributeName == 'autohide') {
-						if (Services.prefs.getBoolPref('browser.tabs.drawInTitlebar') && aDOMWindow.windowState==aDOMWindow.STATE_MAXIMIZED
-							&& mutation.target.getAttribute('autohide')=='true' && mutation.target.hasAttribute('inactive')) {
+						if (
+							Services.prefs.getBoolPref('browser.tabs.drawInTitlebar') &&
+							aDOMWindow.windowState==aDOMWindow.STATE_MAXIMIZED &&
+							mutation.target.getAttribute('autohide')=='true' &&
+							mutation.target.hasAttribute('inactive')
+						) {
 							navBar.appendChild(titlebarButtonsClone);
+							titlebarButtons.style.marginRight = '-9999px'; // Beyond Australis compatibility
 						} else {
 							if (titlebarButtonsClone.parentNode !== null) { // if it exists
 								navBar.removeChild(titlebarButtonsClone);
 							}
+							titlebarButtons.style.marginRight = ''; // Beyond Australis compatibility
 						}
 						return;
 					}
@@ -472,8 +488,8 @@ var windowListener = {
 			aDOMWindow.document.documentElement.removeAttribute("tabsintitlebar"); // show a native titlebar like in Safari
 			aDOMWindow.updateTitlebarDisplay();
 		} else { // Linux
-		    // Set tab position to buttom to fix compatibility with certain extensions
-		    navBar.setAttribute('default-tabs-position', 'bottom')
+		    // Set tab position to buttom to fix compatibility with certain extensions:
+			navBar.setAttribute('default-tabs-position', 'bottom');
 			// here we are concerned only with STATE_FULLSCREEN:
 			switch (aDOMWindow.windowState) {
 				case aDOMWindow.STATE_FULLSCREEN:
@@ -1918,10 +1934,12 @@ var windowListener = {
 								if (Services.prefs.getBoolPref('browser.tabs.drawInTitlebar') && aDOMWindow.windowState == aDOMWindow.STATE_MAXIMIZED
 									&& menu.getAttribute('autohide') == 'true' && menu.hasAttribute('inactive')) {
 									navBar.appendChild(titlebarButtonsClone);
+									titlebarButtons.style.marginRight = '-9999px'; // Beyond Australis compatibility
 								} else {
 									if (titlebarButtonsClone.parentNode !== null) { // if it exists
 										navBar.removeChild(titlebarButtonsClone);
 									}
+									titlebarButtons.style.marginRight = ''; // Beyond Australis compatibility
 								}
 							} // else do nothing
 							break;
