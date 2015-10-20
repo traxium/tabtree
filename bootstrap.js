@@ -67,6 +67,15 @@ function startup(data, reason)
 		});
 	}
 
+	ssHack.SessionStoreInternal.ttOrigOfUndoCloseTab = ssHack.SessionStoreInternal.undoCloseTab;
+	ssHack.SessionStoreInternal.undoCloseTab = new Proxy(ssHack.SessionStoreInternal.undoCloseTab, {
+		apply: function (target, thisArg, argumentsList) {
+			let aWindow = argumentsList[0];
+			aWindow.ttIsRestoringTab = true;
+			return target.apply(thisArg, argumentsList); // returns a tab
+		}
+	}); // restored in shutdown()
+
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.treelines', true); // setting default pref
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.highlight-unloaded-tabs', 0); // setting default pref
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.dblclick', false); // setting default pref
@@ -202,6 +211,7 @@ function shutdown(aData, aReason)
 	} else { // to support Firefox before version 41
 		ssHack.SessionStoreInternal.onLoad = ssOrig;
 	}
+	ssHack.SessionStoreInternal.undoCloseTab = ssHack.SessionStoreInternal.ttOrigOfUndoCloseTab;
 
 	Services.prefs.removeObserver('extensions.tabtree.', prefsObserver); // sss related prefs
 
@@ -1198,7 +1208,11 @@ var windowListener = {
 						}
 						tree.treeBoxObject.ensureRowIsVisible(tab._tPos - tt.nPinned);
 					}, true);
-				} else if (argumentsList.length>=2 && !argumentsList[1].referrerURI || argumentsList.length===1) { // new tab button or dropping links on the native tabbar
+				} else if ( // new tab button or dropping links on the native tabbar or (NEW) gBrowser.addTab() when called without arguments
+					argumentsList.length>=2 && !argumentsList[1].referrerURI ||
+					argumentsList.length===1 ||
+					argumentsList.length===0 && !aDOMWindow.ttIsRestoringTab
+				) {
 					g.tabContainer.addEventListener('TabOpen', function onPreAddTabWithoutRef(event) {
 						g.tabContainer.removeEventListener('TabOpen', onPreAddTabWithoutRef, true);
 						if ( ss.getTabValue(event.target, 'ttLevel') === '' ) { // despite MDN it returns '' instead of undefined
@@ -1207,6 +1221,7 @@ var windowListener = {
 						tree.treeBoxObject.rowCountChanged(event.target._tPos-tt.nPinned, 1);
 					}, true);
 				} else { // undo close tab
+					delete aDOMWindow.ttIsRestoringTab;
 					g.tabContainer.ttUndoingCloseTab = true; // for 'TabSelected' event handler in order not to fire when it is unnecessary
 					g.tabContainer.addEventListener('TabOpen', function onPreAddUndoCloseTab(event) {
 						g.tabContainer.removeEventListener('TabOpen', onPreAddUndoCloseTab, true);
