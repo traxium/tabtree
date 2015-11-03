@@ -1022,6 +1022,11 @@ var windowListener = {
 					} else {
 						toolbarbtn.setAttribute('image', g.tabs[i].image || 'chrome://mozapps/skin/places/defaultFavicon.png');
 					}
+					if (g.tabs[i].hasAttribute('titlechanged')) {
+						toolbarbtn.setAttribute('titlechanged', 'true');
+					} else {
+						toolbarbtn.removeAttribute('titlechanged');
+					}
 				}
 				g.mCurrentTab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(g.mCurrentTab._tPos - tt.nPinned); // NEW
 			}, // redrawToolbarbuttons: function() {
