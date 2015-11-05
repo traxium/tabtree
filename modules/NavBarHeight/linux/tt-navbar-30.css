@@ -1,0 +1,56 @@
+/*
+ * This file is part of Nav Bar Height,
+ * Copyright (C) 2015 Sergey Zelentsov <crayfishexterminator@gmail.com>
+ */
+
+/* from devedition.css ************************************************************************************************/
+
+/* 231 */
+
+window:not([chromehidden~="toolbar"]) #urlbar-wrapper {
+	overflow: -moz-hidden-unscrollable;
+	clip-path: none;
+	-moz-margin-start: 0;
+}
+
+/* 264 */
+
+/* No extra vertical padding for nav bar */
+#nav-bar-customization-target,
+#nav-bar {
+	padding-top: 0;
+	padding-bottom: 0;
+}
+
+/* 271 */
+
+/* Use smaller back button icon */
+#back-button {
+	-moz-image-region: rect(0, 54px, 18px, 36px);
+}
+
+/* 369 */
+
+/* Square back and forward buttons */
+#back-button > .toolbarbutton-icon,
+#forward-button > .toolbarbutton-icon {
+	margin: 0;
+	padding: 2px 5px;
+}
+
+/* 393 */
+
+#back-button > .toolbarbutton-icon {
+	border-radius: 2px 0 0 2px !important;
+}
+
+/* ****************************************************************************************************************** */
+
+#bookmarks-menu-button[cui-areatype="toolbar"] > .toolbarbutton-menubutton-dropmarker > .dropmarker-icon {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+#back-button {
+	padding-left: 4px !important;
+}

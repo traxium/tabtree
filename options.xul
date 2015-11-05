@@ -3,7 +3,12 @@
 <!-- This file is part of Tab Tree,
 - Copyright (C) 2015 Sergey Zelentsov <crayfishexterminator@gmail.com> -->
         
-<!DOCTYPE options SYSTEM "chrome://tabtree/locale/options.dtd">
+<!DOCTYPE options [
+<!ENTITY % optionsDTD SYSTEM "chrome://tabtree/locale/options.dtd" >
+ %optionsDTD;
+<!ENTITY % navbarheightDTD SYSTEM "chrome://tabtree/locale/navbarheight.dtd" >
+ %navbarheightDTD;
+]>
 
 <vbox xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
     <setting type="bool" pref="extensions.tabtree.treelines" title="&treelines.title;" desc="&treelines.desc;" />
@@ -35,16 +40,19 @@
     <setting type="bool" pref="extensions.tabtree.search-autohide" title="&search-autohide.title;" desc="&search-autohide.desc;" />
     <setting type="bool" pref="extensions.tabtree.search-jump" title="&search-jump.title;" desc="&search-jump.desc;" onpreferencechanged="this.setAttribute('value', this.value.toString());" />
     <setting type="integer" pref="extensions.tabtree.search-jump-min-chars" title="&search-jump-min-chars.title;" desc="&search-jump-min-chars.desc;" />
-    <setting type="menulist" pref="extensions.tabtree.navbar-style" title="&navbar-style.title;" desc="&navbar-style.desc;">
+    <setting type="menulist" pref="extensions.navbarheight.height" title="&height.title;" desc="&height.desc;">
         <menulist>
             <menupopup>
-                <menuitem value="0" label="&navbar-style.0;"/>
+                <menuitem value="24" label="&height.24;"/>
+                <menuitem value="26" label="&height.26;"/>
+                <menuitem value="28" label="&height.28;"/>
+                <menuitem value="30" label="&height.30;"/>
+                <menuitem value="32" label="&height.32;"/>
+                <menuitem value="34" label="&height.34;"/>
+                <menuitem value="36" label="&height.36;"/>
+                <menuitem value="38" label="&height.38;"/>
                 <menuseparator />
-                <menuitem value="1" label="&navbar-style.1;"/>
-                <menuitem value="2" label="&navbar-style.2;"/>
-                <menuitem value="3" label="&navbar-style.3;"/>
-                <menuitem value="4" label="&navbar-style.4;"/>
-                <menuitem value="5" label="&navbar-style.5;"/>
+                <menuitem value="-1" label="&height.-1;"/>
             </menupopup>
         </menulist>
     </setting>

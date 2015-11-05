@@ -1,12 +1,21 @@
+1.3.7
+- More Navigation Bar heights (24px, 26px, 28px ... 40px)
+- Navigation Bar context menu to change its height
+- Compatibility with HTitle extension under Linux
+- Beyond Australis add-on compatibility (but only partially in Windows 8 and later)
+- Fixed bug #27 (One tab is missing)
+
 1.3.6
 - Improved fullscreen mode support (especially in fullscreen video players like Youtube)
+- Fixed the bug preventing the add-on to be properly disabled on Linux
 - Fixed the bug with collapsed pinned tabs while Firefox is in fullscreen mode (introduced in Firefox 40+)
-- Partly (or fully) fixed bug #12 (Blank chrome on some hardware when Firefox hardware acceleration is enabled)
+- Partly (maybe fully) fixed bug #12 (Blank chrome on some hardware when Firefox hardware acceleration is enabled)
 
 1.3.6
 - Улучшена поддержка полноэкранного режима
+- Исправлена ошибка из-за который расширение не отключалось корректно на Linux
 - Исправлена ошибка с исчезновением закреплённых вкладок (появилась в Firefox 40+)
-- Частично (а может быть и полностью) исправлена ошибка #12 (Артефакты на некоторых видеокартах при включенном аппаратном ускорении в настройках Firefox)
+- Баг, вызывающий артефакты на некоторых видеокартах при включенном аппаратном ускорении в настройках Firefox, теперь должен встречаться реже
 
 1.3.5
 - Scrolling over the tab tree changes selected tab (optionally)

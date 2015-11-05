@@ -1,0 +1,13 @@
+/*
+ * This file is part of Nav Bar Height,
+ * Copyright (C) 2015 Sergey Zelentsov <crayfishexterminator@gmail.com>
+ */
+
+#nav-bar-customization-target {
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+
+#back-button {
+	margin-left: 0 !important;
+}

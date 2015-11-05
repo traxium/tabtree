@@ -1,0 +1,15 @@
+/*
+ * This file is part of Nav Bar Height,
+ * Copyright (C) 2015 Sergey Zelentsov <crayfishexterminator@gmail.com>
+ */
+
+/* No extra vertical padding for nav bar */
+#nav-bar-customization-target,
+#nav-bar {
+	padding-top: 0;
+	padding-bottom: 0;
+}
+
+#back-button {
+	padding-left: 3px !important;
+}

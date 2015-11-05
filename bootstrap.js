@@ -85,8 +85,6 @@ function startup(data, reason)
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.search-position', 0);
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.search-autohide', false); // setting default pref
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.show-default-tabs', false); // hidden pref for test purposes
-	// 0 - None, 1 - The Smallest, 2 - Small, 3 - Medium, 4 - Big (round), 5 - The Biggest (round):
-	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.navbar-style', Services.appinfo.OS=='Darwin' ? 0 : 1); // until Mac support is done
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.flst', true); // focus last selected tab after closing a current tab
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.highlight-unread-tabs', false);
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.new-tab-button', true);
@@ -102,72 +100,44 @@ function startup(data, reason)
 	
 	// migration code :
 	try {
-		Services.prefs.setBoolPref('extensions.tabtree.treelines', Services.prefs.getBoolPref('extensions.tabstree.treelines'));
-		Services.prefs.setIntPref('extensions.tabtree.highlight-unloaded-tabs', Services.prefs.getIntPref('extensions.tabstree.highlight-unloaded-tabs'));
-		Services.prefs.setBoolPref('extensions.tabtree.dblclick', Services.prefs.getBoolPref('extensions.tabstree.dblclick'));
-		Services.prefs.setIntPref('extensions.tabtree.delay', Services.prefs.getIntPref('extensions.tabstree.delay'));
-		Services.prefs.setIntPref('extensions.tabtree.position', Services.prefs.getIntPref('extensions.tabstree.position'));
-		Services.prefs.deleteBranch('extensions.tabstree.');
+		// 0 - None, 1 - The Smallest, 2 - Small, 3 - Medium, 4 - Big (round), 5 - The Biggest (round):
+		switch (Services.prefs.getIntPref('extensions.tabstree.navbar-style')) {
+		case 0:
+			Services.prefs.setIntPref('extensions.navbarheight.height', -1);
+			break;
+		case 1:
+			Services.prefs.setIntPref('extensions.navbarheight.height', 24);
+			break;
+		case 2:
+			Services.prefs.setIntPref('extensions.navbarheight.height', 26);
+			break;
+		case 3:
+			Services.prefs.setIntPref('extensions.navbarheight.height', 30);
+			break;
+		case 4:
+			Services.prefs.setIntPref('extensions.navbarheight.height', 32);
+			break;
+		case 5:
+			Services.prefs.setIntPref('extensions.navbarheight.height', 34);
+			break;
+		default:
+			Services.prefs.setIntPref('extensions.navbarheight.height', 28);
+		}
+		Services.prefs.deleteBranch('extensions.tabstree.navbar-style');
 	} catch (e) {
 	}
-	// - end migration code // don't forget to delete when v1.1.0 isn't in use anymore
+	// - end migration code // don't forget to delete when v1.3.6 isn't in use anymore
 
 	let uriTabsToolbar = Services.io.newURI("chrome://tabtree/skin/tt-TabsToolbar.css", null, null);
 	if (!Services.prefs.getBoolPref('extensions.tabtree.show-default-tabs')) {
 		sss.loadAndRegisterSheet(uriTabsToolbar, sss.AUTHOR_SHEET);
 	}
-	let uriNav1Css = Services.io.newURI("chrome://tabtree/skin/tt-navbar-1.css", null, null);
-	let uriNav2Css = Services.io.newURI("chrome://tabtree/skin/tt-navbar-2.css", null, null);
-	let uriNav3Css = Services.io.newURI("chrome://tabtree/skin/tt-navbar-3.css", null, null);
-	let uriNav4Css = Services.io.newURI("chrome://tabtree/skin/tt-navbar-4.css", null, null);
-	let uriNav5Css = Services.io.newURI("chrome://tabtree/skin/tt-navbar-5.css", null, null);
-	switch (Services.prefs.getIntPref('extensions.tabtree.navbar-style')) {
-		case 1: // load The Thinnest (square) style
-			sss.loadAndRegisterSheet(uriNav1Css, sss.AUTHOR_SHEET);
-			break;
-		case 2: // load Thin (square) style
-			sss.loadAndRegisterSheet(uriNav2Css, sss.AUTHOR_SHEET);
-			break;
-		case 3: // load Medium (square) style
-			sss.loadAndRegisterSheet(uriNav3Css, sss.AUTHOR_SHEET);
-			break;
-		case 4: // load Big (round) style
-			sss.loadAndRegisterSheet(uriNav4Css, sss.AUTHOR_SHEET);
-			break;
-		case 5: // load The Biggest (round) style
-			sss.loadAndRegisterSheet(uriNav5Css, sss.AUTHOR_SHEET);
-			break;
-	}
+
 	//noinspection JSUnusedGlobalSymbols
 	Services.prefs.addObserver('extensions.tabtree.', (prefsObserver = {
 		observe: function(subject, topic, data) {
 			if (topic == 'nsPref:changed') {
 				switch (data) {
-					case 'extensions.tabtree.navbar-style':
-						// unload all styles for a start:
-						if (sss.sheetRegistered(uriNav1Css, sss.AUTHOR_SHEET)) sss.unregisterSheet(uriNav1Css, sss.AUTHOR_SHEET);
-						if (sss.sheetRegistered(uriNav2Css, sss.AUTHOR_SHEET)) sss.unregisterSheet(uriNav2Css, sss.AUTHOR_SHEET);
-						if (sss.sheetRegistered(uriNav3Css, sss.AUTHOR_SHEET)) sss.unregisterSheet(uriNav3Css, sss.AUTHOR_SHEET);
-						if (sss.sheetRegistered(uriNav4Css, sss.AUTHOR_SHEET)) sss.unregisterSheet(uriNav4Css, sss.AUTHOR_SHEET);
-						if (sss.sheetRegistered(uriNav5Css, sss.AUTHOR_SHEET)) sss.unregisterSheet(uriNav5Css, sss.AUTHOR_SHEET);
-						switch (Services.prefs.getIntPref('extensions.tabtree.navbar-style')) {
-							case 1: // load The Thinnest (square) style
-								sss.loadAndRegisterSheet(uriNav1Css, sss.AUTHOR_SHEET);
-								break;
-							case 2: // load Thin (square) style
-								sss.loadAndRegisterSheet(uriNav2Css, sss.AUTHOR_SHEET);
-								break;
-							case 3: // load Medium (square) style
-								sss.loadAndRegisterSheet(uriNav3Css, sss.AUTHOR_SHEET);
-								break;
-							case 4: // load Big (round) style
-								sss.loadAndRegisterSheet(uriNav4Css, sss.AUTHOR_SHEET);
-								break;
-							case 5: // load The Biggest (round) style
-								sss.loadAndRegisterSheet(uriNav5Css, sss.AUTHOR_SHEET);
-								break;
-						}
-						break;
 					case 'extensions.tabtree.show-default-tabs':
 						if (Services.prefs.getBoolPref('extensions.tabtree.show-default-tabs')) {
 							sss.unregisterSheet(uriTabsToolbar, sss.AUTHOR_SHEET);
@@ -180,13 +150,18 @@ function startup(data, reason)
 		}
 	}), false); // don't forget to remove // there must be only one pref observer for all Firefox windows for sss prefs
 
+	Cu.import(data.resourceURI.spec + "modules/NavBarHeight/NavBarHeight.jsm");
+	NavBarHeight.data = data;
+	NavBarHeight.packageName = "tabtree";
+	NavBarHeight.init();
+	
 	windowListener.register();
 }
 
 //noinspection JSUnusedGlobalSymbols
-function shutdown(aData, aReason)
+function shutdown(data, reason)
 {
-	if (aReason == APP_SHUTDOWN) return;
+	if (reason == APP_SHUTDOWN) return;
 
 	[
 		"chrome://tabtree/skin/tt-tree.css",
@@ -194,11 +169,6 @@ function shutdown(aData, aReason)
 		"chrome://tabtree/skin/tt-navbar-private.css",
 		"chrome://tabtree/skin/tt-options.css",
 		"chrome://tabtree/skin/tt-TabsToolbar.css",
-		"chrome://tabtree/skin/tt-navbar-1.css",
-		"chrome://tabtree/skin/tt-navbar-2.css",
-		"chrome://tabtree/skin/tt-navbar-3.css",
-		"chrome://tabtree/skin/tt-navbar-4.css",
-		"chrome://tabtree/skin/tt-navbar-5.css",
 	].forEach(function(x) {
 		let uri = Services.io.newURI(x, null, null);
 		if (sss.sheetRegistered(uri, sss.AUTHOR_SHEET)) {
@@ -225,6 +195,9 @@ function shutdown(aData, aReason)
 		});
 		ss.deleteGlobalValue('tt-saved-widgets');
 	}
+	
+	NavBarHeight.uninit();
+	Cu.unload(data.resourceURI.spec + "modules/NavBarHeight/NavBarHeight.jsm");
 	
 	windowListener.unregister();
 }
@@ -764,6 +737,10 @@ var windowListener = {
 			appcontent.addEventListener('mouseup', aDOMWindow.tt.toRemove.eventListeners.onAppcontentMouseUp, false); // don't forget to remove
 		}
 		//////////////////// END KEY ///////////////////////////////////////////////////////////////////////////////////
+		
+		////////////////////////// NEXT ///////////////////////////////////////////////////////////////
+				
+		////////////////////// END NEXT ///////////////////////////////////////////////////////////////
 
 //////////////////////////////// here we could load something before all tabs have been loaded and restored by SS ////////////////////////////////
 

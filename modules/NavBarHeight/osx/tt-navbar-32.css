@@ -1,0 +1,30 @@
+/*
+ * This file is part of Nav Bar Height,
+ * Copyright (C) 2015 Sergey Zelentsov <crayfishexterminator@gmail.com>
+ */
+
+#nav-bar-customization-target {
+	padding-top: 0;
+	padding-bottom: 0;
+}
+
+/* Back button */
+
+#back-button {
+	margin-left: 0 !important;
+}
+
+#nav-bar-customization-target {
+	padding-left: 2px;
+}
+
+/* 32px fix in order to not crop the back button (round) with a selected tab */
+
+#back-button {
+	position: relative;
+	z-index: 2;
+}
+
+#nav-bar {
+	z-index: auto !important;
+}

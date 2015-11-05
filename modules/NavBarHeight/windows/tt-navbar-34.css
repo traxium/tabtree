@@ -1,0 +1,27 @@
+/*
+ * This file is part of Nav Bar Height,
+ * Copyright (C) 2015 Sergey Zelentsov <crayfishexterminator@gmail.com>
+ */
+
+/* 34px total: */
+/* 5px */
+/* 1px border */
+/* 22px URL bar */
+/* 1px border */
+/* 5px */
+
+#urlbar-container {
+	padding-top: 2px !important;
+	padding-bottom: 2px !important;
+}
+
+#nav-bar .toolbarbutton-1:not([type=menu-button]),
+#nav-bar .toolbarbutton-1 > .toolbarbutton-menubutton-button,
+#nav-bar .toolbarbutton-1 > .toolbarbutton-menubutton-dropmarker {
+	padding-top: 0 !important;
+	padding-bottom: 0 !important;
+}
+
+#back-button {
+	padding-left: 2px !important;
+}

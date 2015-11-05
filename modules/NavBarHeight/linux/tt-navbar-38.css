@@ -1,0 +1,14 @@
+/*
+ * This file is part of Nav Bar Height,
+ * Copyright (C) 2015 Sergey Zelentsov <crayfishexterminator@gmail.com>
+ */
+
+/* Less extra vertical padding for nav bar */
+#nav-bar {
+	padding-top: 1px;
+	padding-bottom: 1px;
+}
+
+#back-button {
+	padding-left: 4px !important;
+}

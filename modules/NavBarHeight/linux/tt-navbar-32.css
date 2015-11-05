@@ -1,0 +1,36 @@
+/*
+ * This file is part of Nav Bar Height,
+ * Copyright (C) 2015 Sergey Zelentsov <crayfishexterminator@gmail.com>
+ */
+
+/* No extra vertical padding for nav bar */
+#nav-bar-customization-target,
+#nav-bar {
+	padding-top: 0;
+	padding-bottom: 0;
+}
+
+#bookmarks-menu-button[cui-areatype="toolbar"] > .toolbarbutton-menubutton-dropmarker > .dropmarker-icon {
+	margin-top: 0 !important;
+	margin-bottom: 0 !important;
+}
+
+#back-button {
+	padding-top: 1px;
+	padding-bottom: 1px;
+}
+
+#back-button {
+	padding-left: 1px !important;
+}
+
+/* 32px fix in order to not crop the back button with a selected tab */
+
+.tab-background-start[visuallyselected=true]::after,
+.tab-background-end[visuallyselected=true]::after,
+.tab-background-start[visuallyselected=true]::before,
+.tab-background-end[visuallyselected=true]::before,
+.tab-background-middle[visuallyselected=true] {
+	padding-bottom: 1px;
+	background-clip: content-box;
+}

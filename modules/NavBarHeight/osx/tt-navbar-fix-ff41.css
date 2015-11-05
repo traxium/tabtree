@@ -1,0 +1,9 @@
+/*
+ * This file is part of Nav Bar Height,
+ * Copyright (C) 2015 Sergey Zelentsov <crayfishexterminator@gmail.com>
+ */
+
+.toolbarbutton-badge-container > .toolbarbutton-badge::after {
+	top: -4px;
+	padding: 1px 0 2px 0;
+}

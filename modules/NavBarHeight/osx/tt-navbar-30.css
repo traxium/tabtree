@@ -1,0 +1,152 @@
+/*
+ * This file is part of Nav Bar Height,
+ * Copyright (C) 2015 Sergey Zelentsov <crayfishexterminator@gmail.com>
+ */
+
+/* from devedition.css ************************************************************************************************/
+
+/* 216 */
+
+window:not([chromehidden~="toolbar"]) #urlbar-wrapper {
+	overflow: -moz-hidden-unscrollable;
+	clip-path: none;
+	-moz-margin-start: 0;
+}
+
+/* 249 */
+
+/* No extra vertical padding for nav bar */
+#nav-bar-customization-target,
+#nav-bar {
+	padding-top: 0;
+	padding-bottom: 0;
+}
+
+/* 256 */
+
+/* Use smaller back button icon */
+#back-button {
+	-moz-image-region: rect(0, 54px, 18px, 36px);
+}
+
+/* 337 */
+
+/* Square back and forward buttons.  Need !important on these because there
+   are a lot of more specific selectors sprinkled around elsewhere for changing
+   background / shadows for different states */
+#back-button,
+#forward-button {
+	height: 24px !important;
+	/*box-shadow: none !important;*/
+	/*   border: 1px solid var(--chrome-nav-bar-controls-border-color) !important; */
+	/*background: var(--chrome-nav-buttons-background) !important;*/
+}
+
+/* 348 */
+
+#forward-button {
+	-moz-border-start: none !important;
+}
+
+/* 352 */
+
+#forward-button > .toolbarbutton-icon {
+	margin-left: 0;
+	margin-right: 0;
+}
+
+/* 362 */
+
+#back-button {
+	border-radius: 3px 0 0 3px !important;
+	padding: 0 !important;
+	margin: 0 !important;
+}
+
+/* 368 */
+
+#back-button:hover:active:not([disabled="true"]) {
+	-moz-image-region: rect(18px, 54px, 36px, 36px);
+}
+
+/* ****************************************************************************************************************** */
+
+/* from browser.css ***************************************************************************************************/
+
+/* 2255 */
+
+#back-button:not(:-moz-lwtheme) {
+	border: 1px solid;
+	border-color: hsl(0,0%,31%) hsla(0,0%,29%,.6) hsl(0,0%,27%);
+	box-shadow: inset 0 1px 0 hsla(0,0%,100%,.35),	0 1px 0 hsla(0,0%,100%,.2);
+}
+
+/* 2263 */
+
+#back-button:hover:active:not(:-moz-lwtheme) {
+	box-shadow: inset rgba(0,0,0,.3) 0 -6px 10px,	inset #000 0 1px 3px,
+	inset rgba(0,0,0,.2) 0 1px 3px,	0 1px 0 hsla(0,0%,100%,.2);
+}
+
+/* 2271 */
+
+#back-button:-moz-window-inactive:not(:-moz-lwtheme) {
+	border-color: hsl(0,0%,64%) hsl(0,0%,65%) hsl(0,0%,66%);
+	box-shadow: inset 0 1px 0 hsla(0,0%,100%,.35);
+}
+
+/* 2277 */
+
+@media (-moz-mac-lion-theme) {
+	#back-button:not(:-moz-lwtheme),
+	#forward-button:not(:-moz-lwtheme) {
+		/*background-image: linear-gradient(hsla(0,0%,100%,.73), hsla(0,0%,100%,.05) 85%);*/
+		border-color: hsla(0,0%,0%,.35) hsla(0,0%,0%,.25) hsla(0,0%,0%,.2);
+		box-shadow: inset 0 1px 0 hsla(0,0%,100%,.2),
+		inset 0 0 1px hsla(0,0%,100%,.1),
+		0 1px 0 hsla(0,0%,100%,.2);
+	}
+	
+	#back-button:hover:active:not(:-moz-lwtheme),
+	#forward-button:hover:active:not(:-moz-lwtheme) {
+		/*background-image: linear-gradient(hsla(0,0%,60%,.37), hsla(0,0%,100%,.35) 95%);*/
+		border-color: hsla(0,0%,0%,.43) hsla(0,0%,0%,.25) hsla(0,0%,0%,.37);
+		box-shadow: inset 0 1px 0 hsla(0,0%,0%,.02),
+		inset 0 1px 2px hsla(0,0%,0%,.2),
+		0 1px 0 hsla(0,0%,100%,.2);
+	}
+	
+	#back-button:-moz-window-inactive:not(:-moz-lwtheme),
+	#forward-button:-moz-window-inactive:not(:-moz-lwtheme) {
+		/*background-image: none;*/
+		border-color: hsla(0,0%,0%,.2);
+	}
+}
+
+/* ****************************************************************************************************************** */
+
+#back-button {
+	background-image: none !important;
+}
+
+#nav-bar .toolbarbutton-1:not(#back-button):not(#forward-button) {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+/* Back button left space */
+
+#back-button {
+	margin-left: 0 !important;
+}
+
+#nav-bar-customization-target {
+	padding-left: 3px;
+}
+
+/* Actual resizing */
+
+#nav-bar {
+	padding-top: 3px;
+	padding-bottom: 4px;
+}

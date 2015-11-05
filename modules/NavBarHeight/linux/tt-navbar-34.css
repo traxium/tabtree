@@ -1,0 +1,25 @@
+/*
+ * This file is part of Nav Bar Height,
+ * Copyright (C) 2015 Sergey Zelentsov <crayfishexterminator@gmail.com>
+ */
+
+/* No extra vertical padding for nav bar */
+#nav-bar-customization-target,
+#nav-bar {
+	padding-top: 0;
+	padding-bottom: 0;
+}
+
+#bookmarks-menu-button[cui-areatype="toolbar"] > .toolbarbutton-menubutton-dropmarker > .dropmarker-icon {
+	margin-top: 0 !important;
+	margin-bottom: 0 !important;
+}
+
+#back-button {
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+
+#back-button {
+	padding-left: 2px !important;
+}
