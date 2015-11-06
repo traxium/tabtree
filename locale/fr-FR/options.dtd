@@ -22,14 +22,6 @@
 <!ENTITY search-position.bottom-after "En bas (avant le bouton &#171;Nouvel onglet&#187;)">
 <!ENTITY search-autohide.title "Masquage automatique de la barre de recherche d’onglet:">
 <!ENTITY search-autohide.desc "Utilisez Ctrl+Shift+Alt+F pour la réafficher (non-coché par défaut)">
-<!ENTITY navbar-style.title "Taille de la barre d’adresse:">
-<!ENTITY navbar-style.desc "Sélectionnez &#171;Valeur par défaut&#187; pour utiliser un style tiers (&#171;Le plus petit&#187; par défaut)">
-<!ENTITY navbar-style.0 "Valeur par défaut">
-<!ENTITY navbar-style.1 "Le plus petit">
-<!ENTITY navbar-style.2 "Petit">
-<!ENTITY navbar-style.3 "Moyen">
-<!ENTITY navbar-style.4 "Grand">
-<!ENTITY navbar-style.5 "Le plus grand">
 <!ENTITY drawInTitlebar.title "Cacher la barre de titre native du système quand Firefox est maximisé:">
 <!ENTITY drawInTitlebar.desc "Option &#171;browser.tabs.drawInTitlebar&#187; dans about:config (coché par défaut)">
 <!ENTITY flst.title "FLST après la fermeture de l’onglet courant:">
