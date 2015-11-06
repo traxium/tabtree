@@ -101,7 +101,7 @@ function startup(data, reason)
 	// migration code :
 	try {
 		// 0 - None, 1 - The Smallest, 2 - Small, 3 - Medium, 4 - Big (round), 5 - The Biggest (round):
-		switch (Services.prefs.getIntPref('extensions.tabstree.navbar-style')) {
+		switch (Services.prefs.getIntPref('extensions.tabtree.navbar-style')) {
 		case 0:
 			Services.prefs.setIntPref('extensions.navbarheight.height', -1);
 			break;
@@ -123,7 +123,7 @@ function startup(data, reason)
 		default:
 			Services.prefs.setIntPref('extensions.navbarheight.height', 28);
 		}
-		Services.prefs.deleteBranch('extensions.tabstree.navbar-style');
+		Services.prefs.deleteBranch('extensions.tabtree.navbar-style');
 	} catch (e) {
 	}
 	// - end migration code // don't forget to delete when v1.3.6 isn't in use anymore
