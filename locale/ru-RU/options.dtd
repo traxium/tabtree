@@ -13,6 +13,8 @@
 <!ENTITY delay.desc "Задержка перед тем как выделенная вкладка активируется. Если вы не хотите видеть вкладку перед её закрытием, то установите это значение в 160 или больше (0 by default)">
 <!ENTITY position.left "Слева">
 <!ENTITY position.right "Справа">
+<!ENTITY position.sidebar_top "Sidebar (top)">
+<!ENTITY position.sidebar_bottom "Sidebar (bottom)">
 <!ENTITY position.title "Расположение:">
 <!ENTITY position.desc "(&quot;Слева&quot; по умолчанию)">
 <!ENTITY search-position.title "Расположение строки поиска вкладки:">

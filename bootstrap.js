@@ -239,6 +239,7 @@ var windowListener = {
 		}
 		let sidebar = aDOMWindow.document.querySelector('#tt-sidebar');
 		ss.setWindowValue(aDOMWindow, 'tt-width', sidebar.width); // Remember the width of 'tt-sidebar'
+		ss.setWindowValue(aDOMWindow, 'tt-height', sidebar.height); // Remember the height of 'tt-sidebar'
 		// Remember the first visible row of the <tree id="tt">:
 		ss.setWindowValue(aDOMWindow, 'tt-first-visible-row', aDOMWindow.document.querySelector('#tt').treeBoxObject.getFirstVisibleRow().toString());
 		Services.prefs.removeObserver('extensions.tabtree.', aDOMWindow.tt.toRemove.prefsObserver); // it can also be removed in 'unloadFromWindow'
@@ -282,6 +283,7 @@ var windowListener = {
 		if (splitter) {
 			let sidebar = aDOMWindow.document.querySelector('#tt-sidebar');
 			ss.deleteWindowValue(aDOMWindow, 'tt-width', sidebar.width); // Restore the width of 'tt-sidebar' to 200px
+			ss.deleteWindowValue(aDOMWindow, 'tt-height', sidebar.height); // Restore the height of 'tt-sidebar' to 400px
 			splitter.parentNode.removeChild(splitter);
 			sidebar.parentNode.removeChild(sidebar);
 			let fullscrToggler = aDOMWindow.document.querySelector('#tt-fullscr-toggler');
@@ -345,6 +347,9 @@ var windowListener = {
 		}
 		let g = aDOMWindow.gBrowser;
 		let appcontent = aDOMWindow.document.querySelector('#appcontent');
+		let sidebar_browser = aDOMWindow.document.querySelector('#sidebar');
+		let sidebar_box = aDOMWindow.document.querySelector('#sidebar-box');
+		let sidebar_header = aDOMWindow.document.querySelector('#sidebar-header');
 		aDOMWindow.tt = {
 			toRemove: {eventListeners: {}, prefsObserver: null, tabsProgressListener: null, _menuObserver: null, sidebarWidthObserver: null},
 			toRestore: {g: {}, TabContextMenu: {}, tabsintitlebar: true}
@@ -546,7 +551,8 @@ var windowListener = {
 		let sidebar = aDOMWindow.document.createElement('vbox');
 		propsToSet = {
 			id: 'tt-sidebar',
-			width: ss.getWindowValue(aDOMWindow, 'tt-width') || ss.getGlobalValue('tt-new-sidebar-width') || '200'
+			width: ss.getWindowValue(aDOMWindow, 'tt-width') || ss.getGlobalValue('tt-new-sidebar-width') || '200',
+			height: ss.getWindowValue(aDOMWindow, 'tt-height') || ss.getGlobalValue('tt-new-sidebar-height') || '400'
 			//persist: 'width' // It seems 'persist' attr doesn't work in bootstrap addons, I'll use SS instead
 		};
 		Object.keys(propsToSet).forEach( (p)=>{sidebar.setAttribute(p, propsToSet[p])} );
@@ -563,20 +569,34 @@ var windowListener = {
 		Object.keys(propsToSet).forEach( (p)=>{splitter.setAttribute(p, propsToSet[p]);} );
 		// added later
 		//////////////////// END SPLITTER ///////////////////////////////////////////////////////////////////////
+
+		let setTTPos = function (aPos) {
+			switch (aPos) {
+				case TT_POS_SB_TOP:
+					sidebar_box.insertBefore(splitter, sidebar_header);
+					sidebar_box.insertBefore(sidebar, splitter);
+					sidebar_box.insertBefore(fullscrToggler, sidebar);
+					break;
+				case TT_POS_SB_BOT:
+					sidebar_box.appendChild(splitter);
+					sidebar_box.appendChild(sidebar);
+					sidebar_box.appendChild(fullscrToggler);
+					break;
+				case TT_POS_RIGHT:
+					browser.appendChild(fullscrToggler);
+					browser.appendChild(splitter);
+					browser.appendChild(sidebar);
+					break;
+				case TT_POS_LEFT:
+				default:
+					browser.insertBefore(fullscrToggler, appcontent);
+					browser.insertBefore(sidebar, appcontent);
+					browser.insertBefore(splitter, appcontent);
+					break;
+			}
+		};
+		setTTPos(Services.prefs.getIntPref('extensions.tabtree.position'));
 		
-		switch (Services.prefs.getIntPref('extensions.tabtree.position')) {
-			case TT_POS_RIGHT:
-				browser.appendChild(fullscrToggler);
-				browser.appendChild(splitter);
-				browser.appendChild(sidebar);
-				break;
-			case TT_POS_LEFT:
-			default:
-				browser.insertBefore(fullscrToggler, appcontent);
-				browser.insertBefore(sidebar, appcontent);
-				browser.insertBefore(splitter, appcontent);
-				break;
-		}
 
 		//////////////////// DROP INDICATOR ////////////////////////////////////////////////////////////////////////
 		let ind = aDOMWindow.document.getAnonymousElementByAttribute(aDOMWindow.gBrowser.tabContainer, 'anonid', 'tab-drop-indicator').cloneNode(true);
@@ -1998,15 +2018,7 @@ var windowListener = {
 							break;
 						case 'extensions.tabtree.position':
 							let firstVisibleRow = tree.treeBoxObject.getFirstVisibleRow();
-							if (Services.prefs.getIntPref('extensions.tabtree.position') === 1) {
-								browser.appendChild(fullscrToggler);
-								browser.appendChild(splitter);
-								browser.appendChild(sidebar);
-							} else {
-								browser.insertBefore(fullscrToggler, appcontent);
-								browser.insertBefore(sidebar, appcontent);
-								browser.insertBefore(splitter, appcontent);
-							}
+							setTTPos(Services.prefs.getIntPref('extensions.tabtree.position'));
 							tree.view = view;
 							tree.treeBoxObject.scrollToRow(firstVisibleRow);
 							tt.redrawToolbarbuttons();
@@ -2106,6 +2118,11 @@ var windowListener = {
 				if (mutation.attributeName == 'width') {
 					ss.setWindowValue(aDOMWindow, 'tt-width', sidebar.width); // Remember the width of 'tt-sidebar'
 					ss.setGlobalValue('tt-new-sidebar-width', sidebar.width);
+					return;
+				}
+				if (mutation.attributeName == 'height') {
+					ss.setWindowValue(aDOMWindow, 'tt-height', sidebar.height); // Remember the height of 'tt-sidebar'
+					ss.setGlobalValue('tt-new-sidebar-height', sidebar.height);
 					return;
 				}
 			}
