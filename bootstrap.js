@@ -21,6 +21,11 @@ const sss = Cc["@mozilla.org/content/style-sheet-service;1"].getService(Ci.nsISt
 var stringBundle = Services.strings.createBundle('chrome://tabtree/locale/global.properties?' + Math.random()); // Randomize URI to work around bug 719376
 var prefsObserver;
 
+const TT_POS_LEFT = 0;
+const TT_POS_RIGHT = 1;
+const TT_POS_SB_TOP = 2;
+const TT_POS_SB_BOT = 3;
+
 //noinspection JSUnusedGlobalSymbols
 function startup(data, reason)
 {
@@ -513,6 +518,22 @@ var windowListener = {
 		//    <toolbox></toolbox>
 		//    <tree id="tt" flex="1" seltype="single" context="tabContextMenu" treelines="true" hidecolumnpicker="true"></tree>
 		//  </vbox>
+
+		//  for "sidebar top" position:
+		//  <vbox id="sidebar-box">
+		//    <vbox id="tt-sidebar"></vbox>
+		//    <splitter id="tt-splitter" />
+		//    <sidebarheader id="sidebar-header"></sidebarheader>
+		//    ...
+		//  </vbox>
+
+		//  for "sidebar bottom" position:
+		//  <vbox id="sidebar-box">
+		//     ...
+		//     <browser id="sidebar"></browser>
+		//     <splitter id="tt-splitter" />
+		//     <vbox id="tt-sidebar"></vbox>
+		//  </vbox>
 		
 		////////////////////////////////////////// VBOX tt-fullscr-toggler /////////////////////////////////////////////
 		// <vbox id="tt-fullscr-toggler"></vbox> // I am just copying what firefox does for its 'fullscr-toggler'
@@ -543,14 +564,18 @@ var windowListener = {
 		// added later
 		//////////////////// END SPLITTER ///////////////////////////////////////////////////////////////////////
 		
-		if (Services.prefs.getIntPref('extensions.tabtree.position') == 1) {
-			browser.appendChild(fullscrToggler);
-			browser.appendChild(splitter);
-			browser.appendChild(sidebar);
-		} else {
-			browser.insertBefore(fullscrToggler, appcontent);
-			browser.insertBefore(sidebar, appcontent);
-			browser.insertBefore(splitter, appcontent);
+		switch (Services.prefs.getIntPref('extensions.tabtree.position')) {
+			case TT_POS_RIGHT:
+				browser.appendChild(fullscrToggler);
+				browser.appendChild(splitter);
+				browser.appendChild(sidebar);
+				break;
+			case TT_POS_LEFT:
+			default:
+				browser.insertBefore(fullscrToggler, appcontent);
+				browser.insertBefore(sidebar, appcontent);
+				browser.insertBefore(splitter, appcontent);
+				break;
 		}
 
 		//////////////////// DROP INDICATOR ////////////////////////////////////////////////////////////////////////
@@ -849,7 +874,7 @@ var windowListener = {
 						g.moveTabTo(aTab, tPosTo);
 					}
 				}
-			}, // moveTabToPlus: function(aTab, tPosTo, mode) {
+			}, // moveTabToPlus: function(aTab, tPosTo, mode)
 
 			moveBranchToPlus: function(aTab, tPosTo, mode) {
 				let tPos = aTab._tPos;
@@ -936,7 +961,7 @@ var windowListener = {
 						g.moveTabTo(g.tabs[lastDescendantPos], tPosTo+1);
 					}
 				}
-			}, // moveBranchToPlus: function(aTab, tPosTo, mode) {
+			}, // moveBranchToPlus: function(aTab, tPosTo, mode)
 
 			lastDescendantPos: function(aTabOrPos) {
 				let ret;
@@ -1006,7 +1031,7 @@ var windowListener = {
 					}
 				}
 				g.mCurrentTab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(g.mCurrentTab._tPos - tt.nPinned); // NEW
-			}, // redrawToolbarbuttons: function() {
+			}, // redrawToolbarbuttons: function()
 			
 			quickSearch: function(aText, tPos) {
 				// I assume that this method is never invoked with aText=''
@@ -1031,7 +1056,7 @@ var windowListener = {
 					aDOMWindow.document.documentElement.style.paddingLeft = '';
 				}, 500);
 			}
-		}; // let tt = {
+		}; // let tt =
 
 		treechildren.addEventListener('dragstart', function(event) { // if the event was attached to 'tree' then the popup would be shown while you scrolling
 			let tab = g.tabs[tree.currentIndex+tt.nPinned];
@@ -1124,7 +1149,7 @@ var windowListener = {
 			// uncomment if you always want to highlight 'gBrowser.mCurrentTab':
 			//g.mCurrentTab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(g.mCurrentTab._tPos - tt.nPinned); // NEW
 			event.stopPropagation();
-		}, false); // tree.addEventListener('dragstart', function(event) {
+		}, false); // tree.addEventListener('dragstart', function(event)
 		
 		tree.addEventListener('dragend', function(event) {
 			if (event.dataTransfer.dropEffect == 'none') { // the drag was cancelled
@@ -1216,7 +1241,7 @@ var windowListener = {
 								tree.treeBoxObject.rowCountChanged(tab._tPos - tt.nPinned, 1);
 								// refresh the twisty (commented out while the twisty is disabled):
 								//let pTab = tt.parentTab(tab);
-								//if (pTab) {
+								//if (pTab)
 								//	tree.treeBoxObject.invalidateRow(pTab._tPos - tt.nPinned);
 								//}
 
@@ -1478,7 +1503,7 @@ var windowListener = {
 				}
 				g.mCurrentTab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(g.mCurrentTab._tPos - tt.nPinned); // NEW
 			} // drop(row, orientation, dataTransfer)
-		}; // let view = {
+		}; // let view =
 		tree.view = view;
 
 		aDOMWindow.tt.toRestore.g.pinTab = g.pinTab;
@@ -2133,5 +2158,5 @@ var windowListener = {
 		//aDOMWindow.tt.sidebar = sidebar; // uncomment while debugging
 		//aDOMWindow.tt.customizer = aDOMWindow.document.getElementById("customization-container"); // uncomment while debugging
 		
-	} // loadIntoWindow: function(aDOMWindow) {
-}; // var windowListener = {
+	} // loadIntoWindow: function(aDOMWindow)
+}; // var windowListener =
