@@ -571,11 +571,13 @@ var windowListener = {
 		//////////////////// END SPLITTER ///////////////////////////////////////////////////////////////////////
 
 		let setTTPos = function (aPos) {
+			splitter.removeAttribute("resizeafter");
 			switch (aPos) {
 				case TT_POS_SB_TOP:
 					sidebar_box.insertBefore(splitter, sidebar_header);
 					sidebar_box.insertBefore(sidebar, splitter);
 					sidebar_box.insertBefore(fullscrToggler, sidebar);
+					splitter.setAttribute("resizeafter", "farthest");
 					break;
 				case TT_POS_SB_BOT:
 					sidebar_box.appendChild(splitter);
