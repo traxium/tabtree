@@ -26,6 +26,10 @@ const TT_POS_RIGHT = 1;
 const TT_POS_SB_TOP = 2;
 const TT_POS_SB_BOT = 3;
 
+const TT_COL_TITLE = 0;
+const TT_COL_OVERLAY = 1;
+const TT_COL_CLOSE = 2;
+
 //noinspection JSUnusedGlobalSymbols
 function startup(data, reason)
 {
@@ -660,22 +664,28 @@ var windowListener = {
 		};
 		Object.keys(propsToSet).forEach( (p)=>{tree.setAttribute(p, propsToSet[p]);} );
 		let treecols = aDOMWindow.document.createElement('treecols'); // <treecols>
-		let treecol = aDOMWindow.document.createElement('treecol'); // <treecol>
+		let treecol = {
+			tabtitle: aDOMWindow.document.createElement('treecol'), // <treecol>
+			overlay:  aDOMWindow.document.createElement('treecol'), // <treecol>
+			closebtn: aDOMWindow.document.createElement('treecol'), // <treecol>
+		};
 		propsToSet = {
-			id: 'tt-col',
+			id: 'tt-title',
 			flex: '1',
 			primary: 'true',
 			hideheader: 'true'
 		};
-		Object.keys(propsToSet).forEach( (p)=>{treecol.setAttribute(p, propsToSet[p]);} );
-		let treecol2 = aDOMWindow.document.createElement('treecol'); // <treecol>
-		treecol2.setAttribute('hideheader', 'true');
-		treecol2.id = 'tt-col-2';
-		treecol2.collapsed = !Services.prefs.getBoolPref('extensions.tabtree.close-tab-buttons');
+		Object.keys(propsToSet).forEach( (p)=>{treecol.tabtitle.setAttribute(p, propsToSet[p]);} );
+		treecol.overlay.setAttribute('hideheader', 'true');
+		treecol.overlay.id = 'tt-overlay';
+		treecol.closebtn.setAttribute('hideheader', 'true');
+		treecol.closebtn.id = 'tt-close';
+		treecol.closebtn.collapsed = !Services.prefs.getBoolPref('extensions.tabtree.close-tab-buttons');
 		let treechildren = aDOMWindow.document.createElement('treechildren'); // <treechildren id="tt-treechildren">
 		treechildren.setAttribute('id', 'tt-treechildren');
-		treecols.appendChild(treecol);
-		treecols.appendChild(treecol2);
+		treecols.appendChild(treecol.tabtitle);
+		treecols.appendChild(treecol.overlay);
+		treecols.appendChild(treecol.closebtn);
 		tree.appendChild(treecols);
 		tree.appendChild(treechildren);
 		sidebar.appendChild(tree);
@@ -697,17 +707,27 @@ var windowListener = {
 		dragFeedbackTree.setAttribute('treelines', Services.prefs.getBoolPref('extensions.tabtree.treelines').toString());
 		dragFeedbackTree.setAttribute('hidecolumnpicker', 'true');
 		let treecolsDragFeedback = aDOMWindow.document.createElement('treecols');
-		let treecolDragFeedback = aDOMWindow.document.createElement('treecol');
-		treecolDragFeedback.setAttribute('flex', '1');
-		treecolDragFeedback.setAttribute('primary', 'true');
-		treecolDragFeedback.setAttribute('hideheader', 'true');
-		let treecol2DragFeedback = aDOMWindow.document.createElement('treecol');
-		treecol2DragFeedback.setAttribute('hideheader', 'true');
-		treecol2DragFeedback.collapsed = !Services.prefs.getBoolPref('extensions.tabtree.close-tab-buttons');
+		let treecolDragFeedback = {
+			tabtitle: aDOMWindow.document.createElement('treecol'),
+			overlay: aDOMWindow.document.createElement('treecol'),
+			closebtn: aDOMWindow.document.createElement('treecol'),
+		};
+		treecolDragFeedback.tabtitle.setAttribute('id', 'tt-df-title');
+		treecolDragFeedback.tabtitle.setAttribute('flex', '1');
+		treecolDragFeedback.tabtitle.setAttribute('primary', 'true');
+		treecolDragFeedback.tabtitle.setAttribute('hideheader', 'true');
+
+		treecolDragFeedback.overlay.setAttribute('id', 'tt-df-overlay');
+		treecolDragFeedback.overlay.setAttribute('hideheader', 'true');
+
+		treecolDragFeedback.closebtn.setAttribute('id', 'tt-df-close');
+		treecolDragFeedback.closebtn.setAttribute('hideheader', 'true');
+		treecolDragFeedback.closebtn.collapsed = !Services.prefs.getBoolPref('extensions.tabtree.close-tab-buttons');
 		let treechildrenDragFeedback = aDOMWindow.document.createElement('treechildren');
 		treechildrenDragFeedback.setAttribute('id', 'tt-treechildren-feedback');
-		treecolsDragFeedback.appendChild(treecolDragFeedback);
-		treecolsDragFeedback.appendChild(treecol2DragFeedback);
+		treecolsDragFeedback.appendChild(treecolDragFeedback.tabtitle);
+		treecolsDragFeedback.appendChild(treecolDragFeedback.overlay);
+		treecolsDragFeedback.appendChild(treecolDragFeedback.closebtn);
 		dragFeedbackTree.appendChild(treecolsDragFeedback);
 		dragFeedbackTree.appendChild(treechildrenDragFeedback);
 
@@ -1093,7 +1113,7 @@ var windowListener = {
 			event.dataTransfer.mozSetDataAt("text/x-moz-text-internal", tab.linkedBrowser.currentURI.spec, 0);
 
 			if (1 || tt.hasAnyChildren(tab._tPos)) { // remove "1" to use default feedback image for a single row
-				treecol2DragFeedback.collapsed = !Services.prefs.getBoolPref('extensions.tabtree.close-tab-buttons');
+				treecolDragFeedback.closebtn.collapsed = !Services.prefs.getBoolPref('extensions.tabtree.close-tab-buttons');
 				//noinspection JSUnusedGlobalSymbols
 				dragFeedbackTree.treeBoxObject.view = {
 					numStart: tab._tPos,
@@ -1107,14 +1127,14 @@ var windowListener = {
 						return this.numEnd - this.numStart + 1;
 					},
 					getCellText: function (row, column) {
-						if (column.index === 1) {
+						if (column.index !== TT_COL_TITLE) {
 							return '';
 						}
 						let tPos = row + this.numStart;
 						return ' ' + g.tabs[tPos].label;
 					},
 					getImageSrc: function (row, column) {
-						if (column.index === 1) {
+						if (column.index !== TT_COL_TITLE) {
 							return '';
 						}
 						let tPos = row + this.numStart;
@@ -1160,7 +1180,7 @@ var windowListener = {
 						return false;
 					},
 					getCellProperties: function(row, col) {
-						if (col.index === 1) {
+						if (col.index === TT_CLOSE) {
 							return 'tt-close';
 						}
 					}
@@ -1351,14 +1371,14 @@ var windowListener = {
 				return g.tabs.length-tt.nPinned;
 			},
 			getCellText: function(row, column) {
-				if (column.index === 1) {
+				if (column.index !== TT_COL_TITLE) {
 					return ''; // If a column consists only of an image, then the empty string is returned.
 				}
 				let tPos = row+tt.nPinned;
 				return ' ' + g.tabs[tPos].label;
 			},
 			getImageSrc: function(row, column) {
-				if (column.index === 1) {
+				if (column.index !== TT_COL_TITLE) {
 					return ''; // "If the empty string is returned, the ::moz-tree-image pseudoelement will be used."
 				}
 				
@@ -1424,14 +1444,24 @@ var windowListener = {
 				}
 			},
 			getCellProperties: function(row, col) {
-				if (col.index === 1) {
-					return 'tt-close';
-				}
-				
 				let tPos = row+tt.nPinned;
+				let tab = g.tabs[tPos];
 				let ret = '';
 
-				if (prefPending && g.tabs[tPos].hasAttribute('pending')) {
+				switch (col.index) {
+					case TT_COL_CLOSE:
+						return 'tt-close';
+
+					case TT_COL_OVERLAY:
+						ret = 'tt-overlay';
+						if (tab.hasAttribute('muted'))
+							ret += ' tt-muted';
+						else if (tab.hasAttribute('soundplaying'))
+							ret += 'tt-soundplaying';
+						return ret;
+				}
+
+				if (prefPending && tab.hasAttribute('pending')) {
 					switch (prefPending) {
 						case 1:
 							ret += ' pending-grayout';
@@ -1441,7 +1471,7 @@ var windowListener = {
 							break;
 					}
 				}
-				if (prefUnread && g.tabs[tPos].hasAttribute('unread')) {
+				if (prefUnread && tab.hasAttribute('unread')) {
 					ret += ' unread';
 				}
 				return ret;
@@ -1839,7 +1869,7 @@ var windowListener = {
 					}
 				} else { // click a row
 					let tPos = row.value + tt.nPinned;
-					if (col.value.index === 1) {
+					if (col.value.index === TT_COL_CLOSE) {
 						g.removeTab(g.tabs[tPos]);
 					} else {
 						g.selectTabAtIndex(tPos);
@@ -1859,7 +1889,7 @@ var windowListener = {
 				} else { // click a row
 					let tPos = row.value + tt.nPinned;
 					if (event.detail == 1) { // the first click - select a tab
-						if (col.value.index === 1) {
+						if (col.value.index === TT_COL_CLOSE) {
 							g.removeTab(g.tabs[tPos]);
 						} else {
 							f.timer = aDOMWindow.setTimeout(function(){g.selectTabAtIndex(tPos);}, Services.prefs.getIntPref('extensions.tabtree.delay'));
@@ -1987,7 +2017,7 @@ var windowListener = {
 							} // else do nothing
 							break;
 						case 'extensions.tabtree.close-tab-buttons':
-							treecol2.collapsed = !Services.prefs.getBoolPref('extensions.tabtree.close-tab-buttons');
+							treecol.closebtn.collapsed = !Services.prefs.getBoolPref('extensions.tabtree.close-tab-buttons');
 							break;
 						case 'extensions.tabtree.dblclick':
 							if (Services.prefs.getBoolPref('extensions.tabtree.dblclick')) {

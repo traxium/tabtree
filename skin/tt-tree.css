@@ -118,11 +118,11 @@
 
 /* :::::: Close button icons ::::: */
 
-#tt #tt-col-2 { /* assuming 17px scrollbar width */
+#tt #tt-close { /* assuming 17px scrollbar width */
 	width: 35px;
 }
 
-#tt[hidevscroll] #tt-col-2 {
+#tt[hidevscroll] #tt-close {
 	width: 18px;
 }
 
@@ -148,6 +148,34 @@
 #tt-treechildren::-moz-tree-image(tt-close, hover) {
 	list-style-image: url(chrome://tabtree/skin/close.png);
 	-moz-image-region: rect(0, 32px, 16px, 16px);
+}
+
+/* :::::: Icons to simulate tab-overlay icons ::::: */
+
+#tt #tt-overlay {
+	width: 18px;
+}
+
+#tt-treechildren::-moz-tree-image(tt-overlay, tt-playing) {
+	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio-menu);
+}
+
+#tt-treechildren::-moz-tree-image(tt-overlay, tt-playing, hover) {
+	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio-menu-hover);
+}
+
+#tt-treechildren::-moz-tree-image(tt-overlay, tt-muted) {
+	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio-menu-muted);
+}
+
+#tt-treechildren::-moz-tree-image(tt-overlay, tt-muted, hover) {
+	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio-menu-muted-hover);
+}
+
+#tt-treechildren::-moz-tree-image(tt-overlay) {
+	padding-right: 0px;
+	margin: 0 0px;
+	list-style-image: none;
 }
 
 /* Tab search box */
