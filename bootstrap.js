@@ -1163,22 +1163,17 @@ var windowListener = {
 						} else {
 							let lvl = parseInt(ss.getTabValue(oldTab, 'ttLevel')) + 1;
 							let maxLvl = Services.prefs.getIntPref('extensions.tabtree.max-indent');
+							let insertRelatedAfterCurrent = Services.prefs.getBoolPref('browser.tabs.insertRelatedAfterCurrent');
 							let i;
-							if (maxLvl === -1 || lvl <= maxLvl) {
-								ss.setTabValue(tab, 'ttLevel', lvl.toString());
-								for (i = oldTab._tPos + 1; i < g.tabs.length - 1; ++i) { // the last is our new tab
-									if (parseInt(ss.getTabValue(g.tabs[i], 'ttLevel')) < lvl) {
-										g.moveTabTo(tab, i);
-										break;
-									}
-								}
-							} else {
-								ss.setTabValue(tab, 'ttLevel', maxLvl.toString());
-								for (i = oldTab._tPos + 1; i < g.tabs.length - 1; ++i) { // the last is our new tab
-									if (parseInt(ss.getTabValue(g.tabs[i], 'ttLevel')) < maxLvl) {
-										g.moveTabTo(tab, i);
-										break;
-									}
+							if (maxLvl !== -1 && lvl > maxLvl) {
+								lvl = maxLvl;
+							}
+							ss.setTabValue(tab, 'ttLevel', lvl.toString());
+
+							for (i = oldTab._tPos + 1; i < g.tabs.length - 1; ++i) { // the last is our new tab
+								if (insertRelatedAfterCurrent || parseInt(ss.getTabValue(g.tabs[i], 'ttLevel')) < lvl) {
+									g.moveTabTo(tab, i);
+									break;
 								}
 							}
 
