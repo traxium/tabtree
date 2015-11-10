@@ -22,11 +22,15 @@
     <setting type="bool" pref="extensions.tabtree.highlight-unread-tabs" title="&highlight-unread-tabs.title;" desc="&highlight-unread-tabs.desc;" />
     <setting type="bool" pref="extensions.tabtree.dblclick" title="&dblclick.title;" desc="&dblclick.desc;" onpreferencechanged="this.setAttribute('value', this.value.toString());" />
     <setting type="integer" pref="extensions.tabtree.delay" title="&delay.title;" desc="&delay.desc;" />
-    <setting type="radio" pref="extensions.tabtree.position" title="&position.title;" desc="&position.desc;">
-        <radiogroup>
-            <radio value="0" label="&position.left;"/>
-            <radio value="1" label="&position.right;"/>
-        </radiogroup>
+    <setting type="menulist" pref="extensions.tabtree.position" title="&position.title;" desc="&position.desc;">
+        <menulist>
+            <menupopup>
+                <menuitem value="0" label="&position.left;"/>
+                <menuitem value="1" label="&position.right;"/>
+                <menuitem value="2" label="&position.sidebar_top;"/>
+                <menuitem value="3" label="&position.sidebar_bottom;"/>
+            </menupopup>
+        </menulist>
     </setting>
     <setting type="menulist" pref="extensions.tabtree.search-position" title="&search-position.title;" desc="&search-position.desc;">
         <menulist>
