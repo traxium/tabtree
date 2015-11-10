@@ -13,6 +13,11 @@
 	overflow: hidden;
 }
 
+#sidebar-box[hidden="true"] { /* css hack in order "tree.view = view;" to work when the sidebar is hidden */
+	display: -moz-box;
+	visibility: collapse;
+}
+
 /* Full screen mode */
 
 #tt-toolbar[moz-collapsed="true"] { /* do not collapse in fullscreen mode*/
