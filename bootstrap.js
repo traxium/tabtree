@@ -578,22 +578,26 @@ var windowListener = {
 					sidebar_box.insertBefore(sidebar, splitter);
 					sidebar_box.insertBefore(fullscrToggler, sidebar);
 					splitter.setAttribute("resizeafter", "farthest");
+					splitter.setAttribute("orient", "vertical");
 					break;
 				case TT_POS_SB_BOT:
 					sidebar_box.appendChild(splitter);
 					sidebar_box.appendChild(sidebar);
 					sidebar_box.appendChild(fullscrToggler);
+					splitter.setAttribute("orient", "vertical");
 					break;
 				case TT_POS_RIGHT:
 					browser.appendChild(fullscrToggler);
 					browser.appendChild(splitter);
 					browser.appendChild(sidebar);
+					splitter.setAttribute("orient", "horizontal");
 					break;
 				case TT_POS_LEFT:
 				default:
 					browser.insertBefore(fullscrToggler, appcontent);
 					browser.insertBefore(sidebar, appcontent);
 					browser.insertBefore(splitter, appcontent);
+					splitter.setAttribute("orient", "horizontal");
 					break;
 			}
 		};

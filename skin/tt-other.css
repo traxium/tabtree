@@ -9,6 +9,10 @@
 	pointer-events: none; /* preventing the arrow flickering when mouse pointer goes over that arrow and that arrow overlaps 'toolbar' */
 }
 
+#tt-sidebar {
+	overflow: hidden;
+}
+
 /* Full screen mode */
 
 #tt-toolbar[moz-collapsed="true"] { /* do not collapse in fullscreen mode*/
