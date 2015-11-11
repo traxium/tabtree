@@ -156,26 +156,38 @@
 	width: 18px;
 }
 
-#tt-treechildren::-moz-tree-image(tt-overlay, tt-playing) {
-	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio-menu);
+#tt-treechildren:-moz-tree-cell(tt-overlay),
+#tt-treechildren:-moz-tree-image(tt-overlay),
+#tt-treechildren-feedback:-moz-tree-cell(tt-overlay),
+#tt-treechildren-feedback:-moz-tree-image(tt-overlay) {
+	margin: 0;
+	padding: 0;
 }
 
-#tt-treechildren::-moz-tree-image(tt-overlay, tt-playing, hover) {
-	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio-menu-hover);
-}
-
-#tt-treechildren::-moz-tree-image(tt-overlay, tt-muted) {
-	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio-menu-muted);
-}
-
-#tt-treechildren::-moz-tree-image(tt-overlay, tt-muted, hover) {
-	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio-menu-muted-hover);
-}
-
+/* This rule has to come before the following ones, or else it
+ * overrides them */
 #tt-treechildren::-moz-tree-image(tt-overlay) {
-	padding-right: 0px;
-	margin: 0 0px;
 	list-style-image: none;
+}
+
+#tt-treechildren::-moz-tree-image(tt-soundplaying),
+#tt-treechildren-feedback::-moz-tree-image(tt-soundplaying) {
+	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio);
+}
+
+#tt-treechildren::-moz-tree-image(tt-soundplaying, hover),
+#tt-treechildren-feedback::-moz-tree-image(tt-soundplaying, hover) {
+	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio-hover);
+}
+
+#tt-treechildren::-moz-tree-image(tt-muted),
+#tt-treechildren-feedback::-moz-tree-image(tt-muted) {
+	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio-muted);
+}
+
+#tt-treechildren::-moz-tree-image(tt-muted, hover),
+#tt-treechildren-feedback::-moz-tree-image(tt-muted, hover) {
+	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio-muted-hover);
 }
 
 /* Tab search box */

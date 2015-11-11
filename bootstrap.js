@@ -1457,10 +1457,11 @@ var windowListener = {
 						if (tab.hasAttribute('muted'))
 							ret += ' tt-muted';
 						else if (tab.hasAttribute('soundplaying'))
-							ret += 'tt-soundplaying';
+							ret += ' tt-soundplaying';
 						return ret;
 				}
 
+				// Default column is the tab title, TT_COL_TITLE
 				if (prefPending && tab.hasAttribute('pending')) {
 					switch (prefPending) {
 						case 1:
@@ -1857,6 +1858,18 @@ var windowListener = {
 				event.preventDefault();
 			}
 		});
+
+		// Is there a better place in this file for this function?
+		let processOverlayClickTree = function(tab) {
+			if (tab.hasAttribute('soundplaying')) {
+				tab.toggleMuteAudio();
+				g.mCurrentTab.pinned
+					? tree.view.selection.clearSelection()
+					: tree.view.selection.select(g.mCurrentTab._tPos - tt.nPinned);
+				return true; // tell caller to not select the tab
+			}
+			return false; // tell caller to process it as if it were a normal click
+		};
 		
 		let onClickFast = function(event) {
 			if (event.button === 0) { // the left button click
@@ -1869,10 +1882,17 @@ var windowListener = {
 					}
 				} else { // click a row
 					let tPos = row.value + tt.nPinned;
-					if (col.value.index === TT_COL_CLOSE) {
-						g.removeTab(g.tabs[tPos]);
-					} else {
-						g.selectTabAtIndex(tPos);
+					let tab = g.tabs[tPos];
+					switch (col.value.index) {
+						case TT_COL_CLOSE:
+							g.removeTab(tab);
+							return;
+						case TT_COL_OVERLAY:
+							if (processOverlayClickTree(tab)) return;
+							// Intentional fall-through otherwise
+						default:
+							g.selectTabAtIndex(tPos);
+							return;
 					}
 				}
 			}
@@ -1888,11 +1908,18 @@ var windowListener = {
 					}
 				} else { // click a row
 					let tPos = row.value + tt.nPinned;
+					let tab = g.tabs[tPos];
 					if (event.detail == 1) { // the first click - select a tab
-						if (col.value.index === TT_COL_CLOSE) {
-							g.removeTab(g.tabs[tPos]);
-						} else {
-							f.timer = aDOMWindow.setTimeout(function(){g.selectTabAtIndex(tPos);}, Services.prefs.getIntPref('extensions.tabtree.delay'));
+						switch (col.value.index) {
+							case TT_COL_CLOSE:
+								g.removeTab(tab);
+								return;
+							case TT_COL_OVERLAY:
+								if (processOverlayClickTree(tab)) return;
+								// Intentional fall-through otherwise
+							default:
+								f.timer = aDOMWindow.setTimeout(function(){g.selectTabAtIndex(tPos);}, Services.prefs.getIntPref('extensions.tabtree.delay'));
+								return;
 						}
 					} else if (event.detail == 2) { // the second click - remove a tab
 						aDOMWindow.clearTimeout(f.timer);
