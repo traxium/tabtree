@@ -681,6 +681,9 @@ var windowListener = {
 		treecol.closebtn.setAttribute('hideheader', 'true');
 		treecol.closebtn.id = 'tt-close';
 		treecol.closebtn.collapsed = !Services.prefs.getBoolPref('extensions.tabtree.close-tab-buttons');
+		treecol.closebtn.collapsed
+			? tree.setAttribute("hideclosebuttons", "true")
+			: tree.removeAttribute("hideclosebuttons");
 		let treechildren = aDOMWindow.document.createElement('treechildren'); // <treechildren id="tt-treechildren">
 		treechildren.setAttribute('id', 'tt-treechildren');
 		treecols.appendChild(treecol.tabtitle);
@@ -1060,9 +1063,6 @@ var windowListener = {
 					toolbarbtn.setAttribute('group', 'RadioGroup');
 					toolbarbtn.setAttribute('context', 'tabContextMenu');
 					toolbarbtn.checked = g.tabs[i].selected;
-					let image = aDOMWindow.document.getAnonymousNodes(toolbarbtn)[0]; // there are sites with at least 32px*32px images therefore buttons would have become huge
-					image.setAttribute('height', '16px'); // we reduce such big images
-					image.setAttribute('width', '16px'); // also there are cases where the image is 60px*20px ('chrome://browser/skin/search-indicator.png' for example)
 					if (g.tabs[i].hasAttribute('progress') && g.tabs[i].hasAttribute('busy')) {
 						toolbarbtn.setAttribute('image', 'chrome://browser/skin/tabbrowser/loading.png');
 					} else if (g.tabs[i].hasAttribute('busy')) {
@@ -1074,6 +1074,13 @@ var windowListener = {
 						toolbarbtn.setAttribute('titlechanged', 'true');
 					} else {
 						toolbarbtn.removeAttribute('titlechanged');
+					}
+					if (g.tabs[i].hasAttribute('muted')) {
+						toolbarbtn.setAttribute('overlay', 'muted');
+					} else if (g.tabs[i].hasAttribute('soundplaying')) {
+						toolbarbtn.setAttribute('overlay', 'soundplaying');
+					} else {
+						toolbarbtn.removeAttribute('overlay');
 					}
 				}
 				g.mCurrentTab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(g.mCurrentTab._tPos - tt.nPinned); // NEW
@@ -2045,6 +2052,9 @@ var windowListener = {
 							break;
 						case 'extensions.tabtree.close-tab-buttons':
 							treecol.closebtn.collapsed = !Services.prefs.getBoolPref('extensions.tabtree.close-tab-buttons');
+							treecol.closebtn.collapsed
+								? tree.setAttribute("hideclosebuttons", "true")
+								: tree.removeAttribute("hideclosebuttons");
 							break;
 						case 'extensions.tabtree.dblclick':
 							if (Services.prefs.getBoolPref('extensions.tabtree.dblclick')) {

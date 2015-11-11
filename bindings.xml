@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+
+<bindings xmlns="http://www.mozilla.org/xbl"
+  xmlns:xbl="http://www.mozilla.org/xbl"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <binding id="toolbarbutton-overlay"
+    extends="chrome://global/content/bindings/toolbarbutton.xml#toolbarbutton">
+    <!-- Much inspiration taken from chrome://global/content/bindings/toolbarbutton.xml#toolbarbutton-badged -->
+
+    <content>
+      <children includes="observes|template|menupopup|panel|tooltip"/>
+      <xul:stack anonid="toolbarbutton-overlay-stack" class="toolbarbutton-overlay-stack">
+        <xul:image anonid="toolbarbutton-icon" class="toolbarbutton-icon" xbl:inherits="validate,src=image,label"/>
+        <xul:image anonid="toolbarbutton-overlay" class="toolbarbutton-overlay" xbl:inherits="overlay,tooltiptext=overlaytext" top="0" end="0"/>
+      </xul:stack>
+      <xul:label class="toolbarbutton-text" crop="right" flex="1" xbl:inherits="value=label,accesskey,crop,wrap"/>
+      <xul:label class="toolbarbutton-multiline-text" flex="1" xbl:inherits="value=label,accesskey,wrap"/>
+    </content>
+
+    <implementation>
+      <field name="mOverOverlay">false</field>
+      <property name="_overOverlayIcon" readonly="true">
+        <getter><![CDATA[
+          if (!this.hasAttribute("overlay")) return false;
+          let icon = document.getAnonymousElementByAttribute(this, 'anonid', 'toolbarbutton-overlay');
+          return icon && icon.mozMatchesSelector(":hover");
+        ]]></getter>
+      </property>
+      <method name="_overlayClick">
+        <parameter name="aEvent" />
+        <body><![CDATA[
+          if(this.mOverOverlay)
+          {
+            event.stopPropagation();
+            alert("woot");
+          }
+        ]]></body>
+      </method>
+    </implementation>
+
+    <handlers>
+      <handler event="mouseover"><![CDATA[
+        let anonid = event.originalTarget.getAttribute("anonid");
+        if(anonid == "toolbarbutton-overlay") this.mOverOverlay = true;
+      ]]></handler>
+      <handler event="mouseout"><![CDATA[
+        let anonid = event.originalTarget.getAttribute("anonid");
+        if(anonid == "toolbarbutton-overlay") this.mOverOverlay = false;
+      ]]></handler>
+      <handler phase="capturing" event="mousedown" button="0" action="this._overlayClick(event)"/>
+    </handlers>
+
+  </binding>
+
+</bindings>

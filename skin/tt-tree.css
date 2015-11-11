@@ -156,6 +156,10 @@
 	width: 18px;
 }
 
+#tt[hideclosebuttons]:not([hidevscroll]) #tt-overlay { /* assuming 17px scrollbar width */
+    width: 35px;
+}
+
 #tt-treechildren:-moz-tree-cell(tt-overlay),
 #tt-treechildren:-moz-tree-image(tt-overlay),
 #tt-treechildren-feedback:-moz-tree-cell(tt-overlay),

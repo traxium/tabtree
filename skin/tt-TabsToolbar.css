@@ -3,6 +3,9 @@
  * Copyright (C) 2015 Sergey Zelentsov <crayfishexterminator@gmail.com>
  */
 
+
+/* :::::: toolbar buttons :::::: */
+
 window[tabsintitlebar="true"][sizemode="maximized"] #toolbar-menubar { /* [tabsintitlebar="true"] is only on Windows */
 	padding-bottom: 1px; /* padding that causes #toolbar-menubar to change its height (from 19px to 18px) in Windows 7 at a window opening */
 }
@@ -13,6 +16,7 @@ window[tabsintitlebar="true"][sizemode="maximized"] #toolbar-menubar { /* [tabsi
 }
 
 #tt-toolbar > toolbarbutton {
+	-moz-binding: url("chrome://tabtree/content/bindings.xml#toolbarbutton-overlay");
 	-moz-appearance: none; /* This is needed to permit changing the background of the buttons */
 }
 
@@ -21,4 +25,39 @@ window[tabsintitlebar="true"][sizemode="maximized"] #toolbar-menubar { /* [tabsi
 	background-position:  center bottom var(--tab-toolbar-navbar-overlap);
 	background-repeat: no-repeat;
 	background-size: 85% 100%;
+}
+
+
+/* :::::: toolbarbutton-overlay style :::::: */
+/* Much inspiration taken from chrome://global/skin/toolbarbutton.css */
+
+#tt-toolbar > toolbarbutton .toolbarbutton-icon {
+	width: 16px !important;
+	height: 16px !important;
+}
+
+#tt-toolbar > toolbarbutton:not([overlay]) .toolbarbutton-overlay {
+	display: none;
+}
+
+#tt-toolbar > toolbarbutton[overlay] .toolbarbutton-overlay {
+	display: -moz-box;
+	margin: -6px 0 0 !important;
+	-moz-margin-end: -6px !important;
+	width: 14px !important;
+	height: 14px !important;
+	background-color: #000000;
+	border-radius: 6px;
+}
+
+#tt-toolbar > toolbarbutton[overlay] .toolbarbutton-overlay:hover {
+	background-color: #d900d9 !important;
+}
+
+#tt-toolbar > toolbarbutton[overlay~="muted"] .toolbarbutton-overlay {
+	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio-small.svg#tab-audio-muted);
+}
+
+#tt-toolbar > toolbarbutton[overlay~="soundplaying"] .toolbarbutton-overlay {
+	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio-small.svg#tab-audio);
 }
