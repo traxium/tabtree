@@ -668,6 +668,7 @@ var windowListener = {
 			tabtitle: aDOMWindow.document.createElement('treecol'), // <treecol>
 			overlay:  aDOMWindow.document.createElement('treecol'), // <treecol>
 			closebtn: aDOMWindow.document.createElement('treecol'), // <treecol>
+			scrollbar: aDOMWindow.document.createElement('treecol'), // <treecol>
 		};
 		propsToSet = {
 			id: 'tt-title',
@@ -681,14 +682,14 @@ var windowListener = {
 		treecol.closebtn.setAttribute('hideheader', 'true');
 		treecol.closebtn.id = 'tt-close';
 		treecol.closebtn.collapsed = !Services.prefs.getBoolPref('extensions.tabtree.close-tab-buttons');
-		treecol.closebtn.collapsed
-			? tree.setAttribute("hideclosebuttons", "true")
-			: tree.removeAttribute("hideclosebuttons");
+		treecol.scrollbar.setAttribute('hideheader', 'true');
+		treecol.scrollbar.id = 'tt-scrollbar';
 		let treechildren = aDOMWindow.document.createElement('treechildren'); // <treechildren id="tt-treechildren">
 		treechildren.setAttribute('id', 'tt-treechildren');
 		treecols.appendChild(treecol.tabtitle);
 		treecols.appendChild(treecol.overlay);
 		treecols.appendChild(treecol.closebtn);
+		treecols.appendChild(treecol.scrollbar);
 		tree.appendChild(treecols);
 		tree.appendChild(treechildren);
 		sidebar.appendChild(tree);
@@ -2052,9 +2053,6 @@ var windowListener = {
 							break;
 						case 'extensions.tabtree.close-tab-buttons':
 							treecol.closebtn.collapsed = !Services.prefs.getBoolPref('extensions.tabtree.close-tab-buttons');
-							treecol.closebtn.collapsed
-								? tree.setAttribute("hideclosebuttons", "true")
-								: tree.removeAttribute("hideclosebuttons");
 							break;
 						case 'extensions.tabtree.dblclick':
 							if (Services.prefs.getBoolPref('extensions.tabtree.dblclick')) {

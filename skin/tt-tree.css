@@ -116,13 +116,22 @@
 	border: 1px solid #EF0FFF; /* default Firefox color for "Highlight all" option in <findbar> */
 }
 
-/* :::::: Close button icons ::::: */
-
-#tt #tt-close { /* assuming 17px scrollbar width */
-	width: 35px;
+/* :::::: Space for scrollbar ::::: */
+#tt #tt-scrollbar {
+	width: 17px;    /* assuming this width of scrollbar */
+	list-style-image: none;
+	visibility: visible;
 }
 
-#tt[hidevscroll] #tt-close {
+#tt[hidevscroll] #tt-scrollbar {
+	width: 0px;
+	visibility: collapse;
+}
+
+
+/* :::::: Close button icons ::::: */
+
+#tt #tt-close {
 	width: 18px;
 }
 
@@ -154,10 +163,6 @@
 
 #tt #tt-overlay {
 	width: 18px;
-}
-
-#tt[hideclosebuttons]:not([hidevscroll]) #tt-overlay { /* assuming 17px scrollbar width */
-    width: 35px;
 }
 
 #tt-treechildren:-moz-tree-cell(tt-overlay),
