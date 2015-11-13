@@ -4,53 +4,50 @@
   xmlns:xbl="http://www.mozilla.org/xbl"
   xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-  <binding id="toolbarbutton-overlay"
-    extends="chrome://global/content/bindings/toolbarbutton.xml#toolbarbutton">
-    <!-- Much inspiration taken from chrome://global/content/bindings/toolbarbutton.xml#toolbarbutton-badged -->
+  <!-- This is just a toolbarbutton, with a few added methods to make our lives a bit easier -->
+  <binding id="ttbutton" extends="chrome://global/content/bindings/toolbarbutton.xml#toolbarbutton">
+    <implementation>
+      <!-- remember to keep this up to date with changes to ttpinnedtab's structure below -->
+      <property name="tPos" readonly="true" onget="return this.parentNode.parentNode.tPos;"/>
+    </implementation>
+  </binding>
 
+  <!-- element representing a pinned tab; contains the toolbarbutton itself and
+       an image that can be overlaid on it to show e.g. sound is playing -->
+  <binding id="ttpinnedtab">
     <content>
       <children includes="observes|template|menupopup|panel|tooltip"/>
-      <xul:stack anonid="toolbarbutton-overlay-stack" class="toolbarbutton-overlay-stack">
-        <xul:image anonid="toolbarbutton-icon" class="toolbarbutton-icon" xbl:inherits="validate,src=image,label"/>
-        <xul:image anonid="toolbarbutton-overlay" class="toolbarbutton-overlay" xbl:inherits="overlay,tooltiptext=overlaytext" top="0" end="0"/>
+      <xul:stack>
+        <xul:toolbarbutton anonid="button" class="tt-tab-button"
+          xbl:inherits="accesskey,autocheck,checkState,checked,command,crop,dir,disabled,dlgtype,group,image,label,oncommand,open,orient,tabindex,title,type,validate,titlechanged"/>
+        <xul:image anonid="overlay" class="tt-tab-overlay" xbl:inherits="tooltiptext=overlaytext,overlay" top="0" end="0"/>
       </xul:stack>
-      <xul:label class="toolbarbutton-text" crop="right" flex="1" xbl:inherits="value=label,accesskey,crop,wrap"/>
-      <xul:label class="toolbarbutton-multiline-text" flex="1" xbl:inherits="value=label,accesskey,wrap"/>
     </content>
 
     <implementation>
-      <field name="mOverOverlay">false</field>
-      <property name="_overOverlayIcon" readonly="true">
+      <property name="button" readonly="true" onget="return document.getAnonymousElementByAttribute(this, 'anonid', 'button');"/>
+      <property name="_overlay" readonly="true" onget="return document.getAnonymousElementByAttribute(this, 'anonid', 'overlay');"/>
+      <property name="checked" onget="return this.button.checked;" onset="this.button.checked = val;"/>
+      <property name="image" onget="return this.button.getAttribute('image');" onset="val ? this.button.setAttribute('image','val') : this.button.removeAttribute('image')"/>
+      <property name="tPos" readonly="true" onget="return Array.prototype.indexOf.call(this.parentNode.children, this)-1;"/><!-- The first child is the arrow hbox -->
+      <property name="mOverOverlay" readonly="true">
         <getter><![CDATA[
-          if (!this.hasAttribute("overlay")) return false;
-          let icon = document.getAnonymousElementByAttribute(this, 'anonid', 'toolbarbutton-overlay');
-          return icon && icon.mozMatchesSelector(":hover");
+        if(!this.hasAttribute("overlay")) return false;
+        return this._overlay && this._overlay.mozMatchesSelector(":hover");
         ]]></getter>
       </property>
-      <method name="_overlayClick">
-        <parameter name="aEvent" />
-        <body><![CDATA[
-          if(this.mOverOverlay)
-          {
-            event.stopPropagation();
-            alert("woot");
-          }
-        ]]></body>
-      </method>
     </implementation>
 
+    <!--
     <handlers>
-      <handler event="mouseover"><![CDATA[
-        let anonid = event.originalTarget.getAttribute("anonid");
-        if(anonid == "toolbarbutton-overlay") this.mOverOverlay = true;
+      <handler phase="capturing" event="click"><![CDATA[
+        console.log("capturing: original target="+event.originalTarget.nodeName);
       ]]></handler>
-      <handler event="mouseout"><![CDATA[
-        let anonid = event.originalTarget.getAttribute("anonid");
-        if(anonid == "toolbarbutton-overlay") this.mOverOverlay = false;
+      <handler phase="bubbling" event="click"><![CDATA[
+        console.log("bubbling: original target="+event.originalTarget.nodeName);
       ]]></handler>
-      <handler phase="capturing" event="mousedown" button="0" action="this._overlayClick(event)"/>
     </handlers>
-
+    -->
   </binding>
 
 </bindings>

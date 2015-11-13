@@ -29,6 +29,7 @@ const TT_POS_SB_BOT = 3;
 const TT_COL_TITLE = 0;
 const TT_COL_OVERLAY = 1;
 const TT_COL_CLOSE = 2;
+const TT_COL_SCROLLBAR = 3; // Keep this one at the end, it has CSS to keep other columns from being hidden by the scrollbar
 
 //noinspection JSUnusedGlobalSymbols
 function startup(data, reason)
@@ -626,10 +627,10 @@ var windowListener = {
 				<hbox align="start">
 					<img id="tt-drop-indicator" style="margin-top:-8px"/>
 				</hbox>
-				<toolbarbutton />
-				<toolbarbutton />
-				<toolbarbutton />
-				<toolbarbutton />
+				<ttpinnedtab />
+				<ttpinnedtab />
+				<ttpinnedtab />
+				<ttpinnedtab />
 				...
 			</toolbar>
 		</toolbox>
@@ -1048,40 +1049,40 @@ var windowListener = {
 				let max = Math.max(this.nPinned, n);
 				let min = Math.min(this.nPinned, n);
 				for (let i=0; i<max; ++i) {
-					let toolbarbtn;
+					let pinnedtab;
 					if (i<min) { // reusing existing toolbarbuttons here
-						toolbarbtn = toolbar.childNodes[i+1]; // +1 for the arrow hbox
+						pinnedtab = toolbar.childNodes[i+1]; // +1 for the arrow hbox
 					} else if (this.nPinned > n) { // we added a new pinned tab(tabs)
-						toolbarbtn = aDOMWindow.document.createElement('toolbarbutton');
-						toolbar.appendChild(toolbarbtn);
+						pinnedtab = aDOMWindow.document.createElement('ttpinnedtab');
+						toolbar.appendChild(pinnedtab);
 					} else if (this.nPinned < n) { // we removed a pinned tab(tabs)
-						toolbarbtn = toolbar.childNodes[i+1]; // +1 for the arrow hbox
-						toolbar.removeChild(toolbarbtn);
+						pinnedtab = toolbar.childNodes[i+1]; // +1 for the arrow hbox
+						toolbar.removeChild(pinnedtab);
 						continue;
 					}
-					toolbarbtn.setAttribute('tooltiptext', g.tabs[i].label);
-					toolbarbtn.setAttribute('type', 'radio');
-					toolbarbtn.setAttribute('group', 'RadioGroup');
-					toolbarbtn.setAttribute('context', 'tabContextMenu');
-					toolbarbtn.checked = g.tabs[i].selected;
+					pinnedtab.setAttribute('tooltiptext', g.tabs[i].label);
+					pinnedtab.setAttribute('type', 'radio');
+					pinnedtab.setAttribute('group', 'RadioGroup');
+					pinnedtab.setAttribute('context', 'tabContextMenu');
+					pinnedtab.checked = g.tabs[i].selected;
 					if (g.tabs[i].hasAttribute('progress') && g.tabs[i].hasAttribute('busy')) {
-						toolbarbtn.setAttribute('image', 'chrome://browser/skin/tabbrowser/loading.png');
+						pinnedtab.setAttribute('image', 'chrome://browser/skin/tabbrowser/loading.png');
 					} else if (g.tabs[i].hasAttribute('busy')) {
-						toolbarbtn.setAttribute('image', 'chrome://browser/skin/tabbrowser/connecting.png');
+						pinnedtab.setAttribute('image', 'chrome://browser/skin/tabbrowser/connecting.png');
 					} else {
-						toolbarbtn.setAttribute('image', g.tabs[i].image || 'chrome://mozapps/skin/places/defaultFavicon.png');
+						pinnedtab.setAttribute('image', g.tabs[i].image || 'chrome://mozapps/skin/places/defaultFavicon.png');
 					}
 					if (g.tabs[i].hasAttribute('titlechanged')) {
-						toolbarbtn.setAttribute('titlechanged', 'true');
+						pinnedtab.setAttribute('titlechanged', 'true');
 					} else {
-						toolbarbtn.removeAttribute('titlechanged');
+						pinnedtab.removeAttribute('titlechanged');
 					}
 					if (g.tabs[i].hasAttribute('muted')) {
-						toolbarbtn.setAttribute('overlay', 'muted');
+						pinnedtab.setAttribute('overlay', 'muted');
 					} else if (g.tabs[i].hasAttribute('soundplaying')) {
-						toolbarbtn.setAttribute('overlay', 'soundplaying');
+						pinnedtab.setAttribute('overlay', 'soundplaying');
 					} else {
-						toolbarbtn.removeAttribute('overlay');
+						pinnedtab.removeAttribute('overlay');
 					}
 				}
 				g.mCurrentTab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(g.mCurrentTab._tPos - tt.nPinned); // NEW
@@ -1624,8 +1625,8 @@ var windowListener = {
 
 		toolbar.addEventListener('dragstart', function(event) {
 			let toolbarbtn = event.target;
-			let tPos = Array.prototype.indexOf.call(toolbarbtn.parentNode.children, toolbarbtn);
-			let tab = g.tabs[tPos-1]; // the first child is the arrow hbox
+			let tPos = toolbarbtn.tPos;
+			let tab = g.tabs[tPos];
 			event.dataTransfer.mozSetDataAt(aDOMWindow.TAB_DROP_TYPE, tab, 0);
 			event.dataTransfer.mozSetDataAt('application/x-moz-node', toolbarbtn, 0);
 			event.dataTransfer.mozSetDataAt('text/x-moz-text-internal', tab.linkedBrowser.currentURI.spec, 0);
@@ -1644,8 +1645,8 @@ var windowListener = {
 				let rect = toolbar.getBoundingClientRect();
 				let newMargin;
 
-				if (event.originalTarget.tagName == 'toolbarbutton' || event.originalTarget.tagName == 'toolbar') {
-					if (event.originalTarget.tagName == 'toolbarbutton') {
+				if (event.originalTarget.tagName == 'xul:toolbarbutton' || event.originalTarget.tagName == 'toolbar') {
+					if (event.originalTarget.tagName == 'xul:toolbarbutton') {
 						if (event.screenX <= event.originalTarget.boxObject.screenX + event.originalTarget.boxObject.width / 2) {
 							newMargin = event.originalTarget.getBoundingClientRect().left - rect.left;
 						} else {
@@ -1684,14 +1685,14 @@ var windowListener = {
 					g.pinTab(sourceTab);
 				}
 
-				if (event.originalTarget.tagName == 'toolbarbutton' || event.originalTarget.tagName == 'toolbar') {
-					if (event.originalTarget.tagName == 'toolbarbutton') {
-						let idx = Array.prototype.indexOf.call(event.originalTarget.parentNode.children, event.originalTarget);
-						let tab = g.tabs[idx-1]; // the first child is the arrow hbox
+				if (event.originalTarget.tagName == 'xul:toolbarbutton' || event.originalTarget.tagName == 'toolbar') {
+					if (event.originalTarget.tagName == 'xul:toolbarbutton') {
+						let tPos = event.originalTarget.tPos;
+						let tab = g.tabs[tPos];
 						if (event.screenX <= event.originalTarget.boxObject.screenX + event.originalTarget.boxObject.width / 2) {
-							tt.movePinnedToPlus(sourceTab, tab._tPos, tt.DROP_BEFORE);
+							tt.movePinnedToPlus(sourceTab, tPos, tt.DROP_BEFORE);
 						} else {
-							tt.movePinnedToPlus(sourceTab, tab._tPos, tt.DROP_AFTER);
+							tt.movePinnedToPlus(sourceTab, tPos, tt.DROP_AFTER);
 						}
 					} else if (event.originalTarget.tagName == 'toolbar') {
 						tt.movePinnedToPlus(sourceTab, tt.nPinned-1, tt.DROP_AFTER);
@@ -1711,14 +1712,14 @@ var windowListener = {
 				let newTab = g.loadOneTab(url, {inBackground: true, allowThirdPartyFixup: true, relatedToCurrent: false});
 				g.pinTab(newTab);
 
-				if (event.originalTarget.tagName == 'toolbarbutton' || event.originalTarget.tagName == 'toolbar') {
-					if (event.originalTarget.tagName == 'toolbarbutton') {
-						let idx = Array.prototype.indexOf.call(event.originalTarget.parentNode.children, event.originalTarget);
-						let tab = g.tabs[idx-1]; // the first child is the arrow hbox
+				if (event.originalTarget.tagName == 'xul:toolbarbutton' || event.originalTarget.tagName == 'toolbar') {
+					if (event.originalTarget.tagName == 'xul:toolbarbutton') {
+						let tPos = event.originalTarget.tPos;
+						let tab = g.tabs[tPos];
 						if (event.screenX <= event.originalTarget.boxObject.screenX + event.originalTarget.boxObject.width / 2) {
-							tt.movePinnedToPlus(newTab, tab._tPos, tt.DROP_BEFORE);
+							tt.movePinnedToPlus(newTab, tPos, tt.DROP_BEFORE);
 						} else {
-							tt.movePinnedToPlus(newTab, tab._tPos, tt.DROP_AFTER);
+							tt.movePinnedToPlus(newTab, tPos, tt.DROP_AFTER);
 						}
 					} else if (event.originalTarget.tagName == 'toolbar') {
 						tt.movePinnedToPlus(newTab, tt.nPinned-1, tt.DROP_AFTER);
@@ -1764,8 +1765,8 @@ var windowListener = {
 					});
 					target.apply(thisArg, argumentsList); // returns nothing
 					delete aPopupMenu.triggerNode; // because it was an inherited property we can delete it to restore default value
-				} else if (aPopupMenu.triggerNode.localName == 'toolbarbutton') {
-					let tPos = Array.prototype.indexOf.call(aPopupMenu.triggerNode.parentNode.childNodes, aPopupMenu.triggerNode) - 1; // -1 for the arrow hbox
+				} else if (aPopupMenu.triggerNode.localName == 'ttpinnedtab') {
+					let tPos = aPopupMenu.triggerNode.tPos;
 					// we use 'Object.defineProperty' because aPopupMenu.triggerNode is not a writable property, plain 'aPopupMenu.triggerNode = blaBlaBla' doesn't work
 					// and furthermore it's an inherited getter property:
 					Object.defineProperty(aPopupMenu, 'triggerNode', {
@@ -1954,7 +1955,7 @@ var windowListener = {
 		
 		toolbar.addEventListener('command', function f(event) {
 			if (event.originalTarget.localName == 'toolbarbutton') {
-				let tPos = Array.prototype.indexOf.call(toolbar.childNodes, event.originalTarget) - 1; // -1 for the arrow hbox
+				let tPos = event.originalTarget.tPos;
 				g.selectTabAtIndex(tPos);
 			}
 		}, false);
