@@ -20,7 +20,7 @@
       <xul:stack>
         <xul:toolbarbutton anonid="button" class="tt-tab-button"
           xbl:inherits="accesskey,autocheck,checkState,checked,command,crop,dir,disabled,dlgtype,group,image,label,oncommand,open,orient,tabindex,title,type,validate,titlechanged"/>
-        <xul:image anonid="overlay" class="tt-tab-overlay" xbl:inherits="tooltiptext=overlaytext,overlay" top="0" end="0"/>
+        <xul:image anonid="overlay" class="tt-tab-overlay" xbl:inherits="tooltiptext=overlaytext,muted,soundplaying" top="0" end="0"/>
       </xul:stack>
     </content>
 
@@ -29,7 +29,72 @@
       <property name="_overlay" readonly="true" onget="return document.getAnonymousElementByAttribute(this, 'anonid', 'overlay');"/>
       <property name="checked" onget="return this.button.checked;" onset="this.button.checked = val;"/>
       <property name="image" onget="return this.button.getAttribute('image');" onset="val ? this.button.setAttribute('image','val') : this.button.removeAttribute('image')"/>
-      <property name="tPos" readonly="true" onget="return Array.prototype.indexOf.call(this.parentNode.children, this)-1;"/><!-- The first child is the arrow hbox -->
+
+      <field name="_tab">null</field>
+      <property name="tab">
+        <getter><![CDATA[
+          if(this._tab == null) throw "ttpinnedtab.tab get without set";
+          return this._tab;
+        ]]></getter>
+        <setter><![CDATA[
+          if (val.localName != 'tab') throw "invalid tab";
+          this._tab = val;
+          this.repaint();
+          return this._tab;
+        ]]></setter>
+      </property>
+      <property name="_browser" readonly="true">
+        <getter><![CDATA[
+          if(this._tab == null) throw "ttpinnedtab.tab get without set";
+          return this._tab.parentNode.tabbrowser;
+        ]]></getter>
+      </property>
+
+      <method name="repaint">
+        <body><![CDATA[
+          let tab = this._tab;
+          this.setAttribute('tooltiptext', tab.label);
+          this.setAttribute('type', 'radio');
+          this.setAttribute('group', 'RadioGroup');
+          this.setAttribute('context', 'tabContextMenu');
+          this.checked = tab.selected;
+
+          if (tab.hasAttribute('progress') && tab.hasAttribute('busy')) {
+            this.setAttribute('image', 'chrome://browser/skin/tabbrowser/loading.png');
+          } else if (this.tab.hasAttribute('busy')) {
+            this.setAttribute('image', 'chrome://browser/skin/tabbrowser/connecting.png');
+          } else {
+            this.setAttribute('image', tab.image || 'chrome://mozapps/skin/places/defaultFavicon.png');
+          }
+
+          let me = this; // javascript is funny sometimes
+          [
+            'titlechanged',
+            'muted',
+            'soundplaying',
+          ].forEach(function(x) {
+            if (tab.hasAttribute(x))
+              me.setAttribute(x, 'true');
+            else
+              me.removeAttribute(x);
+          });
+
+          // Taken from createTooltip() in chrome://browser/content/tabbrowser.xml
+          if (this.hasAttribute('muted') || this.hasAttribute('soundplaying')) {
+            let stringID = tab.linkedBrowser.audioMuted ?
+              "tabs.unmuteAudio.tooltip" :
+              "tabs.muteAudio.tooltip";
+            let key = document.getElementById("key_toggleMute");
+            let shortcut = ShortcutUtils.prettifyShortcut(key);
+            let label = this._browser.mStringBundle.getFormattedString(stringID, [shortcut]);
+            this.setAttribute('overlaytext', label);
+          } else {
+            this.removeAttribute('overlaytext');
+          }
+        ]]></body>
+      </method>
+
+      <property name="tPos" readonly="true" onget="return this.tab._tPos;"/>
       <property name="mOverOverlay" readonly="true">
         <getter><![CDATA[
         if(!this.hasAttribute("overlay")) return false;
@@ -38,16 +103,15 @@
       </property>
     </implementation>
 
-    <!--
     <handlers>
-      <handler phase="capturing" event="click"><![CDATA[
-        console.log("capturing: original target="+event.originalTarget.nodeName);
-      ]]></handler>
-      <handler phase="bubbling" event="click"><![CDATA[
-        console.log("bubbling: original target="+event.originalTarget.nodeName);
+      <handler event="command" action="if(this.tab) this._browser.selectTabAtIndex(this.tab._tPos)"/>
+      <handler event="click" button="0"><![CDATA[
+        if (event.originalTarget === this._overlay) {
+          event.stopPropagation();
+          this.tab.toggleMuteAudio();
+        }
       ]]></handler>
     </handlers>
-    -->
   </binding>
 
 </bindings>

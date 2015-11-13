@@ -627,7 +627,7 @@ var windowListener = {
 				<hbox align="start">
 					<img id="tt-drop-indicator" style="margin-top:-8px"/>
 				</hbox>
-				<ttpinnedtab />
+				<ttpinnedtab /> <!-- see bindings.xml -->
 				<ttpinnedtab />
 				<ttpinnedtab />
 				<ttpinnedtab />
@@ -1060,30 +1060,7 @@ var windowListener = {
 						toolbar.removeChild(pinnedtab);
 						continue;
 					}
-					pinnedtab.setAttribute('tooltiptext', g.tabs[i].label);
-					pinnedtab.setAttribute('type', 'radio');
-					pinnedtab.setAttribute('group', 'RadioGroup');
-					pinnedtab.setAttribute('context', 'tabContextMenu');
-					pinnedtab.checked = g.tabs[i].selected;
-					if (g.tabs[i].hasAttribute('progress') && g.tabs[i].hasAttribute('busy')) {
-						pinnedtab.setAttribute('image', 'chrome://browser/skin/tabbrowser/loading.png');
-					} else if (g.tabs[i].hasAttribute('busy')) {
-						pinnedtab.setAttribute('image', 'chrome://browser/skin/tabbrowser/connecting.png');
-					} else {
-						pinnedtab.setAttribute('image', g.tabs[i].image || 'chrome://mozapps/skin/places/defaultFavicon.png');
-					}
-					if (g.tabs[i].hasAttribute('titlechanged')) {
-						pinnedtab.setAttribute('titlechanged', 'true');
-					} else {
-						pinnedtab.removeAttribute('titlechanged');
-					}
-					if (g.tabs[i].hasAttribute('muted')) {
-						pinnedtab.setAttribute('overlay', 'muted');
-					} else if (g.tabs[i].hasAttribute('soundplaying')) {
-						pinnedtab.setAttribute('overlay', 'soundplaying');
-					} else {
-						pinnedtab.removeAttribute('overlay');
-					}
+					pinnedtab.tab = g.tabs[i]; // The XBL binding takes care of the details now
 				}
 				g.mCurrentTab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(g.mCurrentTab._tPos - tt.nPinned); // NEW
 			}, // redrawToolbarbuttons: function()
@@ -1953,12 +1930,6 @@ var windowListener = {
 			tt.redrawToolbarbuttons();
 		}), false); // don't forget to remove
 		
-		toolbar.addEventListener('command', function f(event) {
-			if (event.originalTarget.localName == 'toolbarbutton') {
-				let tPos = event.originalTarget.tPos;
-				g.selectTabAtIndex(tPos);
-			}
-		}, false);
 
 		// "This event should be dispatched when any of these attributes change:
 		// label, crop, busy, image, selected" from 'tabbrowser.xml'

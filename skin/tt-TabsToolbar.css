@@ -21,11 +21,12 @@ ttpinnedtab {
 	-moz-binding: url("chrome://tabtree/content/bindings.xml#ttpinnedtab");
 }
 
-.tt-tab-overlay:not([overlay]) {
+.tt-tab-overlay:not([muted]):not([soundplaying]) {
 	display: none;
 }
 
-.tt-tab-overlay[overlay] {
+.tt-tab-overlay[muted],
+.tt-tab-overlay[soundplaying] {
 	display: -moz-box;
 	width: 16px !important;
 	height: 16px !important;
@@ -33,17 +34,19 @@ ttpinnedtab {
 	border-radius: 9px;
 }
 
-.tt-tab-overlay[overlay]:hover {
+.tt-tab-overlay[muted]:hover,
+.tt-tab-overlay[soundplaying]:hover {
 	background-color: white;
 }
 
-.tt-tab-overlay[overlay~="muted"] {
+.tt-tab-overlay[soundplaying] {
+	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio-small.svg#tab-audio);
+}
+
+.tt-tab-overlay[muted] {
 	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio-small.svg#tab-audio-muted);
 }
 
-.tt-tab-overlay[overlay~="soundplaying"] {
-	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio-small.svg#tab-audio);
-}
 
 /* :::::: ttbutton style :::::: */
 /* This is really just a toolbarbutton with a few added methods */
