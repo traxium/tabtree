@@ -13,6 +13,7 @@ const Ci = Components.interfaces;
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
+Cu.import("resource://gre/modules/ShortcutUtils.jsm");
 Cu.import("resource:///modules/CustomizableUI.jsm");
 var ssHack = Cu.import("resource:///modules/sessionstore/SessionStore.jsm");
 var ssOrig;
@@ -685,8 +686,14 @@ var windowListener = {
 		treecol.closebtn.collapsed = !Services.prefs.getBoolPref('extensions.tabtree.close-tab-buttons');
 		treecol.scrollbar.setAttribute('hideheader', 'true');
 		treecol.scrollbar.id = 'tt-scrollbar';
+
+		let treetooltip = aDOMWindow.document.createElement('tooltip');
+		treetooltip.setAttribute('id', 'tt-tooltip');
+		treetooltip.setAttribute('label', '');
+		tree.appendChild(treetooltip);
 		let treechildren = aDOMWindow.document.createElement('treechildren'); // <treechildren id="tt-treechildren">
 		treechildren.setAttribute('id', 'tt-treechildren');
+		treechildren.setAttribute('tooltip', 'tt-tooltip');
 		treecols.appendChild(treecol.tabtitle);
 		treecols.appendChild(treecol.overlay);
 		treecols.appendChild(treecol.closebtn);
@@ -694,6 +701,7 @@ var windowListener = {
 		tree.appendChild(treecols);
 		tree.appendChild(treechildren);
 		sidebar.appendChild(tree);
+
 		//////////////////// END TREE /////////////////////////////////////////////////////////////////
 
 		//////////////////// DRAG FEEDBACK TREE ////////////////////////////////////////////////////////////////////////
@@ -1602,7 +1610,7 @@ var windowListener = {
 
 		toolbar.addEventListener('dragstart', function(event) {
 			let toolbarbtn = event.target;
-			let tPos = toolbarbtn.tPos;
+			let tPos = toolbarbtn.tPos; // See bindings.xml
 			let tab = g.tabs[tPos];
 			event.dataTransfer.mozSetDataAt(aDOMWindow.TAB_DROP_TYPE, tab, 0);
 			event.dataTransfer.mozSetDataAt('application/x-moz-node', toolbarbtn, 0);
@@ -1664,7 +1672,7 @@ var windowListener = {
 
 				if (event.originalTarget.tagName == 'xul:toolbarbutton' || event.originalTarget.tagName == 'toolbar') {
 					if (event.originalTarget.tagName == 'xul:toolbarbutton') {
-						let tPos = event.originalTarget.tPos;
+						let tPos = event.originalTarget.tPos; // see bindings.xml
 						let tab = g.tabs[tPos];
 						if (event.screenX <= event.originalTarget.boxObject.screenX + event.originalTarget.boxObject.width / 2) {
 							tt.movePinnedToPlus(sourceTab, tPos, tt.DROP_BEFORE);
@@ -1691,7 +1699,7 @@ var windowListener = {
 
 				if (event.originalTarget.tagName == 'xul:toolbarbutton' || event.originalTarget.tagName == 'toolbar') {
 					if (event.originalTarget.tagName == 'xul:toolbarbutton') {
-						let tPos = event.originalTarget.tPos;
+						let tPos = event.originalTarget.tPos; // see bindings.xml
 						let tab = g.tabs[tPos];
 						if (event.screenX <= event.originalTarget.boxObject.screenX + event.originalTarget.boxObject.width / 2) {
 							tt.movePinnedToPlus(newTab, tPos, tt.DROP_BEFORE);
@@ -2001,6 +2009,47 @@ var windowListener = {
 					let tPos = idx + tt.nPinned;
 					g.removeTab(g.tabs[tPos]);
 				}
+			}
+		}, false);
+
+		treetooltip.addEventListener('popupshowing', function onTreeTooltipShowing(event) {
+			let row = {};
+			let col = {};
+			tree.treeBoxObject.getCellAt(event.clientX, event.clientY, row, col, {});
+			if(row.value == -1) {
+				treetooltip.setAttribute('label', stringBundle.GetStringFromName('dbl_click_new_tab'));
+				return;
+			}
+
+			let tPos = row.value + tt.nPinned;
+			let tab = g.tabs[tPos];
+			let bundle = g.mStringBundle;
+			// The string creation bit was taken from createTooltip() in chrome://browser/content/tabbrowser.xml
+			switch (col.value.index) {
+				case TT_COL_CLOSE:
+					treetooltip.setAttribute("label", bundle.getString("tabs.closeTab.tooltip"));
+					break;
+				case TT_COL_OVERLAY:
+					if (tab.hasAttribute('muted') || tab.hasAttribute('soundplaying')) {
+						let stringID = tab.linkedBrowser.audioMuted ?
+							"tabs.unmuteAudio.tooltip" :
+							"tabs.muteAudio.tooltip";
+						let key = aDOMWindow.document.getElementById("key_toggleMute");
+						let shortcut = ShortcutUtils.prettifyShortcut(key);
+						let label = bundle.getFormattedString(stringID, [shortcut]);
+						treetooltip.setAttribute("label", label);
+						break;
+					}
+					// Intentional fallthrough otherwise, after
+					// pretending we were over the tab's label all along
+					col.value = col.value.columns.getColumnAt(TT_COL_TITLE);
+				default:
+					if (tree.treeBoxObject.isCellCropped(row.value, col.value)) {
+						treetooltip.setAttribute("label", tab.label);
+					} else {
+						event.preventDefault();
+					}
+					break;
 			}
 		}, false);
 
