@@ -116,13 +116,22 @@
 	border: 1px solid #EF0FFF; /* default Firefox color for "Highlight all" option in <findbar> */
 }
 
-/* :::::: Close button icons ::::: */
-
-#tt #tt-col-2 { /* assuming 17px scrollbar width */
-	width: 35px;
+/* :::::: Space for scrollbar ::::: */
+#tt #tt-scrollbar {
+	width: 17px;    /* assuming this width of scrollbar */
+	list-style-image: none;
+	visibility: visible;
 }
 
-#tt[hidevscroll] #tt-col-2 {
+#tt[hidevscroll] #tt-scrollbar {
+	width: 0px;
+	visibility: collapse;
+}
+
+
+/* :::::: Close button icons ::::: */
+
+#tt #tt-close {
 	width: 18px;
 }
 
@@ -148,6 +157,46 @@
 #tt-treechildren::-moz-tree-image(tt-close, hover) {
 	list-style-image: url(chrome://tabtree/skin/close.png);
 	-moz-image-region: rect(0, 32px, 16px, 16px);
+}
+
+/* :::::: Icons to simulate tab-overlay icons ::::: */
+
+#tt #tt-overlay {
+	width: 18px;
+}
+
+#tt-treechildren:-moz-tree-cell(tt-overlay),
+#tt-treechildren:-moz-tree-image(tt-overlay),
+#tt-treechildren-feedback:-moz-tree-cell(tt-overlay),
+#tt-treechildren-feedback:-moz-tree-image(tt-overlay) {
+	margin: 0;
+	padding: 0;
+}
+
+/* This rule has to come before the following ones, or else it
+ * overrides them */
+#tt-treechildren::-moz-tree-image(tt-overlay) {
+	list-style-image: none;
+}
+
+#tt-treechildren::-moz-tree-image(tt-soundplaying),
+#tt-treechildren-feedback::-moz-tree-image(tt-soundplaying) {
+	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio);
+}
+
+#tt-treechildren::-moz-tree-image(tt-soundplaying, hover),
+#tt-treechildren-feedback::-moz-tree-image(tt-soundplaying, hover) {
+	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio-hover);
+}
+
+#tt-treechildren::-moz-tree-image(tt-muted),
+#tt-treechildren-feedback::-moz-tree-image(tt-muted) {
+	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio-muted);
+}
+
+#tt-treechildren::-moz-tree-image(tt-muted, hover),
+#tt-treechildren-feedback::-moz-tree-image(tt-muted, hover) {
+	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio-muted-hover);
 }
 
 /* Tab search box */

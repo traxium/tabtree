@@ -3,6 +3,9 @@
  * Copyright (C) 2015 Sergey Zelentsov <crayfishexterminator@gmail.com>
  */
 
+
+/* :::::: toolbar buttons :::::: */
+
 window[tabsintitlebar="true"][sizemode="maximized"] #toolbar-menubar { /* [tabsintitlebar="true"] is only on Windows */
 	padding-bottom: 1px; /* padding that causes #toolbar-menubar to change its height (from 19px to 18px) in Windows 7 at a window opening */
 }
@@ -12,13 +15,56 @@ window[tabsintitlebar="true"][sizemode="maximized"] #toolbar-menubar { /* [tabsi
 	visibility: collapse;
 }
 
-#tt-toolbar > toolbarbutton {
+/* :::::: ttpinnedtab style :::::: */
+
+ttpinnedtab {
+	-moz-binding: url("chrome://tabtree/content/bindings.xml#ttpinnedtab");
+}
+
+.tt-tab-overlay:not([muted]):not([soundplaying]) {
+	display: none;
+}
+
+.tt-tab-overlay[muted],
+.tt-tab-overlay[soundplaying] {
+	display: -moz-box;
+	width: 16px !important;
+	height: 16px !important;
+	background-color: transparent;
+	border-radius: 9px;
+}
+
+.tt-tab-overlay[muted]:hover,
+.tt-tab-overlay[soundplaying]:hover {
+	background-color: white;
+}
+
+.tt-tab-overlay[soundplaying] {
+	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio-small.svg#tab-audio);
+}
+
+.tt-tab-overlay[muted] {
+	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio-small.svg#tab-audio-muted);
+}
+
+
+/* :::::: ttbutton style :::::: */
+/* This is really just a toolbarbutton with a few added methods */
+
+toolbarbutton.tt-tab-button {
+	-moz-binding: url("chrome://tabtree/content/bindings.xml#ttbutton");
 	-moz-appearance: none; /* This is needed to permit changing the background of the buttons */
 }
 
-#tt-toolbar > toolbarbutton[titlechanged] {
+toolbarbutton.tt-tab-button[titlechanged] {
 	background-image: radial-gradient(farthest-corner at center bottom , rgb(255, 255, 255) 3%, rgba(186, 221, 251, 0.75) 20%, rgba(127, 179, 255, 0.25) 40%, transparent 70%);
 	background-position:  center bottom var(--tab-toolbar-navbar-overlap);
 	background-repeat: no-repeat;
 	background-size: 85% 100%;
 }
+
+toolbarbutton.tt-tab-button > image {
+	width: 16px !important;
+	height: 16px !important;
+}
+
