@@ -5,7 +5,7 @@
 
 'use strict';
 /* jshint moz:true */
-/* global Components, CustomizableUI, Services, SessionStore, APP_SHUTDOWN */
+/* global Components, CustomizableUI, Services, SessionStore, APP_SHUTDOWN, ShortcutUtils */
 
 //const {classes: Cc, interfaces: Ci, utils: Cu} = Components; // WebStorm inspector doesn't understand destructuring assignment
 const Cc = Components.classes;
@@ -353,7 +353,6 @@ var windowListener = {
 		}
 		let g = aDOMWindow.gBrowser;
 		let appcontent = aDOMWindow.document.querySelector('#appcontent');
-		let sidebar_browser = aDOMWindow.document.querySelector('#sidebar');
 		let sidebar_box = aDOMWindow.document.querySelector('#sidebar-box');
 		let sidebar_header = aDOMWindow.document.querySelector('#sidebar-header');
 		aDOMWindow.tt = {
@@ -1174,7 +1173,7 @@ var windowListener = {
 						return false;
 					},
 					getCellProperties: function(row, col) {
-						if (col.index === TT_CLOSE) {
+						if (col.index === TT_COL_CLOSE) {
 							return 'tt-close';
 						}
 					}
@@ -1673,7 +1672,6 @@ var windowListener = {
 				if (event.originalTarget.tagName == 'xul:toolbarbutton' || event.originalTarget.tagName == 'toolbar') {
 					if (event.originalTarget.tagName == 'xul:toolbarbutton') {
 						let tPos = event.originalTarget.tPos; // see bindings.xml
-						let tab = g.tabs[tPos];
 						if (event.screenX <= event.originalTarget.boxObject.screenX + event.originalTarget.boxObject.width / 2) {
 							tt.movePinnedToPlus(sourceTab, tPos, tt.DROP_BEFORE);
 						} else {
@@ -1700,7 +1698,6 @@ var windowListener = {
 				if (event.originalTarget.tagName == 'xul:toolbarbutton' || event.originalTarget.tagName == 'toolbar') {
 					if (event.originalTarget.tagName == 'xul:toolbarbutton') {
 						let tPos = event.originalTarget.tPos; // see bindings.xml
-						let tab = g.tabs[tPos];
 						if (event.screenX <= event.originalTarget.boxObject.screenX + event.originalTarget.boxObject.width / 2) {
 							tt.movePinnedToPlus(newTab, tPos, tt.DROP_BEFORE);
 						} else {
@@ -2025,6 +2022,7 @@ var windowListener = {
 			let tab = g.tabs[tPos];
 			let bundle = g.mStringBundle;
 			// The string creation bit was taken from createTooltip() in chrome://browser/content/tabbrowser.xml
+			//noinspection FallThroughInSwitchStatementJS
 			switch (col.value.index) {
 				case TT_COL_CLOSE:
 					treetooltip.setAttribute("label", bundle.getString("tabs.closeTab.tooltip"));
