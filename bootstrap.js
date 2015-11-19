@@ -1596,6 +1596,10 @@ var windowListener = {
 				let row = tPos-tt.nPinned; // remember the row because after target.apply the number of pinned tabs will change(+1) and result would be different
 				target.apply(thisArg, argumentsList); // dispatches 'TabPinned' event, returns nothing
 				tree.treeBoxObject.rowCountChanged(row, -1);
+
+				// Hiding TT_COL_OVERLAY column when there's no at least 1 audio indicator and vice verse
+				// Duplicate this code in onTabAttrModified, pinTab and unpinTab
+				treecol.overlay.collapsed = !Array.some(g.tabs, (x) => !x.pinned && (x.hasAttribute('muted') || x.hasAttribute('soundplaying')));
 			}
 		}); // don't forget to restore
 
@@ -1616,7 +1620,11 @@ var windowListener = {
 						//tree.treeBoxObject.ensureRowIsVisible(tab._tPos - tt.nPinned); // questionable option, I think I should leave it out
 					}, false);
 				}
-				return target.apply(thisArg, argumentsList); // dispatches 'TabUnpinned' event
+				target.apply(thisArg, argumentsList); // returns nothing // dispatches 'TabUnpinned' event
+
+				// Hiding TT_COL_OVERLAY column when there's no at least 1 audio indicator and vice verse
+				// Duplicate this code in onTabAttrModified, pinTab and unpinTab
+				treecol.overlay.collapsed = !Array.some(g.tabs, (x) => !x.pinned && (x.hasAttribute('muted') || x.hasAttribute('soundplaying')));
 			}
 		}); // don't forget to restore
 
@@ -1978,6 +1986,11 @@ var windowListener = {
 					}, 50); // originally it was 50ms for 'connecting.png' and 40ms for 'loading.png'
 				}
 			}
+
+			// Hiding TT_COL_OVERLAY column when there's no at least 1 audio indicator and vice verse
+			// Duplicate this code in onTabAttrModified, pinTab and unpinTab
+			treecol.overlay.collapsed = !Array.some(g.tabs, (x) => !x.pinned && (x.hasAttribute('muted') || x.hasAttribute('soundplaying')));
+
 			tab.pinned ? tt.redrawToolbarbuttons() : tree.treeBoxObject.invalidateRow(tab._tPos - tt.nPinned);
 		}), false); // don't forget to remove
 
@@ -2272,6 +2285,7 @@ var windowListener = {
 		//aDOMWindow.tt.tabContextMenu = tabContextMenu; // uncomment while debugging
 		//aDOMWindow.tt.sidebar = sidebar; // uncomment while debugging
 		//aDOMWindow.tt.customizer = aDOMWindow.document.getElementById("customization-container"); // uncomment while debugging
-		
+		//aDOMWindow.tt.treecol = treecol; // uncomment while debugging
+
 	} // loadIntoWindow: function(aDOMWindow)
 }; // var windowListener =
