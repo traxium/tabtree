@@ -18,6 +18,7 @@
     <content>
       <children includes="observes|template|menupopup|panel|tooltip"/>
       <xul:stack>
+        <xul:hbox anonid="titlechanged-placeholder" xbl:inherits="titlechanged" />
         <xul:toolbarbutton anonid="button" class="tt-tab-button"
           xbl:inherits="accesskey,autocheck,checkState,checked,command,crop,dir,disabled,dlgtype,group,image,label,oncommand,open,orient,tabindex,title,type,validate,titlechanged"/>
         <xul:image anonid="overlay" class="tt-tab-overlay" xbl:inherits="tooltiptext=overlaytext,muted,soundplaying" top="0" end="0"/>
@@ -52,6 +53,7 @@
 
       <method name="repaint">
         <body><![CDATA[
+          /* global ShortcutUtils */
           let tab = this._tab;
           this.setAttribute('tooltiptext', tab.label);
           this.setAttribute('type', 'radio');

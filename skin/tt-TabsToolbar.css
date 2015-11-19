@@ -53,10 +53,12 @@ ttpinnedtab {
 
 toolbarbutton.tt-tab-button {
 	-moz-binding: url("chrome://tabtree/content/bindings.xml#ttbutton");
-	-moz-appearance: none; /* This is needed to permit changing the background of the buttons */
+	/* "-moz-appearance: none;" is needed to permit changing the background of the buttons */
+	/* But we can't use "-moz-appearance: none;" because it breaks appearance on Linux */
+	/* Therefore I use hbox[anonid="titlechanged-placeholder"] (see bindings.xml) in order to show "titlechanged" indicator */
 }
 
-toolbarbutton.tt-tab-button[titlechanged] {
+ttpinnedtab [anonid="titlechanged-placeholder"][titlechanged] {
 	background-image: radial-gradient(farthest-corner at center bottom , rgb(255, 255, 255) 3%, rgba(186, 221, 251, 0.75) 20%, rgba(127, 179, 255, 0.25) 40%, transparent 70%);
 	background-position:  center bottom var(--tab-toolbar-navbar-overlap);
 	background-repeat: no-repeat;
