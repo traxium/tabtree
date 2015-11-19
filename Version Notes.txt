@@ -1,6 +1,13 @@
+1.3.8
+- Audio indicator
+- Respect browser.tabs.insertRelatedAfterCurrent about:config option
+- New tab tree position options: "In the sidebar (at the top)" and "In the sidebar (at the bottom)"
+- Tooltips in the tab tree
+
 1.3.7
 - More Navigation Bar heights (24px, 26px, 28px ... 40px)
 - Navigation Bar context menu to change its height
+- "Title changed" indicator on pinned tabs
 - Compatibility with HTitle extension under Linux
 - Beyond Australis add-on compatibility (but only partially in Windows 8 and later)
 - Fixed bug #27 (One tab is missing)

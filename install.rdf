@@ -7,13 +7,14 @@
      xmlns:em="http://www.mozilla.org/2004/em-rdf#">
   <Description about="urn:mozilla:install-manifest">
     <em:id>TabsTree@traxium</em:id>
-    <em:version>1.3.7</em:version>
+    <em:version>1.3.8</em:version>
     <em:name>Tab Tree</em:name>
     <em:description>Tabs how they must be.</em:description>
     <em:creator>Sergey Zelentsov</em:creator>
     <em:homepageURL>https://github.com/traxium/tabtree</em:homepageURL>
     <em:type>2</em:type>
     <em:bootstrap>true</em:bootstrap>
+    <em:multiprocessCompatible>true</em:multiprocessCompatible>
     <em:targetApplication>
       <Description>
         <!-- Firefox -->
