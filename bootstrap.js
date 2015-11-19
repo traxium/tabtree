@@ -1176,8 +1176,18 @@ var windowListener = {
 						return false;
 					},
 					getCellProperties: function(row, col) {
-						if (col.index === TT_COL_CLOSE) {
-							return 'tt-close';
+						switch (col.index) {
+							case TT_COL_CLOSE:
+								return 'tt-close';
+
+							case TT_COL_OVERLAY:
+								if (tab.hasAttribute('muted')) {
+									return 'tt-muted';
+								} else if (tab.hasAttribute('soundplaying')) {
+									return 'tt-soundplaying';
+								} else {
+									return 'tt-overlay';
+								}
 						}
 					}
 				};
