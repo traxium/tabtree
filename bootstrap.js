@@ -5,7 +5,7 @@
 
 'use strict';
 /* jshint moz:true */
-/* global Components, CustomizableUI, Services, SessionStore, APP_SHUTDOWN, ShortcutUtils */
+/* global Components, CustomizableUI, Services, SessionStore, APP_SHUTDOWN, ShortcutUtils, NavBarHeight */
 
 //const {classes: Cc, interfaces: Ci, utils: Cu} = Components; // WebStorm inspector doesn't understand destructuring assignment
 const Cc = Components.classes;
@@ -30,9 +30,10 @@ const TT_POS_SB_BOT = 3;
 const TT_COL_TITLE = 0;
 const TT_COL_OVERLAY = 1;
 const TT_COL_CLOSE = 2;
+//noinspection JSUnusedLocalSymbols
 const TT_COL_SCROLLBAR = 3; // Keep this one at the end, it has CSS to keep other columns from being hidden by the scrollbar
 
-//noinspection JSUnusedGlobalSymbols
+//noinspection JSUnusedGlobalSymbols,JSUnusedLocalSymbols
 function startup(data, reason)
 {
 	let uri = Services.io.newURI("chrome://tabtree/skin/tt-tree.css", null, null);
@@ -62,6 +63,7 @@ function startup(data, reason)
 			apply: function (target, thisArg, argumentsList) {
 				target.apply(thisArg, argumentsList); // returns nothing
 				let aWindow = argumentsList[0];
+				//noinspection JSClosureCompilerSyntax
 				let event = new Event('tt-TabsLoad'); // we just added our event after this function is executed
 				aWindow.dispatchEvent(event);
 			}
@@ -72,6 +74,7 @@ function startup(data, reason)
 			apply: function (target, thisArg, argumentsList) {
 				target.apply(thisArg, argumentsList); // returns nothing
 				let aWindow = argumentsList[0];
+				//noinspection JSClosureCompilerSyntax
 				let event = new Event('tt-TabsLoad'); // we just added our event after this function is executed
 				aWindow.dispatchEvent(event);
 			}
@@ -169,7 +172,7 @@ function startup(data, reason)
 	windowListener.register();
 }
 
-//noinspection JSUnusedGlobalSymbols
+//noinspection JSUnusedGlobalSymbols,JSUnusedLocalSymbols
 function shutdown(data, reason)
 {
 	if (reason == APP_SHUTDOWN) return;
@@ -213,9 +216,9 @@ function shutdown(data, reason)
 	windowListener.unregister();
 }
 
-//noinspection JSUnusedGlobalSymbols
+//noinspection JSUnusedGlobalSymbols,JSUnusedLocalSymbols
 function install(aData, aReason) { }
-//noinspection JSUnusedGlobalSymbols
+//noinspection JSUnusedGlobalSymbols,JSUnusedLocalSymbols
 function uninstall(aData, aReason) { }
 
 //noinspection JSUnusedGlobalSymbols
