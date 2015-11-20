@@ -1,5 +1,4 @@
-# content   tabtree 		content/
-content   tabtree 		.
+content   tabtree 		./
 skin      tabtree classic/1.0	skin/
 locale    tabtree en-US locale/en-US/
 locale    tabtree ru-RU locale/ru-RU/
