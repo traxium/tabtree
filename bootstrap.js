@@ -301,6 +301,10 @@ var windowListener = {
 			if (titlebarButtonsClone && titlebarButtonsClone.parentNode !== null) { // if it exists
 				titlebarButtonsClone.parentNode.removeChild(titlebarButtonsClone);
 			}
+			let slimSpacer = aDOMWindow.document.querySelector('#tt-slimChrome-spacer');
+			if(slimSpacer && slimSpacer.parentNode !== null) {
+				slimSpacer.parentNode.removeChild(slimSpacer);
+			}
 			let titlebarButtonboxContainer = aDOMWindow.document.querySelector('#titlebar-buttonbox-container');
 			if (titlebarButtonboxContainer) {
 				titlebarButtonboxContainer.style.marginRight = ''; // Beyond Australis compatibility
@@ -337,6 +341,7 @@ var windowListener = {
 
 		if (Services.appinfo.OS == 'WINNT') { // all Windows despite name 'WINNT' 
 			aDOMWindow.tt.toRemove._menuObserver.disconnect();
+			aDOMWindow.tt.toRemove._toolboxObserver.disconnect();
 		}
 		aDOMWindow.tt.toRemove.sidebarWidthObserver.disconnect();
 		
@@ -359,7 +364,7 @@ var windowListener = {
 		let sidebar_box = aDOMWindow.document.querySelector('#sidebar-box');
 		let sidebar_header = aDOMWindow.document.querySelector('#sidebar-header');
 		aDOMWindow.tt = {
-			toRemove: {eventListeners: {}, prefsObserver: null, tabsProgressListener: null, _menuObserver: null, sidebarWidthObserver: null},
+			toRemove: {eventListeners: {}, prefsObserver: null, tabsProgressListener: null, _menuObserver: null, _toolboxObserver: null, sidebarWidthObserver: null},
 			toRestore: {g: {}, TabContextMenu: {}, tabsintitlebar: true}
 		};
 
@@ -397,17 +402,36 @@ var windowListener = {
 			titlebarButtonsClone.classList.add('tt-clone'); // add a class to distinguish the elements with the same id
 		}
 		let menu = aDOMWindow.document.querySelector('#toolbar-menubar');
+		let navToolbox = aDOMWindow.document.querySelector('#navigator-toolbox');
 		let navBar = aDOMWindow.document.querySelector('#nav-bar');
 		let windowControlsClone = aDOMWindow.document.querySelector('#window-controls').cloneNode(true);
 		windowControlsClone.id = 'tt-window-controls-clone'; // change id to distinguish the new element
 		windowControlsClone.hidden = false;
+		
+		let slimSpacer = aDOMWindow.document.createElement('spacer');
+		slimSpacer.id = 'tt-slimChrome-spacer';
+		slimSpacer.setAttribute('flex', '1');
 
 		if (Services.appinfo.OS == 'WINNT') {
 			switch (aDOMWindow.windowState) {
 				case aDOMWindow.STATE_MAXIMIZED:
 					if (Services.prefs.getBoolPref('browser.tabs.drawInTitlebar')) {
 						if (menu.getAttribute('autohide') == 'true' && menu.hasAttribute('inactive')) {
-							navBar.appendChild(titlebarButtonsClone);
+							// BEGIN Beyond Australis compatibility:
+							// window controls wouldn't be visible because the buttonbox container wouldn't be in the right place
+							if(navToolbox.getAttribute('slimChromeNavBar') == 'true') {
+								let slimmer = aDOMWindow.document.querySelector('#theFoxOnlyBetter-slimChrome-slimmer');
+								slimmer.appendChild(slimSpacer);
+								slimmer.appendChild(titlebarButtonsClone);
+							} else {
+								navBar.appendChild(titlebarButtonsClone);
+								if(slimSpacer.parentNode !== null) {
+									slimSpacer.parentNode.removeChild(slimSpacer);
+								}
+								
+							}
+							// END Beyond Australis compatibility
+							
 							// It can't be plain ".collapsed = true" because it would affect ".updateTitlebarDisplay()"
 							// and consequently "aDOMWindow.TabsInTitlebar.updateAppearance(true);" margin calculations:
 							titlebarButtons.style.marginRight = '-9999px'; // Beyond Australis compatibility
@@ -433,7 +457,21 @@ var windowListener = {
 						}
 						if (Services.prefs.getBoolPref('browser.tabs.drawInTitlebar')) {
 							if (menu.getAttribute('autohide') == 'true' && menu.hasAttribute('inactive')) {
-								navBar.appendChild(titlebarButtonsClone);
+								// BEGIN Beyond Australis compatibility:
+								// window controls wouldn't be visible because the buttonbox container wouldn't be in the right place
+								if(navToolbox.getAttribute('slimChromeNavBar') == 'true') {
+									let slimmer = aDOMWindow.document.querySelector('#theFoxOnlyBetter-slimChrome-slimmer');
+									slimmer.appendChild(slimSpacer);
+									slimmer.appendChild(titlebarButtonsClone);
+								} else {
+									navBar.appendChild(titlebarButtonsClone);
+									if(slimSpacer.parentNode !== null) {
+										slimSpacer.parentNode.removeChild(slimSpacer);
+									}
+									
+								}
+								// END Beyond Australis compatibility
+								
 								titlebarButtons.style.marginRight = '-9999px'; // Beyond Australis compatibility
 								aDOMWindow.document.documentElement.setAttribute("tabsintitlebar", "true"); // hide native titlebar
 								aDOMWindow.updateTitlebarDisplay();
@@ -446,15 +484,21 @@ var windowListener = {
 						}
 						aDOMWindow.document.documentElement.removeAttribute("tabsintitlebar"); // show native toolbar
 						if (titlebarButtonsClone.parentNode !== null) { // if it exists
-							navBar.removeChild(titlebarButtonsClone);
+							titlebarButtonsClone.parentNode.removeChild(titlebarButtonsClone);
 							titlebarButtons.style.marginRight = ''; // Beyond Australis compatibility
+							if(slimSpacer.parentNode !== null) {
+								slimSpacer.parentNode.removeChild(slimSpacer);
+							}
 						}
 						aDOMWindow.updateTitlebarDisplay();
 						break;
 					case aDOMWindow.STATE_FULLSCREEN:
 						if (titlebarButtonsClone.parentNode !== null) { // if it exists
-							navBar.removeChild(titlebarButtonsClone);
+							titlebarButtonsClone.parentNode.removeChild(titlebarButtonsClone);
 							titlebarButtons.style.marginRight = ''; // Beyond Australis compatibility
+							if(slimSpacer.parentNode !== null) {
+								slimSpacer.parentNode.removeChild(slimSpacer);
+							}
 						}
 						navBar.appendChild(windowControlsClone);
 						break;
@@ -470,11 +514,28 @@ var windowListener = {
 							mutation.target.getAttribute('autohide')=='true' &&
 							mutation.target.hasAttribute('inactive')
 						) {
-							navBar.appendChild(titlebarButtonsClone);
+							// BEGIN Beyond Australis compatibility:
+							// window controls wouldn't be visible because the buttonbox container wouldn't be in the right place
+							if(navToolbox.getAttribute('slimChromeNavBar') == 'true') {
+								let slimmer = aDOMWindow.document.querySelector('#theFoxOnlyBetter-slimChrome-slimmer');
+								slimmer.appendChild(slimSpacer);
+								slimmer.appendChild(titlebarButtonsClone);
+							} else {
+								navBar.appendChild(titlebarButtonsClone);
+								if(slimSpacer.parentNode !== null) {
+									slimSpacer.parentNode.removeChild(slimSpacer);
+								}
+								
+							}
+							// END Beyond Australis compatibility
+							
 							titlebarButtons.style.marginRight = '-9999px'; // Beyond Australis compatibility
 						} else {
 							if (titlebarButtonsClone.parentNode !== null) { // if it exists
-								navBar.removeChild(titlebarButtonsClone);
+								titlebarButtonsClone.parentNode.removeChild(titlebarButtonsClone);
+								if(slimSpacer.parentNode !== null) {
+									slimSpacer.parentNode.removeChild(slimSpacer);
+								}
 							}
 							titlebarButtons.style.marginRight = ''; // Beyond Australis compatibility
 						}
@@ -482,6 +543,45 @@ var windowListener = {
 					}
 				}
 			})).observe(menu, {attributes: true}); // removed in unloadFromWindow()
+
+			(aDOMWindow.tt.toRemove._toolboxObserver = new aDOMWindow.MutationObserver(function(aMutations) {
+				for (let mutation of aMutations) {
+					if (mutation.attributeName == 'slimChromeNavBar') {
+						if (
+							Services.prefs.getBoolPref('browser.tabs.drawInTitlebar') &&
+							aDOMWindow.windowState==aDOMWindow.STATE_MAXIMIZED &&
+							menu.getAttribute('autohide')=='true' &&
+							menu.hasAttribute('inactive')
+						) {
+							// BEGIN Beyond Australis compatibility:
+							// window controls wouldn't be visible because the buttonbox container wouldn't be in the right place
+							if(navToolbox.getAttribute('slimChromeNavBar') == 'true') {
+								let slimmer = aDOMWindow.document.querySelector('#theFoxOnlyBetter-slimChrome-slimmer');
+								slimmer.appendChild(slimSpacer);
+								slimmer.appendChild(titlebarButtonsClone);
+							} else {
+								navBar.appendChild(titlebarButtonsClone);
+								if(slimSpacer.parentNode !== null) {
+									slimSpacer.parentNode.removeChild(slimSpacer);
+								}
+								
+							}
+							// END Beyond Australis compatibility
+							
+							titlebarButtons.style.marginRight = '-9999px'; // Beyond Australis compatibility
+						} else {
+							if (titlebarButtonsClone.parentNode !== null) { // if it exists
+								titlebarButtonsClone.parentNode.removeChild(titlebarButtonsClone);
+								if(slimSpacer.parentNode !== null) {
+									slimSpacer.parentNode.removeChild(slimSpacer);
+								}
+							}
+							titlebarButtons.style.marginRight = ''; // Beyond Australis compatibility
+						}
+						return;
+					}
+				}
+			})).observe(navToolbox, {attributes: true}); // removed in unloadFromWindow()
 		} else if (Services.appinfo.OS == 'Darwin') { // Mac
 			// here we just always force a native titlebar
 			// it's probably possible to move minimize/maximize/close buttons to #nav-bar
@@ -2086,11 +2186,28 @@ var windowListener = {
 							if (Services.appinfo.OS == 'WINNT') {
 								if (Services.prefs.getBoolPref('browser.tabs.drawInTitlebar') && aDOMWindow.windowState == aDOMWindow.STATE_MAXIMIZED
 									&& menu.getAttribute('autohide') == 'true' && menu.hasAttribute('inactive')) {
-									navBar.appendChild(titlebarButtonsClone);
+									// BEGIN Beyond Australis compatibility:
+									// window controls wouldn't be visible because the buttonbox container wouldn't be in the right place
+									if(navToolbox.getAttribute('slimChromeNavBar') == 'true') {
+										let slimmer = aDOMWindow.document.querySelector('#theFoxOnlyBetter-slimChrome-slimmer');
+										slimmer.appendChild(slimSpacer);
+										slimmer.appendChild(titlebarButtonsClone);
+									} else {
+										navBar.appendChild(titlebarButtonsClone);
+										if(slimSpacer.parentNode !== null) {
+											slimSpacer.parentNode.removeChild(slimSpacer);
+										}
+										
+									}
+									// END Beyond Australis compatibility
+									
 									titlebarButtons.style.marginRight = '-9999px'; // Beyond Australis compatibility
 								} else {
 									if (titlebarButtonsClone.parentNode !== null) { // if it exists
-										navBar.removeChild(titlebarButtonsClone);
+										titlebarButtonsClone.parentNode.removeChild(titlebarButtonsClone);
+										if(slimSpacer.parentNode !== null) {
+											slimSpacer.parentNode.removeChild(slimSpacer);
+										}
 									}
 									titlebarButtons.style.marginRight = ''; // Beyond Australis compatibility
 								}
