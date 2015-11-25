@@ -111,7 +111,8 @@ function startup(data, reason)
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.search-jump', false); // jump to the first search match
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.search-jump-min-chars', 4); // min chars to jump
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.fullscreen-show', false); // #18 hold the tab tree in full screen mode
-	
+	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.hide-tabtree-with-one-tab', false); // #31
+
 	// migration code :
 	try {
 		// 0 - None, 1 - The Smallest, 2 - Small, 3 - Medium, 4 - Big (round), 5 - The Biggest (round):
@@ -2240,6 +2241,13 @@ var windowListener = {
 								fullscrToggler.removeAttribute('style');
 							}
 							break;
+						case 'extensions.tabtree.hide-tabtree-with-one-tab':
+							if (Services.prefs.getBoolPref('extensions.tabtree.hide-tabtree-with-one-tab')) {
+								sidebar.collapsed = splitter.collapsed = g.tabs.length <= 1;
+							} else {
+								sidebar.collapsed = splitter.collapsed = false;
+							}
+							break;
 						case 'extensions.tabtree.highlight-unloaded-tabs':
 							prefPending = Services.prefs.getIntPref('extensions.tabtree.highlight-unloaded-tabs');
 							tree.treeBoxObject.invalidate();
@@ -2360,10 +2368,10 @@ var windowListener = {
 			}
 		})).observe(sidebar, {attributes: true}); // removed in unloadFromWindow()
 
-		sidebar.collapsed = splitter.collapsed = g.tabs.length <= 1;
+		sidebar.collapsed = splitter.collapsed = g.tabs.length <= 1 && Services.prefs.getBoolPref("extensions.tabtree.hide-tabtree-with-one-tab");
 		(aDOMWindow.tt.toRemove.numberOfTabsObserver = new aDOMWindow.MutationObserver(function(aMutations) {
 			// if there's only one tab then hide the tab bar
-			sidebar.collapsed = splitter.collapsed = g.tabs.length <= 1;
+			sidebar.collapsed = splitter.collapsed = g.tabs.length <= 1 && Services.prefs.getBoolPref("extensions.tabtree.hide-tabtree-with-one-tab");
 		})).observe(g.tabContainer, {childList: true}); // removed in unloadFromWindow()
 
 		//////////////////// TAB CONTEXT MENU //////////////////////////////////////////////////////////////////////////
