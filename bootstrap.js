@@ -344,7 +344,8 @@ var windowListener = {
 			aDOMWindow.tt.toRemove._toolboxObserver.disconnect();
 		}
 		aDOMWindow.tt.toRemove.sidebarWidthObserver.disconnect();
-		
+		aDOMWindow.tt.toRemove.numberOfTabsObserver.disconnect();
+
 		delete aDOMWindow.tt;
 	},
 	
@@ -1185,6 +1186,7 @@ var windowListener = {
 			},
 			
 			forceReflow: function() {
+				/*
 				// This function is needed to fix bug #12 (Browser chrome goes blank on some hardware when Firefox hardware acceleration is enabled)
 				sidebar.collapsed = true;
 				aDOMWindow.setTimeout(function () { sidebar.collapsed = false; }, 400);
@@ -1197,6 +1199,8 @@ var windowListener = {
 					aDOMWindow.document.documentElement.style.marginLeft = '';
 					aDOMWindow.document.documentElement.style.paddingLeft = '';
 				}, 500);
+				*/
+				// <- It didn't fix bug #12/#53/#2 anyway
 			}
 		}; // let tt =
 
@@ -2355,6 +2359,12 @@ var windowListener = {
 				}
 			}
 		})).observe(sidebar, {attributes: true}); // removed in unloadFromWindow()
+
+		sidebar.collapsed = splitter.collapsed = g.tabs.length <= 1;
+		(aDOMWindow.tt.toRemove.numberOfTabsObserver = new aDOMWindow.MutationObserver(function(aMutations) {
+			// if there's only one tab then hide the tab bar
+			sidebar.collapsed = splitter.collapsed = g.tabs.length <= 1;
+		})).observe(g.tabContainer, {childList: true}); // removed in unloadFromWindow()
 
 		//////////////////// TAB CONTEXT MENU //////////////////////////////////////////////////////////////////////////
 		let tabContextMenu = aDOMWindow.document.querySelector('#tabContextMenu');
