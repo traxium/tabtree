@@ -252,7 +252,7 @@ var windowListener = {
 		ss.setWindowValue(aDOMWindow, 'tt-height', sidebar.height); // Remember the height of 'tt-sidebar'
 		// Remember the first visible row of the <tree id="tt">:
 		ss.setWindowValue(aDOMWindow, 'tt-first-visible-row', aDOMWindow.document.querySelector('#tt').treeBoxObject.getFirstVisibleRow().toString());
-		Services.prefs.removeObserver('extensions.tabtree.', aDOMWindow.tt.toRemove.prefsObserver); // it can also be removed in 'unloadFromWindow'
+		Services.prefs.removeObserver('', aDOMWindow.tt.toRemove.prefsObserver); // it can also be removed in 'unloadFromWindow'
 	},
 	
 	onWindowTitleChange: function (aXULWindow, aNewTitle) {},
@@ -338,7 +338,7 @@ var windowListener = {
 			aDOMWindow.document.documentElement.removeAttribute("tabsintitlebar"); // show native titlebar
 		}
 		aDOMWindow.TabsInTitlebar.updateAppearance(true); // It is needed to recalculate negative 'margin-bottom' for 'titlebar' and 'margin-bottom' for 'titlebarContainer'
-		Services.prefs.removeObserver('extensions.tabtree.', aDOMWindow.tt.toRemove.prefsObserver); // it could be already removed in 'onCloseWindow'
+		Services.prefs.removeObserver('', aDOMWindow.tt.toRemove.prefsObserver); // it could be already removed in 'onCloseWindow'
 
 		if (Services.appinfo.OS == 'WINNT') { // all Windows despite name 'WINNT' 
 			aDOMWindow.tt.toRemove._menuObserver.disconnect();
