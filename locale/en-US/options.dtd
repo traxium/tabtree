@@ -13,8 +13,8 @@
 <!ENTITY delay.desc "Actually it is a delay until a selected tab is displayed. Set it to around 160 if you don't want to see a tab flipping while closing a tab (0 by default)">
 <!ENTITY position.left "Left">
 <!ENTITY position.right "Right">
-<!ENTITY position.sidebar_top "In the sidebar (at the top)">
-<!ENTITY position.sidebar_bottom "In the sidebar (at the bottom)">
+<!ENTITY position.sidebar_top "Above the default (e.g. Bookmarks) sidebar (hidden by default)">
+<!ENTITY position.sidebar_bottom "Below the default (e.g. History) sidebar (hidden by default)">
 <!ENTITY position.title "Position:">
 <!ENTITY position.desc "(&quot;Left&quot; by default)">
 <!ENTITY search-position.title "Tab search bar position:">

@@ -13,8 +13,8 @@
 <!ENTITY delay.desc "W rzeczywistości jest to odstęp, zanim wybrana karta zostanie pokazana. Wpisz 160, jeśli nie chcesz widzieć mignięcia kart przy zamykaniu (domyślnie 0)">
 <!ENTITY position.left "Lewo">
 <!ENTITY position.right "Prawo">
-<!ENTITY position.sidebar_top "Sidebar (top)">
-<!ENTITY position.sidebar_bottom "Sidebar (bottom)">
+<!ENTITY position.sidebar_top "Above the default (e.g. Bookmarks) sidebar (hidden by default)">
+<!ENTITY position.sidebar_bottom "Below the default (e.g. History) sidebar (hidden by default)">
 <!ENTITY position.title "Pozycja:">
 <!ENTITY position.desc "(Domyślnie &quot;lewo&quot;)">
 <!ENTITY search-position.title "Pozycja wyszukiwarki kart:">

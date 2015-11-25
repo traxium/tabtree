@@ -13,8 +13,8 @@
 <!ENTITY delay.desc "En réalité, c’est le délai avant qu’un onglet sélectionné soit affiché. Mettez-le autour de 160 si vous ne voulez pas voir votre onglet changer pendant la fermeture de l’onglet (0 par défaut)">
 <!ENTITY position.left "Gauche">
 <!ENTITY position.right "Droite">
-<!ENTITY position.sidebar_top "Sidebar (top)">
-<!ENTITY position.sidebar_bottom "Sidebar (bottom)">
+<!ENTITY position.sidebar_top "Above the default (e.g. Bookmarks) sidebar (hidden by default)">
+<!ENTITY position.sidebar_bottom "Below the default (e.g. History) sidebar (hidden by default)">
 <!ENTITY position.title "Position:">
 <!ENTITY position.desc "(&#171;Gauche&#187; par défaut)">
 <!ENTITY search-position.title "Position de la barre de recherche d’onglet:">
