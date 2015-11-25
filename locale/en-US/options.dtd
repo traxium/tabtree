@@ -46,3 +46,5 @@
 <!ENTITY search-jump-min-chars.desc "(4 by default)">
 <!ENTITY fullscreen-show.title "Show the tab tree in full screen:">
 <!ENTITY fullscreen-show.desc "(checked by default)">
+<!ENTITY hide-tabtree-with-one-tab.title "Hide the tab tree when there's only one tab">
+<!ENTITY hide-tabtree-with-one-tab.desc "(press Ctrl+T to open a new tab)">
