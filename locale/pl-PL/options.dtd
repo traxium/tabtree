@@ -1,12 +1,12 @@
 <!ENTITY treelines.title "Pokazuj linie łączące karty wzdłuż drzewa:">
 <!ENTITY treelines.desc "Linie łączące karty podrzędne z kartą nadrzędną (domyślnie zaznaczone)">
 <!ENTITY highlight-unloaded-tabs.title "Podświetl niezaładowane karty:">
-<!ENTITY highlight-unloaded-tabs.desc "Gdy używasz opcji Firefox &quot;Nie wczytuj kart, dopóki nie zostały wybrane&quot; (Domyślnie &quot;Nie&quot;)">
+<!ENTITY highlight-unloaded-tabs.desc "Gdy używasz opcji Firefox &quot;Nie wczytuj kart, dopóki nie zostały wybrane&quot; (domyślnie &quot;Nie&quot;)">
 <!ENTITY highlight-unloaded-tabs.no "Nie">
 <!ENTITY highlight-unloaded-tabs.grayout "Zabarw na szaro">
 <!ENTITY highlight-unloaded-tabs.highlight "Podświetl">
 <!ENTITY highlight-unread-tabs.title "Podświetl nieprzeczytane karty:">
-<!ENTITY highlight-unread-tabs.desc "(Domyślnie odznaczone)">
+<!ENTITY highlight-unread-tabs.desc "(domyślnie odznaczone)">
 <!ENTITY dblclick.title "Dwuklik, żeby zamknąć kartę">
 <!ENTITY dblclick.desc "Polecane jedynie gdy nie masz myszy z kółkiem (domyślnie odznaczone)">
 <!ENTITY delay.title "Odstęp dwukliku (w milisekundach)">
@@ -16,14 +16,14 @@
 <!ENTITY position.sidebar_top "Above the default (e.g. Bookmarks) sidebar (hidden by default)">
 <!ENTITY position.sidebar_bottom "Below the default (e.g. History) sidebar (hidden by default)">
 <!ENTITY position.title "Pozycja:">
-<!ENTITY position.desc "(Domyślnie &quot;lewo&quot;)">
+<!ENTITY position.desc "(domyślnie &quot;lewo&quot;)">
 <!ENTITY search-position.title "Pozycja wyszukiwarki kart:">
-<!ENTITY search-position.desc "(Domyślnie &quot;Góra&quot;)">
+<!ENTITY search-position.desc "(domyślnie &quot;Góra&quot;)">
 <!ENTITY search-position.top "Góra">
 <!ENTITY search-position.bottom-before "Dół (przed przyciskiem &quot;Nowa karta&quot;)">
 <!ENTITY search-position.bottom-after "Dół (po przycisku &quot;Nowa karta&quot;)">
 <!ENTITY search-autohide.title "Samoukrywanie się wyszukiwarki kart:">
-<!ENTITY search-autohide.desc "Ctrl+Shift+Alt+F sprawia, że się pojawia (Domyślnie odznaczone)">
+<!ENTITY search-autohide.desc "Ctrl+Shift+Alt+F sprawia, że się pojawia (domyślnie odznaczone)">
 <!ENTITY drawInTitlebar.title "Ukryj natywny dla systemu pasek tytułu gdy Firefox jest zmaksymalizowany:">
 <!ENTITY drawInTitlebar.desc "To &quot;browser.tabs.drawInTitlebar&quot; w about:config (domyślnie zaznaczony)">
 <!ENTITY flst.title "FLST po zamknięciu otwartej karty:">
@@ -35,7 +35,7 @@
 <!ENTITY max-indent.title "Maksymalny poziom zagnieżdżenia:">
 <!ENTITY max-indent.desc "Przy otwieraniu karty. &quot;-1&quot; znaczy, że nie ma limitu zagnieżdżenia (&quot;-1&quot; domyślnie)">
 <!ENTITY wheel.title "Przy przewijaniu drzewa kart:">
-<!ENTITY wheel.desc "(Domyślnie pierwszy wybór)">
+<!ENTITY wheel.desc "(domyślnie pierwszy wybór)">
 <!ENTITY wheel.0 "bez Shifta - normalne przewijanie, z Shiftem - zmienia aktywną kartę">
 <!ENTITY wheel.1 "bez Shifta - zmienia aktywną kartę, z Shiftem - normalne przewijanie">
 <!ENTITY wheel.2 "zawsze normalne przewijanie">
@@ -45,7 +45,7 @@
 <!ENTITY search-jump-min-chars.title "Minimalna liczba znaków do wykonania przejścia:">
 <!ENTITY search-jump-min-chars.desc "(domyślnie 4)">
 <!ENTITY fullscreen-show.title "Pokaż drzewa kart w trybie pełnoekranowym:">
-<!ENTITY fullscreen-show.desc "(domyślnie zaznaczone)">
+<!ENTITY fullscreen-show.desc "(domyślnie odznaczone)">
 <!ENTITY hide-tabtree-with-one-tab.title "Hide the tab tree when there's only one tab">
 <!ENTITY hide-tabtree-with-one-tab.desc "(press Ctrl+T to open a new tab)">
 <!ENTITY insertRelatedAfterCurrent.title "Insert a new related tab at the:">
