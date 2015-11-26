@@ -125,7 +125,7 @@ function startup(data, reason)
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.search-jump-min-chars', 4); // min chars to jump
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.fullscreen-show', false); // #18 hold the tab tree in full screen mode
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.hide-tabtree-with-one-tab', false); // #31
-	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.new-child-tab-position', false); // #19 // false - Bottom, true - Top
+	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.insertRelatedAfterCurrent', false); // #19 // false - Bottom, true - Top
 
 	// migration code :
 	try {
@@ -1354,7 +1354,7 @@ var windowListener = {
 						g.tabContainer.removeEventListener('TabOpen', onPreAddTabWithRef, true);
 						let tab = event.target;
 						let oldTab = g.selectedTab;
-						let insertRelatedAfterCurrent = Services.prefs.getBoolPref('extensions.tabtree.new-child-tab-position');
+						let insertRelatedAfterCurrent = Services.prefs.getBoolPref('extensions.tabtree.insertRelatedAfterCurrent');
 						if (oldTab.pinned) {
 							ss.setTabValue(tab, 'ttLevel', '0');
 							tree.treeBoxObject.rowCountChanged(g.tabs.length-1 - tt.nPinned, 1); // our new tab is at index g.tabs.length-1
