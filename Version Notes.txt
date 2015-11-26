@@ -1,8 +1,17 @@
+1.3.9
+- Added an option to hide the tab tree when there's only one tab
+- An option to insert a new child tab at the top/bottom in the add-on options
+- The add-on ignores "browser.tabs.insertRelatedAfterCurrent" that was replaced with "extensions.tabtree.new-child-tab-position"
+- Better Beyond Australis compatibility
+- Clarified the "Position" option in the add-on options
+- Fixed the bug with prefsObserver
+
 1.3.8
 - Audio indicator
 - Respect browser.tabs.insertRelatedAfterCurrent about:config option
 - New tab tree position options: "In the sidebar (at the top)" and "In the sidebar (at the bottom)"
 - Tooltips in the tab tree
+- Fixed the bug in Linux with a selected pinned tab looking like not selected
 
 1.3.7
 - More Navigation Bar heights (24px, 26px, 28px ... 40px)
