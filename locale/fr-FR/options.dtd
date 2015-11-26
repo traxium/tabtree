@@ -48,3 +48,7 @@
 <!ENTITY fullscreen-show.desc "(checked by default)">
 <!ENTITY hide-tabtree-with-one-tab.title "Hide the tab tree when there's only one tab">
 <!ENTITY hide-tabtree-with-one-tab.desc "(press Ctrl+T to open a new tab)">
+<!ENTITY insertRelatedAfterCurrent.title "Insert a new child tab at the:">
+<!ENTITY insertRelatedAfterCurrent.desc "&quot;browser.tabs.insertRelatedAfterCurrent&quot; in about:config (&quot;Top&quot; by default)">
+<!ENTITY insertRelatedAfterCurrent.top "Top">
+<!ENTITY insertRelatedAfterCurrent.bottom "Bottom">

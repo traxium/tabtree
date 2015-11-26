@@ -77,4 +77,10 @@
     </setting>
     <setting type="bool" pref="extensions.tabtree.fullscreen-show" title="&fullscreen-show.title;" desc="&fullscreen-show.desc;" />
     <setting type="bool" pref="extensions.tabtree.hide-tabtree-with-one-tab" title="&hide-tabtree-with-one-tab.title;" desc="&hide-tabtree-with-one-tab.desc;" />
+    <setting type="radio" pref="browser.tabs.insertRelatedAfterCurrent" title="&insertRelatedAfterCurrent.title;" desc="&insertRelatedAfterCurrent.desc;">
+        <radiogroup>
+            <radio value="true" label="&insertRelatedAfterCurrent.top;"/>
+            <radio value="false" label="&insertRelatedAfterCurrent.bottom;"/>
+        </radiogroup>
+    </setting>
 </vbox>

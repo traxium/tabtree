@@ -48,3 +48,7 @@
 <!ENTITY fullscreen-show.desc "(не отмечено по умолчанию)">
 <!ENTITY hide-tabtree-with-one-tab.title "Скрывать дерево вкладок с одной вкладкой">
 <!ENTITY hide-tabtree-with-one-tab.desc "(в таком случае новую вкладку можно открыть по Ctrl-T)">
+<!ENTITY insertRelatedAfterCurrent.title "Размещать новую дочернюю вкладку:">
+<!ENTITY insertRelatedAfterCurrent.desc "Эта опция всего лишь переключает &quot;browser.tabs.insertRelatedAfterCurrent&quot; в about:config (&quot;Сверху&quot; по умолчанию)">
+<!ENTITY insertRelatedAfterCurrent.top "Сверху">
+<!ENTITY insertRelatedAfterCurrent.bottom "Снизу">
