@@ -125,6 +125,7 @@ function startup(data, reason)
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.search-jump-min-chars', 4); // min chars to jump
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.fullscreen-show', false); // #18 hold the tab tree in full screen mode
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.hide-tabtree-with-one-tab', false); // #31
+	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.new-child-tab-position', false); // #19 // false - Bottom, true - Top
 
 	// migration code :
 	try {
@@ -1359,7 +1360,7 @@ var windowListener = {
 						} else {
 							let lvl = parseInt(ss.getTabValue(oldTab, 'ttLevel')) + 1;
 							let maxLvl = Services.prefs.getIntPref('extensions.tabtree.max-indent');
-							let insertRelatedAfterCurrent = Services.prefs.getBoolPref('browser.tabs.insertRelatedAfterCurrent');
+							let insertRelatedAfterCurrent = Services.prefs.getBoolPref('extensions.tabtree.new-child-tab-position');
 							let i;
 							if (maxLvl !== -1 && lvl > maxLvl) {
 								lvl = maxLvl;
@@ -2388,6 +2389,7 @@ var windowListener = {
 			sidebar.collapsed = splitter.collapsed = g.tabs.length <= 1 && Services.prefs.getBoolPref("extensions.tabtree.hide-tabtree-with-one-tab");
 		})).observe(g.tabContainer, {childList: true}); // removed in unloadFromWindow()
 
+		// To fix bug #27 (Some tabs are missing when Firefox isn't properly closed and the session is restored by the built-in Session Manager):
 		aDOMWindow.addEventListener("SSWindowStateReady", (aDOMWindow.tt.toRemove.eventListeners.onSSWindowStateReady = function (event) {
 			let firstVisibleRow = tree.treeBoxObject.getFirstVisibleRow();
 			tree.view = view;
