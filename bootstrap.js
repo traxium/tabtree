@@ -800,6 +800,9 @@ var windowListener = {
 		Object.keys(propsToSet).forEach( (p)=>{treecol.tabtitle.setAttribute(p, propsToSet[p]);} );
 		treecol.overlay.setAttribute('hideheader', 'true');
 		treecol.overlay.id = 'tt-overlay';
+		// Hiding TT_COL_OVERLAY column when there's no at least 1 audio indicator and vice verse
+		// Duplicate this code in onTabAttrModified, pinTab and unpinTab
+		treecol.overlay.collapsed = !Array.some(g.tabs, (x) => !x.pinned && (x.hasAttribute('muted') || x.hasAttribute('soundplaying')));
 		treecol.closebtn.setAttribute('hideheader', 'true');
 		treecol.closebtn.id = 'tt-close';
 		treecol.closebtn.collapsed = !Services.prefs.getBoolPref('extensions.tabtree.close-tab-buttons');
