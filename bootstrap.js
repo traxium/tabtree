@@ -951,7 +951,7 @@ var windowListener = {
 			DROP_BEFORE: -1,
 			DROP_AFTER: 1,
 
-			get nPinned() {
+			get nPinned() { // == g._numPinnedTabs
 				let c;
 				for (c=0; c<g.tabs.length; ++c) {
 					if (!g.tabs[c].pinned) {
@@ -1354,13 +1354,16 @@ var windowListener = {
 						g.tabContainer.removeEventListener('TabOpen', onPreAddTabWithRef, true);
 						let tab = event.target;
 						let oldTab = g.selectedTab;
+						let insertRelatedAfterCurrent = Services.prefs.getBoolPref('extensions.tabtree.new-child-tab-position');
 						if (oldTab.pinned) {
 							ss.setTabValue(tab, 'ttLevel', '0');
 							tree.treeBoxObject.rowCountChanged(g.tabs.length-1 - tt.nPinned, 1); // our new tab is at index g.tabs.length-1
+							if (insertRelatedAfterCurrent) {
+								g.moveTabTo(g.tabs[g.tabs.length-1], tt.nPinned);
+							}
 						} else {
 							let lvl = parseInt(ss.getTabValue(oldTab, 'ttLevel')) + 1;
 							let maxLvl = Services.prefs.getIntPref('extensions.tabtree.max-indent');
-							let insertRelatedAfterCurrent = Services.prefs.getBoolPref('extensions.tabtree.new-child-tab-position');
 							let i;
 							if (maxLvl !== -1 && lvl > maxLvl) {
 								lvl = maxLvl;
