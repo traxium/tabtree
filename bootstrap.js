@@ -81,6 +81,19 @@ function startup(data, reason)
 		});
 	}
 
+	// I leave it here just in case. It also works, but the upper version is better tested.
+	//ssHack.SessionStoreInternal._setWindowStateBusyValue = new Proxy(ssHack.SessionStoreInternal._setWindowStateBusyValue, {
+	//	apply: function (target, thisArg, argumentsList) {
+	//		target.apply(thisArg, argumentsList); // returns nothing
+	//		let aWindow = argumentsList[0];
+	//		let aValue = argumentsList[1];
+	//		if (!aValue) { //noinspection JSClosureCompilerSyntax
+	//			let event = new Event('tt-TabsLoad'); // we just added our event after this function is executed
+	//			aWindow.dispatchEvent(event);
+	//		}
+	//	}
+	//});
+
 	ssHack.SessionStoreInternal.ttOrigOfUndoCloseTab = ssHack.SessionStoreInternal.undoCloseTab;
 	ssHack.SessionStoreInternal.undoCloseTab = new Proxy(ssHack.SessionStoreInternal.undoCloseTab, {
 		apply: function (target, thisArg, argumentsList) {
@@ -326,6 +339,7 @@ var windowListener = {
 		aDOMWindow.gBrowser.tabContainer.removeEventListener("TabMove", aDOMWindow.tt.toRemove.eventListeners.onTabMove, false);
 		aDOMWindow.gBrowser.tabContainer.removeEventListener("TabSelect", aDOMWindow.tt.toRemove.eventListeners.onTabSelect, false);
 		aDOMWindow.gBrowser.tabContainer.removeEventListener("TabAttrModified", aDOMWindow.tt.toRemove.eventListeners.onTabAttrModified, false);
+		aDOMWindow.gBrowser.tabContainer.removeEventListener("SSWindowStateReady", aDOMWindow.tt.toRemove.eventListeners.onSSWindowStateReady, false);
 		aDOMWindow.gBrowser.removeTabsProgressListener(aDOMWindow.tt.toRemove.tabsProgressListener);
 		aDOMWindow.removeEventListener("sizemodechange", aDOMWindow.tt.toRemove.eventListeners.onSizemodechange, false);
 		aDOMWindow.removeEventListener("keypress", aDOMWindow.tt.toRemove.eventListeners.onWindowKeyPress, false);
@@ -2373,6 +2387,13 @@ var windowListener = {
 			// if there's only one tab then hide the tab bar
 			sidebar.collapsed = splitter.collapsed = g.tabs.length <= 1 && Services.prefs.getBoolPref("extensions.tabtree.hide-tabtree-with-one-tab");
 		})).observe(g.tabContainer, {childList: true}); // removed in unloadFromWindow()
+
+		aDOMWindow.addEventListener("SSWindowStateReady", (aDOMWindow.tt.toRemove.eventListeners.onSSWindowStateReady = function (event) {
+			let firstVisibleRow = tree.treeBoxObject.getFirstVisibleRow();
+			tree.view = view;
+			tree.treeBoxObject.scrollToRow(firstVisibleRow);
+			tt.redrawToolbarbuttons();
+		}), false); // removed in unloadFromWindow()
 
 		//////////////////// TAB CONTEXT MENU //////////////////////////////////////////////////////////////////////////
 		let tabContextMenu = aDOMWindow.document.querySelector('#tabContextMenu');
