@@ -1,9 +1,15 @@
+1.4.0
+- Middle-click on the empty space opens a new tab
+- A tab context menu options to open a new tab as a sibling/child of the current tab
+- Fixed the bug when undoing close tab introduced in Tab Tree 1.3.9
+
 1.3.9
 - Added an option to hide the tab tree when there's only one tab
 - An option to insert a new child tab at the top/bottom in the add-on options
-- The add-on ignores "browser.tabs.insertRelatedAfterCurrent" that was replaced with "extensions.tabtree.new-child-tab-position"
+- The add-on ignores "browser.tabs.insertRelatedAfterCurrent" that was replaced with "extensions.tabtree.insertRelatedAfterCurrent"
 - Better Beyond Australis compatibility
-- Clarified the "Position" option in the add-on options
+- Clarified the "Position" option and some misspells are corrected in the add-on options
+- Better audio indicators handling when the add-on is updated
 - Fixed the bug with prefsObserver
 
 1.3.8
