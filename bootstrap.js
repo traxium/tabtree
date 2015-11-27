@@ -334,6 +334,8 @@ var windowListener = {
 			menuItemCloseChildren.parentNode.removeChild(menuItemCloseChildren);
 			let menuItemOpenNewTabSibling = aDOMWindow.document.querySelector('#tt-content-open-sibling');
 			menuItemOpenNewTabSibling.parentNode.removeChild(menuItemOpenNewTabSibling);
+			let menuItemOpenNewTabChild = aDOMWindow.document.querySelector('#tt-content-open-child');
+			menuItemOpenNewTabChild.parentNode.removeChild(menuItemOpenNewTabChild);
 		}
 		
 		Object.keys(aDOMWindow.tt.toRestore.g).forEach( (x)=>{aDOMWindow.gBrowser[x] = aDOMWindow.tt.toRestore.g[x];} );
@@ -2443,7 +2445,7 @@ var windowListener = {
 			aDOMWindow.BrowserOpenTab(); // our new tab will be opened at position g.tabs.length - 1
 			let newTab = g.tabs[g.tabs.length - 1];
 			for (let i = tPos + 1; i < g.tabs.length - 1; ++i) {
-				if (parseInt(ss.getTabValue(g.tabs[i], "ttLevel")) < parseInt(lvl)) {
+				if (parseInt(ss.getTabValue(g.tabs[i], "ttLevel")) <= parseInt(lvl)) {
 					g.moveTabTo(newTab, i);
 					break;
 				}
@@ -2451,8 +2453,21 @@ var windowListener = {
 			ss.setTabValue(newTab, "ttLevel", lvl);
 		}, false);
 
+		let menuItemOpenNewTabChild = aDOMWindow.document.createElement("menuitem"); // removed in unloadFromWindow()
+		menuItemOpenNewTabChild.id = "tt-content-open-child";
+		menuItemOpenNewTabChild.setAttribute("label", stringBundle.GetStringFromName("open_child"));
+		menuItemOpenNewTabChild.addEventListener("command", function (event) {
+			let tab = aDOMWindow.TabContextMenu.contextTab;
+			let lvl = ss.getTabValue(tab, "ttLevel");
+			aDOMWindow.BrowserOpenTab(); // our new tab will be opened at position g.tabs.length - 1
+			let newTab = g.tabs[g.tabs.length - 1];
+			g.moveTabTo(newTab, tt.lastDescendantPos(tab) + 1);
+			ss.setTabValue(newTab, "ttLevel", (parseInt(lvl) + 1).toString());
+		}, false);
+
 		let tabContextMenu = aDOMWindow.document.querySelector('#tabContextMenu');
 		let tabContextMenuCloseTab = aDOMWindow.document.querySelector('#context_closeTab');
+		tabContextMenu.insertBefore(menuItemOpenNewTabChild, tabContextMenuCloseTab.nextSibling);
 		tabContextMenu.insertBefore(menuItemOpenNewTabSibling, tabContextMenuCloseTab.nextSibling);
 		tabContextMenu.insertBefore(menuItemCloseChildren, tabContextMenuCloseTab.nextSibling);
 		tabContextMenu.insertBefore(menuItemCloseTree, tabContextMenuCloseTab.nextSibling);
