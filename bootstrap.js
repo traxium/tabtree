@@ -2154,7 +2154,9 @@ var windowListener = {
 		tree.addEventListener('click', function onMiddleClick(event) {
 			if (event.button === 1) { // middle click
 				let idx = tree.treeBoxObject.getRowAt(event.clientX, event.clientY);
-				if (idx != -1) {
+				if (idx === -1) { // on empty space
+					aDOMWindow.BrowserOpenNewTabOrWindow(event);
+				} else { // on a tab
 					let tPos = idx + tt.nPinned;
 					g.removeTab(g.tabs[tPos]);
 				}
