@@ -1176,8 +1176,9 @@ var windowListener = {
 				}
 				this.redrawToolbarbuttons();
 			},
-			
-			redrawToolbarbuttons: function() { // It's better to redraw all toolbarbuttons every time then add one toolbarbutton at a time. There were bugs when dragging and dropping them very fast
+
+			// It's better to redraw all toolbarbuttons every time then add one toolbarbutton at a time. There were bugs when dragging and dropping them very fast
+			redrawToolbarbuttons: function() {
 				// reusing existing toolbarbuttons
 				let n = toolbar.childNodes.length - 1; // -1 for the arrow hbox
 				let max = Math.max(this.nPinned, n);
@@ -1698,7 +1699,10 @@ var windowListener = {
 		g.pinTab = new Proxy(g.pinTab, {
 			apply: function(target, thisArg, argumentsList) {
 				let tab = argumentsList[0];
-				if (ss.getTabValue(tab, 'ttLevel') == '') { // if there is no information about 'ttLevel' then it means SS is calling gBrowser.pinTab(newlyCreatedEmptyTab)
+				// #27 (Some tabs are missing when Firefox isn't properly closed and the session is restored using the built-in Session Manager)
+				// if we are pinning an already pinned tab or - #27
+				// if there is no information about 'ttLevel' then it means SS is calling gBrowser.pinTab(newlyCreatedEmptyTab)
+				if (tab.pinned || ss.getTabValue(tab, 'ttLevel') == '') {
 					target.apply(thisArg, argumentsList); // dispatches 'TabPinned' event, returns nothing
 					return; // then just do nothing
 				}
@@ -2400,14 +2404,6 @@ var windowListener = {
 			// if there's only one tab then hide the tab bar
 			sidebar.collapsed = splitter.collapsed = g.tabs.length <= 1 && Services.prefs.getBoolPref("extensions.tabtree.hide-tabtree-with-one-tab");
 		})).observe(g.tabContainer, {childList: true}); // removed in unloadFromWindow()
-
-		// To fix bug #27 (Some tabs are missing when Firefox isn't properly closed and the session is restored by the built-in Session Manager):
-		aDOMWindow.addEventListener("SSWindowStateReady", (aDOMWindow.tt.toRemove.eventListeners.onSSWindowStateReady = function (event) {
-			let firstVisibleRow = tree.treeBoxObject.getFirstVisibleRow();
-			tree.view = view;
-			tree.treeBoxObject.scrollToRow(firstVisibleRow);
-			tt.redrawToolbarbuttons();
-		}), false); // removed in unloadFromWindow()
 
 		//////////////////// TAB CONTEXT MENU //////////////////////////////////////////////////////////////////////////
 		let menuItemCloseTree = aDOMWindow.document.createElement('menuitem'); // removed in unloadFromWindow()
