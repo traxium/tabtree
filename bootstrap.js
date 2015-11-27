@@ -332,6 +332,8 @@ var windowListener = {
 			menuItemCloseTree.parentNode.removeChild(menuItemCloseTree);
 			let menuItemCloseChildren = aDOMWindow.document.querySelector('#tt-context-close-children');
 			menuItemCloseChildren.parentNode.removeChild(menuItemCloseChildren);
+			let menuItemOpenNewTabSibling = aDOMWindow.document.querySelector('#tt-content-open-sibling');
+			menuItemOpenNewTabSibling.parentNode.removeChild(menuItemOpenNewTabSibling);
 		}
 		
 		Object.keys(aDOMWindow.tt.toRestore.g).forEach( (x)=>{aDOMWindow.gBrowser[x] = aDOMWindow.tt.toRestore.g[x];} );
@@ -2406,7 +2408,6 @@ var windowListener = {
 		}), false); // removed in unloadFromWindow()
 
 		//////////////////// TAB CONTEXT MENU //////////////////////////////////////////////////////////////////////////
-		let tabContextMenu = aDOMWindow.document.querySelector('#tabContextMenu');
 		let menuItemCloseTree = aDOMWindow.document.createElement('menuitem'); // removed in unloadFromWindow()
 		menuItemCloseTree.id = 'tt-context-close-tree';
 		menuItemCloseTree.setAttribute('label', stringBundle.GetStringFromName('close_this_tree'));
@@ -2419,6 +2420,7 @@ var windowListener = {
 			}
 			g.removeTab(g.tabs[tPos]);
 		}, false);
+
 		let menuItemCloseChildren = aDOMWindow.document.createElement('menuitem'); // removed in unloadFromWindow()
 		menuItemCloseChildren.id = 'tt-context-close-children';
 		menuItemCloseChildren.setAttribute('label', stringBundle.GetStringFromName('close_children'));
@@ -2430,8 +2432,30 @@ var windowListener = {
 				g.removeTab(g.tabs[tPos+1]);
 			}
 		}, false);
-		tabContextMenu.insertBefore(menuItemCloseChildren, aDOMWindow.document.querySelector('#context_closeTab').nextSibling);
-		tabContextMenu.insertBefore(menuItemCloseTree, menuItemCloseChildren);
+
+		let menuItemOpenNewTabSibling = aDOMWindow.document.createElement("menuitem"); // removed in unloadFromWindow()
+		menuItemOpenNewTabSibling.id = "tt-content-open-sibling";
+		menuItemOpenNewTabSibling.setAttribute("label", stringBundle.GetStringFromName("open_sibling"));
+		menuItemOpenNewTabSibling.addEventListener("command", function (event) {
+			let tab = aDOMWindow.TabContextMenu.contextTab;
+			let tPos = tab._tPos;
+			let lvl = ss.getTabValue(tab, "ttLevel");
+			aDOMWindow.BrowserOpenTab(); // our new tab will be opened at position g.tabs.length - 1
+			let newTab = g.tabs[g.tabs.length - 1];
+			for (let i = tPos + 1; i < g.tabs.length - 1; ++i) {
+				if (parseInt(ss.getTabValue(g.tabs[i], "ttLevel")) < parseInt(lvl)) {
+					g.moveTabTo(newTab, i);
+					break;
+				}
+			}
+			ss.setTabValue(newTab, "ttLevel", lvl);
+		}, false);
+
+		let tabContextMenu = aDOMWindow.document.querySelector('#tabContextMenu');
+		let tabContextMenuCloseTab = aDOMWindow.document.querySelector('#context_closeTab');
+		tabContextMenu.insertBefore(menuItemOpenNewTabSibling, tabContextMenuCloseTab.nextSibling);
+		tabContextMenu.insertBefore(menuItemCloseChildren, tabContextMenuCloseTab.nextSibling);
+		tabContextMenu.insertBefore(menuItemCloseTree, tabContextMenuCloseTab.nextSibling);
 		tabContextMenu.addEventListener('popupshowing', (aDOMWindow.tt.toRemove.eventListeners.onPopupshowing = function (event) {
 			let tab = aDOMWindow.TabContextMenu.contextTab;
 			if (tt.hasAnyChildren(tab._tPos)) {
