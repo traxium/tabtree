@@ -735,25 +735,25 @@ var windowListener = {
 		};
 		setTTPos(Services.prefs.getIntPref('extensions.tabtree.position'));
 		
+		//////////////////// DROP INDICATOR //////////////////////////////////////////////////////////////////////////////
+		/*
+		<hbox id="tt-drop-indicator-container">
+			<image id="tt-drop-indicator" />
+		</hbox>
+		*/
+		let dropIndicator = aDOMWindow.document.createElement("image");
+		dropIndicator.id = "tt-drop-indicator";
+		let dropIndicatorContainer = aDOMWindow.document.createElement("hbox");
+		dropIndicatorContainer.id = "tt-drop-indicator-container";
+		dropIndicatorContainer.appendChild(dropIndicator);
+		sidebar.appendChild(dropIndicatorContainer);
+		dropIndicator.collapsed = true;
+		//////////////////// END DROP INDICATOR //////////////////////////////////////////////////////////////////////////
 
-		//////////////////// DROP INDICATOR ////////////////////////////////////////////////////////////////////////
-		let ind = aDOMWindow.document.getAnonymousElementByAttribute(aDOMWindow.gBrowser.tabContainer, 'anonid', 'tab-drop-indicator').cloneNode(true);
-		ind.removeAttribute('anonid');
-		ind.id = 'tt-drop-indicator';
-		ind.collapsed = true;
-		ind.style.marginTop = '-8px'; // needed for flipped arrow
-		let hboxForDropIndicator = aDOMWindow.document.createElement('hbox');
-		hboxForDropIndicator.align = 'start'; // just copying what mozilla does, but 'start' instead of 'end'
-		hboxForDropIndicator.appendChild(ind);
-		//////////////////// END DROP INDICATOR /////////////////////////////////////////////////////////////////
-		
 		//////////////////// TOOLBOX /////////////////////////////////////////////////////////////////
 		/*
 		<toolbox id="tt-toolbox">
 			<toolbar id="tt-toolbar">
-				<hbox align="start">
-					<img id="tt-drop-indicator" style="margin-top:-8px"/>
-				</hbox>
 				<ttpinnedtab /> <!-- see bindings.xml -->
 				<ttpinnedtab />
 				<ttpinnedtab />
@@ -767,7 +767,6 @@ var windowListener = {
 		let toolbar = aDOMWindow.document.createElement('toolbar');
 		toolbar.id = 'tt-toolbar';
 		toolbar.setAttribute('fullscreentoolbar', 'true');
-		toolbar.appendChild(hboxForDropIndicator);
 		toolbox.appendChild(toolbar);
 		sidebar.appendChild(toolbox);
 		//////////////////// END TOOLBOX /////////////////////////////////////////////////////////////////
@@ -1183,18 +1182,18 @@ var windowListener = {
 			// It's better to redraw all toolbarbuttons every time then add one toolbarbutton at a time. There were bugs when dragging and dropping them very fast
 			redrawToolbarbuttons: function() {
 				// reusing existing toolbarbuttons
-				let n = toolbar.childNodes.length - 1; // -1 for the arrow hbox
+				let n = toolbar.childNodes.length;
 				let max = Math.max(this.nPinned, n);
 				let min = Math.min(this.nPinned, n);
 				for (let i=0; i<max; ++i) {
 					let pinnedtab;
 					if (i<min) { // reusing existing toolbarbuttons here
-						pinnedtab = toolbar.childNodes[i+1]; // +1 for the arrow hbox
+						pinnedtab = toolbar.childNodes[i];
 					} else if (this.nPinned > n) { // we added a new pinned tab(tabs)
 						pinnedtab = aDOMWindow.document.createElement('ttpinnedtab');
 						toolbar.appendChild(pinnedtab);
 					} else if (this.nPinned < n) { // we removed a pinned tab(tabs)
-						pinnedtab = toolbar.childNodes[i+1]; // +1 for the arrow hbox
+						pinnedtab = toolbar.childNodes[i];
 						toolbar.removeChild(pinnedtab);
 						continue;
 					}
@@ -1775,33 +1774,31 @@ var windowListener = {
 			event.stopPropagation();
 		}, false);
 
-		toolbar.addEventListener('dragover', function f(event) {
+		toolbar.addEventListener('dragover', (event) => {
 			let dt = event.dataTransfer;
-			
-			if ( dt.mozTypesAt(0).contains(aDOMWindow.TAB_DROP_TYPE)
-				|| dt.mozTypesAt(0).contains('text/uri-list') )			// adding new pinned tab
-			{
+
+			if (dt.mozTypesAt(0).contains(aDOMWindow.TAB_DROP_TYPE) ||
+				 dt.mozTypesAt(0).contains('text/uri-list')
+			){
 				event.preventDefault();
 				event.stopPropagation();
 
-				let rect = toolbar.getBoundingClientRect();
-				let newMargin;
-
-				if (event.originalTarget.tagName == 'xul:toolbarbutton' || event.originalTarget.tagName == 'toolbar') {
-					if (event.originalTarget.tagName == 'xul:toolbarbutton') {
-						if (event.screenX <= event.originalTarget.boxObject.screenX + event.originalTarget.boxObject.width / 2) {
-							newMargin = event.originalTarget.getBoundingClientRect().left - rect.left;
-						} else {
-							newMargin = event.originalTarget.getBoundingClientRect().right - rect.left;
-						}
-					} else { // == 'toolbar'
-						newMargin = toolbar.lastChild.getBoundingClientRect().right - rect.left; // there is always at least one child (<hbox> with <img> where the arrow is stored)
+				let ot = event.originalTarget;
+				let x;
+				let y;
+				if (ot.localName === "toolbarbutton") {
+					if (event.screenX <= ot.boxObject.screenX + ot.boxObject.width / 2) {
+						x = ot.boxObject.screenX - toolbar.boxObject.screenX;
+					} else {
+						x = ot.boxObject.screenX + ot.boxObject.width - toolbar.boxObject.screenX;
 					}
-					newMargin += ind.clientWidth / 2; // just copying what mozilla does
-					ind.collapsed = false;
-					ind.style.transform = "translate(" + Math.round(newMargin) + "px)" + " scaleY(-1)"; // just copying what mozilla does + flip
-					ind.style.MozMarginStart = (-ind.clientWidth) + "px"; // just copying what mozilla does
+					y = ot.boxObject.screenY - toolbar.boxObject.screenY;
+				} else { // ot.localName === "toolbar"
+					x = toolbar.lastChild.boxObject.screenX - toolbar.boxObject.screenX + toolbar.lastChild.boxObject.width;
+					y = toolbar.lastChild.boxObject.screenY - toolbar.boxObject.screenY;
 				}
+				dropIndicator.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
+				dropIndicator.collapsed = false;
 			}
 		}, false);
 
@@ -1809,7 +1806,7 @@ var windowListener = {
 			event.preventDefault();
 			event.stopPropagation();
 
-			ind.collapsed = true;
+			dropIndicator.collapsed = true;
 		}, false);
 
 		toolbar.addEventListener('drop', function f(event) {
@@ -1838,7 +1835,7 @@ var windowListener = {
 					} else if (event.originalTarget.tagName == 'toolbar') {
 						tt.movePinnedToPlus(sourceTab, tt.nPinned-1, tt.DROP_AFTER);
 					}
-					ind.collapsed = true;
+					dropIndicator.collapsed = true;
 				}
 			} else if (dt.mozTypesAt(0).contains('text/uri-list')) {
 				// adding new pinned tab:
@@ -1864,7 +1861,7 @@ var windowListener = {
 					} else if (event.originalTarget.tagName == 'toolbar') {
 						tt.movePinnedToPlus(newTab, tt.nPinned-1, tt.DROP_AFTER);
 					}
-					ind.collapsed = true;
+					dropIndicator.collapsed = true;
 				}
 			}
 		}, false);

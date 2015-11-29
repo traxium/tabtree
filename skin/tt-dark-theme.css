@@ -5,6 +5,12 @@
 
 /* Dark theme */
 
+/* ****** 0. ******************************************************************************************************** */
+
+:root[devtoolstheme="dark"] {
+	--tt-toolbar-border-top-width: 2px;
+}
+
 /* ****** 1. Tabs (not pinned) ****** */
 
 :root[devtoolstheme="dark"]	#tt-treechildren,
@@ -236,7 +242,7 @@
 	list-style-image: url(chrome://tabtree/skin/newtab-inverted.png);
 }
 
-/* ****** 4. Tab search box ****** */
+/* ****** 4. Tab search box ***************************************************************************************** */
 
 :root[devtoolstheme="dark"] #tt-quicksearchbox {
 	-moz-appearance: none;
@@ -279,7 +285,11 @@
 /*-moz-image-region: rect(0, 60px, 20px, 40px);*/
 /*}*/
 
-/* 4. Other */
+/* ****** 4. Other ************************************************************************************************** */
+
+/*:root[devtoolstheme="dark"] #tt-drop-indicator-container:last-child {*/
+	/*visibility: collapse;*/
+/*}*/
 
 /*:root[devtoolstheme="dark"] #tt-sidebar {*/
 /*background-color: var(--chrome-secondary-background-color);*/
@@ -287,7 +297,11 @@
 
 :root[devtoolstheme="dark"] #tt-toolbox {
 	border: none;
-	border-top: 2px solid var(--chrome-secondary-background-color);
+}
+
+:root[devtoolstheme="dark"] #tt-toolbar {
+	/* Important needed because !important is used in toolbar.css:33 */
+	border-top: 2px solid var(--chrome-secondary-background-color) !important;
 }
 
 :root[devtoolstheme="dark"] #tt-splitter {
@@ -295,4 +309,64 @@
 	min-width: 5px;
 	background-color: var(--chrome-secondary-background-color);
 }
+
+/* ****** Experimental ********************************************************************************************** */
+
+:root[devtoolstheme="dark"] #tt-toolbox,
+:root[devtoolstheme="dark"] #tt-toolbar {
+	-moz-appearance: none;
+	display: block;
+}
+
+:root[devtoolstheme="dark"] #tt-toolbox {
+	/*position: relative;*/
+}
+
+:root[devtoolstheme="dark"] #tt-toolbar:empty {
+	visibility: collapse;
+}
+
+:root[devtoolstheme="dark"] ttpinnedtab {
+	display: inline-block;
+}
+
+/* I don't know why but "fixed" and "absolute" positions don't work here */
+/* And "top" and "left" properties don't work either when "position: relative" */
+
+:root[devtoolstheme="dark"] #tt-drop-indicator {
+	position: relative;
+	z-index: 3;
+	/*margin-bottom: calc(-36px - var(--tt-toolbar-border-top-width));*/
+	margin-bottom: -18px;
+	margin-top: -6px; /* 18 + 6 = 24 */
+	list-style-image: url(chrome://tabtree/skin/tt-drop-indicator-white-5.png); /* 24*11px */
+	/*transform: translate(40px, 20px);*/
+	/*border-top: var(--tt-toolbar-border-top-width) solid transparent;*/
+	margin-left: -5px;
+}
+
+/*:root[devtoolstheme="dark"] #tt-drop-indicator {*/
+	/*position: fixed;*/
+	/*top: 100px;*/
+	/*left: 100px;*/
+	/*z-index: 99;*/
+	/*!*width: 10px;*!*/
+	/*!*height: 20px;*!*/
+	/*border: 4px solid green;*/
+	/*list-style-image: url(chrome://tabtree/skin/tt-drop-indicator-white-3.png);*/
+/*}*/
+
+/*:root[devtoolstheme="dark"] #tt-drop-indicator-container {*/
+	/*position: fixed;*/
+	/*top: 0;*/
+	/*left: 0;*/
+	/*width: 10px;*/
+	/*height: 20px;*/
+/*}*/
+
+/*:root[devtoolstheme="dark"] #tt-drop-indicator-container > #tt-drop-indicator {*/
+	/*list-style-image: url(chrome://tabtree/skin/tt-drop-indicator-white-3.png);*/
+/*}*/
+
+
 
