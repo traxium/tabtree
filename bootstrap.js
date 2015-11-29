@@ -38,6 +38,8 @@ function startup(data, reason)
 {
 	let uri = Services.io.newURI("chrome://tabtree/skin/tt-tree.css", null, null);
 	sss.loadAndRegisterSheet(uri, sss.AUTHOR_SHEET);
+	uri = Services.io.newURI("chrome://tabtree/skin/tt-dark-theme.css", null, null);
+	sss.loadAndRegisterSheet(uri, sss.AUTHOR_SHEET);
 	uri = Services.io.newURI("chrome://tabtree/skin/tt-other.css", null, null);
 	sss.loadAndRegisterSheet(uri, sss.AUTHOR_SHEET);
 	uri = Services.io.newURI("chrome://tabtree/skin/tt-navbar-private.css", null, null);
@@ -194,6 +196,7 @@ function shutdown(data, reason)
 
 	[
 		"chrome://tabtree/skin/tt-tree.css",
+		"chrome://tabtree/skin/tt-dark-theme.css",
 		"chrome://tabtree/skin/tt-other.css",
 		"chrome://tabtree/skin/tt-navbar-private.css",
 		"chrome://tabtree/skin/tt-options.css",
