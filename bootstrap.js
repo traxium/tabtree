@@ -2469,13 +2469,10 @@ var windowListener = {
 		tabContextMenu.insertBefore(menuItemCloseTree, tabContextMenuCloseTab.nextSibling);
 		tabContextMenu.addEventListener('popupshowing', (aDOMWindow.tt.toRemove.eventListeners.onPopupshowing = function (event) {
 			let tab = aDOMWindow.TabContextMenu.contextTab;
-			if (tt.hasAnyChildren(tab._tPos)) {
-				menuItemCloseTree.hidden = false;
-				menuItemCloseChildren.hidden = false;
-			} else {
-				menuItemCloseTree.hidden = true;
-				menuItemCloseChildren.hidden = true;
-			}
+
+			menuItemCloseTree.hidden = menuItemCloseChildren.hidden = !tt.hasAnyChildren(tab._tPos);
+			menuItemOpenNewTabChild.hidden = tab.pinned;
+			menuItemOpenNewTabSibling.hidden = tab._tPos < tt.nPinned - 1;
 		}), false); // removed in unloadFromWindow()
 		//////////////////// END TAB CONTEXT MENU //////////////////////////////////////////////////////////////////////
 
