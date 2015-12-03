@@ -127,3 +127,88 @@
 }
 
 /* ****************************************************************************************************************** */
+
+/* ************ Pinned Tabs****************************************************************************************** */
+
+:root[devtoolstheme="dark"] #tt-toolbar {
+	background-color: var(--tab-background-color);
+	/* Important needed because !important is used in toolbar.css:33 */
+	border-top: 2px solid var(--chrome-secondary-background-color) !important;
+}
+
+:root[devtoolstheme="dark"] #tt-toolbar toolbarbutton {
+	-moz-appearance: none;
+	padding: 3px 2px 1px 2px; /* Preventing changing padding on hover */
+}
+
+:root[devtoolstheme="dark"] #tt-toolbar toolbarbutton[checked="true"] {
+	background: var(--tab-selection-background-color);
+	border-color: var(--tab-selection-background-color);
+	box-shadow: var(--tab-selection-box-shadow);
+}
+
+:root[devtoolstheme="dark"] #tt-toolbar toolbarbutton:hover {
+	background: var(--tab-hover-background-color);
+	border-color: var(--tab-hover-background-color);
+	box-shadow: var(--tab-selection-box-shadow);
+}
+
+:root[devtoolstheme="dark"] .tt-tab-overlay[soundplaying] {
+	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio-small.svg#tab-audio-white);
+}
+
+:root[devtoolstheme="dark"] .tt-tab-overlay[muted] {
+	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio-small.svg#tab-audio-white-muted);
+}
+:root[devtoolstheme="dark"] .tt-tab-overlay[soundplaying]:hover {
+	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio-small.svg#tab-audio);
+}
+
+:root[devtoolstheme="dark"] .tt-tab-overlay[muted]:hover {
+	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio-small.svg#tab-audio-muted);
+}
+
+/* ****************************************************************************************************************** */
+
+/* ************ New Tab Button *************************************************************************************** */
+
+:root[devtoolstheme="dark"] #tt-new-tab-button-container {
+	background-color: var(--chrome-secondary-background-color);
+}
+
+:root[devtoolstheme="dark"] .tt-new-tab-button {
+	-moz-appearance: none;
+}
+
+:root[devtoolstheme="dark"] .tt-new-tab-button:hover {
+	background-color: var(--tab-hover-background-color);
+	border-color: var(--toolbarbutton-active-bordercolor);
+	box-shadow: var(--toolbarbutton-active-boxshadow);
+	transition-duration: 40ms;
+}
+
+:root[devtoolstheme="dark"] .tt-new-tab-button {
+	list-style-image: url(chrome://tabtree/skin/newtab-inverted.png);
+}
+
+/* ****************************************************************************************************************** */
+
+/* ************ Tab Search Box ************************************************************************************** */
+
+:root[devtoolstheme="dark"] #tt-quicksearchbox {
+	-moz-appearance: none;
+	margin: 0;
+	background-color: var(--url-and-searchbar-background-color);
+	color: var(--url-and-searchbar-color);
+	border: 1px solid var(--chrome-nav-bar-controls-border-color);
+	position: relative;
+	padding-left: 20px;
+}
+
+:root[devtoolstheme="dark"] #tt-quicksearchbox::before {
+	content: url(chrome://tabtree/skin/search-indicator.png);
+	position: absolute;
+	left: 4px;
+}
+
+/* ****************************************************************************************************************** */
