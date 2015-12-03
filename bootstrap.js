@@ -38,7 +38,7 @@ function startup(data, reason)
 {
 	let uri = Services.io.newURI("chrome://tabtree/skin/tt-tree.css", null, null);
 	sss.loadAndRegisterSheet(uri, sss.AUTHOR_SHEET);
-	uri = Services.io.newURI("chrome://tabtree/skin/tt-dark-theme.css", null, null);
+	uri = Services.io.newURI("chrome://tabtree/skin/tt-theme-dark.css", null, null);
 	sss.loadAndRegisterSheet(uri, sss.AUTHOR_SHEET);
 	uri = Services.io.newURI("chrome://tabtree/skin/tt-other.css", null, null);
 	sss.loadAndRegisterSheet(uri, sss.AUTHOR_SHEET);
@@ -196,7 +196,7 @@ function shutdown(data, reason)
 
 	[
 		"chrome://tabtree/skin/tt-tree.css",
-		"chrome://tabtree/skin/tt-dark-theme.css",
+		"chrome://tabtree/skin/tt-theme-dark.css",
 		"chrome://tabtree/skin/tt-other.css",
 		"chrome://tabtree/skin/tt-navbar-private.css",
 		"chrome://tabtree/skin/tt-options.css",
@@ -781,6 +781,7 @@ var windowListener = {
 			</tree>
 		*/
 		let tree = aDOMWindow.document.createElement('tree'); // <tree>
+		tree.classList.add("tt-tree");
 		propsToSet = {
 			id: 'tt',
 			flex: '1',
@@ -834,6 +835,7 @@ var windowListener = {
 
 		//////////////////// DRAG FEEDBACK TREE ////////////////////////////////////////////////////////////////////////
 		let dragFeedbackTree = aDOMWindow.document.createElement('tree');
+		dragFeedbackTree.classList.add("tt-tree");
 		/*
 		 * <tree id="tt-feedback" seltype="single" treelines="true/false" hidecolumnpicker="true">
 		 * 	<treecols>
@@ -951,7 +953,7 @@ var windowListener = {
 		//////////////////// END KEY ///////////////////////////////////////////////////////////////////////////////////
 		
 		////////////////////////// NEXT ///////////////////////////////////////////////////////////////
-				
+
 		////////////////////// END NEXT ///////////////////////////////////////////////////////////////
 
 //////////////////////////////// here we could load something before all tabs have been loaded and restored by SS ////////////////////////////////

@@ -1,0 +1,129 @@
+/*
+ * This file is part of Tab Tree,
+ * Copyright (C) 2015 Sergey Zelentsov <crayfishexterminator@gmail.com>
+ */
+
+/* ************ chrome://global/skin/tree.css *********************************************************************** */
+
+:root[devtoolstheme="dark"] .tt-tree treechildren {
+	--treechildren-outline: none;
+	background-color: var(--tab-background-color);
+}
+
+/* ::::: tree ::::: */
+
+@media all and (-moz-os-version: windows-xp) {
+	:root[devtoolstheme="dark"] .tt-tree {
+		font-size: 12px;
+	}
+}
+
+:root[devtoolstheme="dark"] .tt-tree {
+	color: -moz-FieldText; /* TODO: check */
+}
+
+/* ::::: tree rows ::::: */
+
+:root[devtoolstheme="dark"] .tt-tree treechildren::-moz-tree-row {
+	border: 1px solid transparent;
+	border-radius: 0;
+	min-height: 18px;
+	height: 1.3em;
+	background: var(--tab-background-color) none;
+	outline: var(--treechildren-outline);
+}
+
+:root[devtoolstheme="dark"] .tt-tree treechildren::-moz-tree-row(selected),
+:root[devtoolstheme="dark"] .tt-tree treechildren::-moz-tree-row(selected, focus) {
+	background: var(--tab-selection-background-color) none;
+	outline: var(--treechildren-outline);
+}
+
+:root[devtoolstheme="dark"] .tt-tree treechildren::-moz-tree-row(current),
+:root[devtoolstheme="dark"] .tt-tree treechildren::-moz-tree-row(current, focus) {
+	border: 1px dotted var(--tab-selection-color);
+	background-image: none;
+	outline: var(--treechildren-outline);
+}
+
+:root[devtoolstheme="dark"] .tt-tree treechildren::-moz-tree-row(selected, current),
+:root[devtoolstheme="dark"] .tt-tree treechildren::-moz-tree-row(selected, current, focus) {
+	border: 1px solid transparent;
+	background-image: none;
+	outline: var(--treechildren-outline);
+}
+
+:root[devtoolstheme="dark"] #tt treechildren:not(.autocomplete-treebody)::-moz-tree-row(hover) {
+	background: var(--tab-hover-background-color) none;
+	outline: var(--treechildren-outline);
+}
+
+:root[devtoolstheme="dark"] #tt treechildren:not(.autocomplete-treebody)::-moz-tree-row(hover, selected, current) {
+	border: 1px dotted #7F9DB9;
+	background-image: none;
+	outline: var(--treechildren-outline);
+}
+
+/* ::::: tree cells ::::: */
+
+:root[devtoolstheme="dark"] .tt-tree treechildren::-moz-tree-cell {
+	padding: 0 2px;
+}
+
+:root[devtoolstheme="dark"] .tt-tree treechildren::-moz-tree-cell-text {
+	color: var(--tabs-toolbar-color);
+}
+
+:root[devtoolstheme="dark"] .tt-tree treechildren::-moz-tree-cell-text(selected),
+:root[devtoolstheme="dark"] .tt-tree treechildren::-moz-tree-cell-text(selected, focus) {
+	color: var(--tab-selection-color); /* TODO: check shaking */
+}
+
+:root[devtoolstheme="dark"] #tt treechildren::-moz-tree-cell-text(hover) {
+	text-decoration: none;
+}
+
+
+/* ::::: lines connecting cells ::::: */
+
+:root[devtoolstheme="dark"] .tt-tree treechildren::-moz-tree-line {
+	border: 1px dotted ThreeDShadow; /* TODO: be cautious */
+}
+
+:root[devtoolstheme="dark"] .tt-tree treechildren::-moz-tree-line(selected),
+:root[devtoolstheme="dark"] .tt-tree treechildren::-moz-tree-line(selected, focus) {
+	border: 1px dotted var(--tab-selection-color);
+}
+
+
+/* ::::: drop feedback ::::: */
+
+:root[devtoolstheme="dark"] .tt-tree treechildren::-moz-tree-row(dropOn) {
+	background-color: var(--chrome-secondary-background-color);
+}
+
+:root[devtoolstheme="dark"] .tt-tree treechildren::-moz-tree-row(dropOn),
+:root[devtoolstheme="dark"] .tt-tree treechildren::-moz-tree-row(dropBefore),
+:root[devtoolstheme="dark"] .tt-tree treechildren::-moz-tree-row(dropAfter) {
+	border: 1px dashed var(--tabs-toolbar-color);
+}
+
+:root[devtoolstheme="dark"] .tt-tree treechildren::-moz-tree-cell-text(primary, dropOn) {
+	color: var(--tab-selection-color);
+}
+
+:root[devtoolstheme="dark"] .tt-tree treechildren::-moz-tree-drop-feedback {
+	background-color: var(--tabs-toolbar-color);
+	width: 100px;
+	height: 2px;
+	-moz-margin-start: 5px;
+}
+
+
+/* ::::: twisty :::::  */
+
+:root[devtoolstheme="dark"] .tt-tree treechildren::-moz-tree-indentation {
+	width: 18px;
+}
+
+/* ****************************************************************************************************************** */
