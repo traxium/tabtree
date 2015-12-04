@@ -70,3 +70,7 @@ toolbarbutton.tt-tab-button > image {
 	height: 16px !important;
 }
 
+.tt-tab-button,
+.tt-tab-button[checked="true"] {
+	padding: 3px; /* otherwise the toolbar height changes every time pinned tabs selected and unselected */
+}

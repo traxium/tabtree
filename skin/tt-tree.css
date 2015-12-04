@@ -9,30 +9,26 @@
 	margin: 0;
 }
 
-#tt-treechildren::-moz-tree-cell-text(hover),
-#tt-treechildren-feedback::-moz-tree-cell-text(hover) {
+.tt-treechildren::-moz-tree-cell-text(hover) {
 	text-decoration: underline;
 }
 
 /* Style Places sidebars as Vista media collection */
 @media not all and (-moz-os-version: windows-xp) {
 	@media (-moz-windows-default-theme) {
-		#tt-treechildren::-moz-tree-cell-text(hover),
-		#tt-treechildren-feedback::-moz-tree-cell-text(hover) {
+		.tt-treechildren::-moz-tree-cell-text(hover) {
 			text-decoration: none;
 		}
 	}
 }
 
 @media (-moz-windows-default-theme) {
-	#tt-treechildren,
-	#tt-treechildren-feedback {
+	.tt-treechildren {
 		background-color: #eef3fa;
 	}
 }
 
-#tt-treechildren::-moz-tree-image,
-#tt-treechildren-feedback::-moz-tree-image {
+.tt-treechildren::-moz-tree-image {
 	list-style-image: url(chrome://mozapps/skin/places/defaultFavicon.png);
 	padding-right: 2px;
 	margin: 0 2px;
@@ -43,76 +39,68 @@
 
 /* Highlighting unloaded tabs */
 
-#tt-treechildren::-moz-tree-image(pending-grayout) {
+.tt-treechildren::-moz-tree-image(pending-grayout) {
 	opacity: .6;
 }
 
-#tt-treechildren::-moz-tree-cell-text(pending-grayout) {
+.tt-treechildren::-moz-tree-cell-text(pending-grayout) {
 	opacity: .76;
 }
 
-#tt-treechildren::-moz-tree-cell-text(pending-highlight) {
+.tt-treechildren::-moz-tree-cell-text(pending-highlight) {
 	color: Highlight;
 }
 
 /* Highlighting unread tabs */
 
-#tt-treechildren::-moz-tree-cell-text(unread) {
+.tt-treechildren::-moz-tree-cell-text(unread) {
 	color: #bb0000;
 }
 
 /************************************** chrome://global/skin/tree.css adaptation **************************************/
-#tt-treechildren::-moz-tree-row(dropOn),
-#tt-treechildren-feedback::-moz-tree-row(dropOn) {
+.tt-treechildren::-moz-tree-row(dropOn) {
 	background-color: Highlight; /* makes Linux look like Windows, It's -moz-tree-cell-text instead of -moz-tree-row on Linux */
 }
 
-#tt-treechildren::-moz-tree-cell-text(primary, dropOn),
-#tt-treechildren-feedback::-moz-tree-cell-text(primary, dropOn) {
+.tt-treechildren::-moz-tree-cell-text(primary, dropOn)  {
 	color: HighlightText;  /* to override (pending-highlight) color */
 }
 
-#tt-treechildren::-moz-tree-row(selected),
-#tt-treechildren-feedback::-moz-tree-row(selected) {
+.tt-treechildren::-moz-tree-row(selected) {
 	background-color: Highlight;
 }
 
-#tt-treechildren::-moz-tree-cell-text(selected),
-#tt-treechildren-feedback::-moz-tree-cell-text(selected) {
+.tt-treechildren::-moz-tree-cell-text(selected) {
 	color: HighlightText;
 }
 
-#tt-treechildren::-moz-tree-twisty,
-#tt-treechildren-feedback::-moz-tree-twisty {
+.tt-treechildren::-moz-tree-twisty {
 	padding: 0;
 	width: 0; /* The image's width is 9 pixels */
 	-moz-appearance: none; /* Linux fix */
 }
 
-#tt-treechildren::-moz-tree-twisty(open),
-#tt-treechildren-feedback::-moz-tree-twisty(open) {
+.tt-treechildren::-moz-tree-twisty(open) {
 	width: 0; /* The image's width is 9 pixels */
 	-moz-appearance: none; /* Linux fix */
 }
 
-#tt-treechildren::-moz-tree-row(current),
-#tt-treechildren-feedback::-moz-tree-row(current) {
+.tt-treechildren::-moz-tree-row(current) {
 	border: 1px dotted Highlight;
 }
 
-#tt-treechildren::-moz-tree-line(selected),
-#tt-treechildren-feedback::-moz-tree-line(selected) {
+.tt-treechildren::-moz-tree-line(selected) {
 	border: 1px dotted HighlightText;
 }
 /**********************************************************************************************************************/
 
-#tt-treechildren::-moz-tree-row(dropOn),
-#tt-treechildren::-moz-tree-row(dropBefore),
-#tt-treechildren::-moz-tree-row(dropAfter) {
+.tt-treechildren::-moz-tree-row(dropOn),
+.tt-treechildren::-moz-tree-row(dropBefore),
+.tt-treechildren::-moz-tree-row(dropAfter) {
 	border: 1px dashed Highlight;
 }
 
-#tt-treechildren::-moz-tree-row(quickSearch) {
+.tt-treechildren::-moz-tree-row(quickSearch) {
 	border: 1px solid #EF0FFF; /* default Firefox color for "Highlight all" option in <findbar> */
 }
 
@@ -143,18 +131,17 @@
 	padding: 0;
 }
 
-#tt-treechildren::-moz-tree-image(tt-close),
-#tt-treechildren-feedback::-moz-tree-image(tt-close) {
+.tt-treechildren::-moz-tree-image(tt-close) {
 	list-style-image: url(chrome://tabtree/skin/close.png);
 	-moz-image-region: rect(0, 16px, 16px, 0);
 }
 
-#tt-treechildren::-moz-tree-image(tt-close, selected) {
+.tt-treechildren::-moz-tree-image(tt-close, selected) {
 	list-style-image: url(chrome://tabtree/skin/close.png);
 	-moz-image-region: rect(0, 48px, 16px, 32px);
 }
 
-#tt-treechildren::-moz-tree-image(tt-close, hover) {
+.tt-treechildren::-moz-tree-image(tt-close, hover) {
 	list-style-image: url(chrome://tabtree/skin/close.png);
 	-moz-image-region: rect(0, 32px, 16px, 16px);
 }
@@ -180,23 +167,19 @@
 	list-style-image: none;
 }
 
-#tt-treechildren::-moz-tree-image(tt-soundplaying),
-#tt-treechildren-feedback::-moz-tree-image(tt-soundplaying) {
+.tt-treechildren::-moz-tree-image(tt-soundplaying) {
 	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio);
 }
 
-#tt-treechildren::-moz-tree-image(tt-soundplaying, hover),
-#tt-treechildren-feedback::-moz-tree-image(tt-soundplaying, hover) {
+.tt-treechildren::-moz-tree-image(tt-soundplaying, hover) {
 	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio-hover);
 }
 
-#tt-treechildren::-moz-tree-image(tt-muted),
-#tt-treechildren-feedback::-moz-tree-image(tt-muted) {
+.tt-treechildren::-moz-tree-image(tt-muted) {
 	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio-muted);
 }
 
-#tt-treechildren::-moz-tree-image(tt-muted, hover),
-#tt-treechildren-feedback::-moz-tree-image(tt-muted, hover) {
+.tt-treechildren::-moz-tree-image(tt-muted, hover) {
 	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio-muted-hover);
 }
 

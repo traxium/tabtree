@@ -762,13 +762,11 @@ var windowListener = {
 			</toolbar>
 		</toolbox>
 		*/
-		let toolbox = aDOMWindow.document.createElement('toolbox');
-		toolbox.id = 'tt-toolbox';
+		// The toolbox element is removed in order toolbar:empty css selector to work:
 		let toolbar = aDOMWindow.document.createElement('toolbar');
 		toolbar.id = 'tt-toolbar';
 		toolbar.setAttribute('fullscreentoolbar', 'true');
-		toolbox.appendChild(toolbar);
-		sidebar.appendChild(toolbox);
+		sidebar.appendChild(toolbar);
 		//////////////////// END TOOLBOX /////////////////////////////////////////////////////////////////
 
 		//////////////////// TREE ///////////////////////////////////////////////////////////////////////
@@ -791,6 +789,7 @@ var windowListener = {
 			hidecolumnpicker: 'true'
 		};
 		Object.keys(propsToSet).forEach( (p)=>{tree.setAttribute(p, propsToSet[p]);} );
+
 		let treecols = aDOMWindow.document.createElement('treecols'); // <treecols>
 		let treecol = {
 			tabtitle: aDOMWindow.document.createElement('treecol'), // <treecol>
@@ -820,9 +819,12 @@ var windowListener = {
 		treetooltip.setAttribute('id', 'tt-tooltip');
 		treetooltip.setAttribute('label', '');
 		tree.appendChild(treetooltip);
+
 		let treechildren = aDOMWindow.document.createElement('treechildren'); // <treechildren id="tt-treechildren">
+		treechildren.classList.add("tt-treechildren");
 		treechildren.setAttribute('id', 'tt-treechildren');
 		treechildren.setAttribute('tooltip', 'tt-tooltip');
+
 		treecols.appendChild(treecol.tabtitle);
 		treecols.appendChild(treecol.overlay);
 		treecols.appendChild(treecol.closebtn);
@@ -867,6 +869,7 @@ var windowListener = {
 		treecolDragFeedback.closebtn.setAttribute('hideheader', 'true');
 		treecolDragFeedback.closebtn.collapsed = !Services.prefs.getBoolPref('extensions.tabtree.close-tab-buttons');
 		let treechildrenDragFeedback = aDOMWindow.document.createElement('treechildren');
+		treechildrenDragFeedback.classList.add("tt-treechildren");
 		treechildrenDragFeedback.setAttribute('id', 'tt-treechildren-feedback');
 		treecolsDragFeedback.appendChild(treecolDragFeedback.tabtitle);
 		treecolsDragFeedback.appendChild(treecolDragFeedback.overlay);
@@ -951,10 +954,6 @@ var windowListener = {
 			appcontent.addEventListener('mouseup', aDOMWindow.tt.toRemove.eventListeners.onAppcontentMouseUp, false); // don't forget to remove
 		}
 		//////////////////// END KEY ///////////////////////////////////////////////////////////////////////////////////
-		
-		////////////////////////// NEXT ///////////////////////////////////////////////////////////////
-
-		////////////////////// END NEXT ///////////////////////////////////////////////////////////////
 
 //////////////////////////////// here we could load something before all tabs have been loaded and restored by SS ////////////////////////////////
 
