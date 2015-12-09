@@ -1205,6 +1205,7 @@ var windowListener = {
 					pinnedtab.tab = g.tabs[i]; // The XBL binding takes care of the details now
 				}
 				g.mCurrentTab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(g.mCurrentTab._tPos - tt.nPinned); // NEW
+				toolbox.collapsed = this.nPinned === 0; /* NEW*/
 			}, // redrawToolbarbuttons: function()
 			
 			quickSearch: function(aText, tPos) {
