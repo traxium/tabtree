@@ -762,11 +762,15 @@ var windowListener = {
 			</toolbar>
 		</toolbox>
 		*/
-		// The toolbox element is removed in order toolbar:empty css selector to work:
+		// #tt-toolbox can be decorated to look different in different themes
+		// borders shouldn't be added to #tt-toolbar because they slightly break drag'n'drop behaviour
+		let toolbox = aDOMWindow.document.createElement('toolbox');
+		toolbox.id = 'tt-toolbox';
 		let toolbar = aDOMWindow.document.createElement('toolbar');
 		toolbar.id = 'tt-toolbar';
 		toolbar.setAttribute('fullscreentoolbar', 'true');
-		sidebar.appendChild(toolbar);
+		toolbox.appendChild(toolbar);
+		sidebar.appendChild(toolbox);
 		//////////////////// END TOOLBOX /////////////////////////////////////////////////////////////////
 
 		//////////////////// TREE ///////////////////////////////////////////////////////////////////////
@@ -1766,7 +1770,7 @@ var windowListener = {
 		}); // don't forget to restore
 
 		toolbar.addEventListener('dragstart', function(event) {
-			let toolbarbtn = event.target;
+			let toolbarbtn = event.originalTarget;
 			let tPos = toolbarbtn.tPos; // See bindings.xml
 			let tab = g.tabs[tPos];
 			event.dataTransfer.mozSetDataAt(aDOMWindow.TAB_DROP_TYPE, tab, 0);
@@ -1777,14 +1781,14 @@ var windowListener = {
 
 		toolbar.addEventListener('dragover', (event) => {
 			let dt = event.dataTransfer;
+			let ot = event.originalTarget;
 
-			if (dt.mozTypesAt(0).contains(aDOMWindow.TAB_DROP_TYPE) ||
-				 dt.mozTypesAt(0).contains('text/uri-list')
-			){
+			if ((dt.mozTypesAt(0).contains(aDOMWindow.TAB_DROP_TYPE) || dt.mozTypesAt(0).contains('text/uri-list')) &&
+				 dt.mozGetDataAt("application/x-moz-node", 0) !== ot
+			) {
 				event.preventDefault();
 				event.stopPropagation();
 
-				let ot = event.originalTarget;
 				let x;
 				let y;
 				if (ot.localName === "toolbarbutton") {

@@ -189,10 +189,13 @@
 
 /* ************ Pinned Tabs ***************************************************************************************** */
 
+:root[devtoolstheme="dark"] #tt-toolbox {
+	border: none;
+	border-top: 2px solid var(--chrome-secondary-background-color);
+}
+
 :root[devtoolstheme="dark"] #tt-toolbar {
 	background-color: var(--tab-background-color);
-	/* Important needed because !important is used in toolbar.css:33 */
-	border-top: 2px solid var(--chrome-secondary-background-color) !important;
 }
 
 :root[devtoolstheme="dark"] #tt-toolbar toolbarbutton {
