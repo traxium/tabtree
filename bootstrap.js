@@ -38,8 +38,6 @@ function startup(data, reason)
 {
 	let uri = Services.io.newURI("chrome://tabtree/skin/tt-tree.css", null, null);
 	sss.loadAndRegisterSheet(uri, sss.AUTHOR_SHEET);
-	uri = Services.io.newURI("chrome://tabtree/skin/tt-theme-dark.css", null, null);
-	sss.loadAndRegisterSheet(uri, sss.AUTHOR_SHEET);
 	uri = Services.io.newURI("chrome://tabtree/skin/tt-other.css", null, null);
 	sss.loadAndRegisterSheet(uri, sss.AUTHOR_SHEET);
 	uri = Services.io.newURI("chrome://tabtree/skin/tt-navbar-private.css", null, null);
@@ -128,6 +126,8 @@ function startup(data, reason)
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.fullscreen-show', false); // #18 hold the tab tree in full screen mode
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.hide-tabtree-with-one-tab', false); // #31
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.insertRelatedAfterCurrent', false); // #19 // false - Bottom, true - Top
+	// 0 - default, 1 - try to mimic Firefox theme, 2 - dark
+	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.theme', 1); // #35 #50
 
 	// migration code :
 	try {
@@ -176,10 +176,29 @@ function startup(data, reason)
 							sss.loadAndRegisterSheet(uriTabsToolbar, sss.AUTHOR_SHEET);
 						}
 						break;
+					case "extensions.tabtree.theme":
+						[
+							"chrome://tabtree/skin/tt-theme-mimic.css",
+							"chrome://tabtree/skin/tt-theme-dark.css",
+						].forEach((x) => {
+							let uri = Services.io.newURI(x, null, null);
+							if (sss.sheetRegistered(uri, sss.AUTHOR_SHEET)) {
+								sss.unregisterSheet(uri, sss.AUTHOR_SHEET);
+							}
+						});
+						switch (Services.prefs.getIntPref("extensions.tabtree.theme")) {
+							case 1:
+								sss.loadAndRegisterSheet(Services.io.newURI("chrome://tabtree/skin/tt-theme-mimic.css", null, null), sss.AUTHOR_SHEET);
+								break;
+							case 2:
+								sss.loadAndRegisterSheet(Services.io.newURI("chrome://tabtree/skin/tt-theme-dark.css", null, null), sss.AUTHOR_SHEET);
+								break;
+						}
 				}
 			}
 		}
 	}), false); // don't forget to remove // there must be only one pref observer for all Firefox windows for sss prefs
+	prefsObserver.observe(null, 'nsPref:changed', 'extensions.tabtree.theme');
 
 	Cu.import(data.resourceURI.spec + "modules/NavBarHeight/NavBarHeight.jsm");
 	NavBarHeight.data = data;
@@ -196,6 +215,7 @@ function shutdown(data, reason)
 
 	[
 		"chrome://tabtree/skin/tt-tree.css",
+		"chrome://tabtree/skin/tt-theme-mimic.css",
 		"chrome://tabtree/skin/tt-theme-dark.css",
 		"chrome://tabtree/skin/tt-other.css",
 		"chrome://tabtree/skin/tt-navbar-private.css",
