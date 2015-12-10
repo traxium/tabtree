@@ -37,14 +37,23 @@
 
 .tt-treechildren::-moz-tree-row(current),
 .tt-treechildren::-moz-tree-row(current, focus) {
-	border: 1px dotted var(--tab-selection-color);
 	background-image: none;
 	outline: var(--treechildren-outline);
 }
 
+:root[devtoolstheme="dark"] .tt-treechildren::-moz-tree-row(current),
+:root[devtoolstheme="dark"] .tt-treechildren::-moz-tree-row(current, focus) {
+	border: 1px dotted var(--tab-selection-color);
+}
+
+:root[devtoolstheme="light"] .tt-treechildren::-moz-tree-row(current),
+:root[devtoolstheme="light"] .tt-treechildren::-moz-tree-row(current, focus) {
+	border: 1px dotted var(--tab-selection-background-color);
+}
+
 .tt-treechildren::-moz-tree-row(selected, current),
 .tt-treechildren::-moz-tree-row(selected, current, focus) {
-	border: 1px solid transparent;
+	border: 1px solid transparent !important;
 	background-image: none;
 	outline: var(--treechildren-outline);
 }
@@ -55,7 +64,7 @@
 }
 
 .tt-treechildren:not(.autocomplete-treebody)::-moz-tree-row(hover, selected, current) {
-	border: 1px solid var(--tab-selection-background-color);
+	border: 1px solid var(--tab-selection-background-color) !important;
 	background-image: none;
 	outline: var(--treechildren-outline);
 }
@@ -84,7 +93,6 @@
 	text-decoration: none;
 }
 
-
 /* ::::: lines connecting cells ::::: */
 
 .tt-treechildren::-moz-tree-line {
@@ -96,30 +104,37 @@
 	border: 1px dotted var(--tab-selection-color);
 }
 
-
 /* ::::: drop feedback ::::: */
 
 .tt-treechildren::-moz-tree-row(dropOn) {
 	background-color: var(--chrome-secondary-background-color);
 }
 
-.tt-treechildren::-moz-tree-row(dropOn),
-.tt-treechildren::-moz-tree-row(dropBefore),
-.tt-treechildren::-moz-tree-row(dropAfter) {
+:root[devtoolstheme="dark"] .tt-treechildren::-moz-tree-row(dropOn),
+:root[devtoolstheme="dark"] .tt-treechildren::-moz-tree-row(dropBefore),
+:root[devtoolstheme="dark"] .tt-treechildren::-moz-tree-row(dropAfter) {
 	border: 1px dashed var(--tabs-toolbar-color);
 }
 
-.tt-treechildren::-moz-tree-cell-text(primary, dropOn) {
-	color: var(--tab-selection-color);
+:root[devtoolstheme="light"] .tt-treechildren::-moz-tree-row(dropOn),
+:root[devtoolstheme="light"] .tt-treechildren::-moz-tree-row(dropBefore),
+:root[devtoolstheme="light"] .tt-treechildren::-moz-tree-row(dropAfter) {
+	border: 1px dashed var(--tab-selection-background-color);
 }
 
-.tt-treechildren::-moz-tree-drop-feedback {
+:root[devtoolstheme="dark"] .tt-treechildren::-moz-tree-drop-feedback {
 	background-color: var(--tabs-toolbar-color);
 	width: 100px;
 	height: 2px;
 	-moz-margin-start: 5px;
 }
 
+:root[devtoolstheme="light"] .tt-treechildren::-moz-tree-drop-feedback {
+	background-color: var(--tab-selection-background-color);
+	width: 100px;
+	height: 2px;
+	-moz-margin-start: 5px;
+}
 
 /* ::::: twisty :::::  */
 
