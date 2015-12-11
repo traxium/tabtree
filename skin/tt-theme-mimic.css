@@ -250,6 +250,12 @@
 
 /* ************ Pinned Tabs ***************************************************************************************** */
 
+#tt-toolbox,
+#tt-toolbar,
+#tt-toolbar toolbarbutton {
+	-moz-appearance: none;
+}
+
 #tt-toolbox {
 	border: none;
 	border-top: 2px solid var(--chrome-secondary-background-color);
@@ -260,7 +266,6 @@
 }
 
 #tt-toolbar toolbarbutton {
-	-moz-appearance: none;
 	padding: 3px 2px 1px 2px; /* Preventing changing padding on hover */
 }
 

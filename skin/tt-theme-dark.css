@@ -6,17 +6,23 @@
 /* ************ chrome://global/skin/tree.css *********************************************************************** */
 
 :root {
+	/* Chrome */
 	--tt-chrome-secondary-background-color: #39424D;
+	--tt-chrome-nav-bar-controls-border-color: #1D2328;
 
+	/* Tabs */
 	--tt-tabs-toolbar-color: #F5F7FA;
 	--tt-tab-background-color: #1C2126;
 	--tt-tab-hover-background-color: #07090a;
 	--tt-tab-selection-color: #f5f7fa;
 	--tt-tab-selection-background-color: #1a4666;
-
 	--tt-tab-selection-box-shadow: 0 2px 0 #D7F1FF inset,
-	                            0 -2px 0 rgba(0,0,0,.05) inset,
-	                            0 -1px 0 rgba(0,0,0,.3) inset;
+	                               0 -2px 0 rgba(0,0,0,.05) inset,
+	                               0 -1px 0 rgba(0,0,0,.3) inset;
+
+	/* Url and search bars */
+	--tt-url-and-searchbar-background-color: #171B1F;
+	--tt-url-and-searchbar-color: #fff;
 }
 
 .tt-treechildren {
@@ -205,6 +211,12 @@
 
 /* ************ Pinned Tabs ***************************************************************************************** */
 
+#tt-toolbox,
+#tt-toolbar,
+#tt-toolbar toolbarbutton {
+	-moz-appearance: none;
+}
+
 #tt-toolbox {
 	border: none;
 	border-top: 2px solid var(--tt-chrome-secondary-background-color);
@@ -215,7 +227,6 @@
 }
 
 #tt-toolbar toolbarbutton {
-	-moz-appearance: none;
 	padding: 3px 2px 1px 2px; /* Preventing changing padding on hover */
 }
 
@@ -276,9 +287,9 @@
 #tt-quicksearchbox {
 	-moz-appearance: none;
 	margin: 0;
-	background-color: var(--url-and-searchbar-background-color);
-	color: var(--url-and-searchbar-color);
-	border: 1px solid var(--chrome-nav-bar-controls-border-color);
+	background-color: var(--tt-url-and-searchbar-background-color);
+	color: var(--tt-url-and-searchbar-color);
+	border: 1px solid var(--tt-chrome-nav-bar-controls-border-color);
 	position: relative;
 	padding-left: 22px;
 }
