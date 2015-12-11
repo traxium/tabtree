@@ -5,7 +5,7 @@
 
 'use strict';
 /* jshint moz:true */
-/* global Components, CustomizableUI, Services, SessionStore, APP_SHUTDOWN, ShortcutUtils, NavBarHeight */
+/* global Components, CustomizableUI, Services, SessionStore, APP_SHUTDOWN, ShortcutUtils, NavBarHeight, AddonManager */
 
 //const {classes: Cc, interfaces: Ci, utils: Cu} = Components; // WebStorm inspector doesn't understand destructuring assignment
 const Cc = Components.classes;
@@ -15,12 +15,14 @@ const Cu = Components.utils;
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/ShortcutUtils.jsm");
 Cu.import("resource:///modules/CustomizableUI.jsm");
+Cu.import("resource://gre/modules/AddonManager.jsm");
 var ssHack = Cu.import("resource:///modules/sessionstore/SessionStore.jsm");
 var ssOrig;
 const ss = Cc["@mozilla.org/browser/sessionstore;1"].getService(Ci.nsISessionStore);
 const sss = Cc["@mozilla.org/content/style-sheet-service;1"].getService(Ci.nsIStyleSheetService);
 var stringBundle = Services.strings.createBundle('chrome://tabtree/locale/global.properties?' + Math.random()); // Randomize URI to work around bug 719376
 var prefsObserver;
+var defaultThemeAddonListener;
 
 const TT_POS_LEFT = 0;
 const TT_POS_RIGHT = 1;
@@ -177,28 +179,47 @@ function startup(data, reason)
 						}
 						break;
 					case "extensions.tabtree.theme":
-						[
-							"chrome://tabtree/skin/tt-theme-mimic.css",
-							"chrome://tabtree/skin/tt-theme-dark.css",
-						].forEach((x) => {
-							let uri = Services.io.newURI(x, null, null);
-							if (sss.sheetRegistered(uri, sss.AUTHOR_SHEET)) {
-								sss.unregisterSheet(uri, sss.AUTHOR_SHEET);
+						// Get default theme:
+						AddonManager.getAddonByID("{972ce4c6-7e08-4474-a285-3208198ce6fd}", (x) => {
+							console.log(x.id);
+							[
+								"chrome://tabtree/skin/tt-theme-mimic.css",
+								"chrome://tabtree/skin/tt-theme-dark.css",
+							].forEach((x) => {
+								let uri = Services.io.newURI(x, null, null);
+								if (sss.sheetRegistered(uri, sss.AUTHOR_SHEET)) {
+									sss.unregisterSheet(uri, sss.AUTHOR_SHEET);
+								}
+							});
+							switch (Services.prefs.getIntPref("extensions.tabtree.theme")) {
+								case 1: // try to mimic the current Firefox theme
+									if (x.userDisabled) { // if the default Firefox theme is enabled then do nothing
+										sss.loadAndRegisterSheet(Services.io.newURI("chrome://tabtree/skin/tt-theme-mimic.css", null, null), sss.AUTHOR_SHEET);
+									}
+									break;
+								case 2: // force the dark theme
+									sss.loadAndRegisterSheet(Services.io.newURI("chrome://tabtree/skin/tt-theme-dark.css", null, null), sss.AUTHOR_SHEET);
+									break;
 							}
 						});
-						switch (Services.prefs.getIntPref("extensions.tabtree.theme")) {
-							case 1:
-								sss.loadAndRegisterSheet(Services.io.newURI("chrome://tabtree/skin/tt-theme-mimic.css", null, null), sss.AUTHOR_SHEET);
-								break;
-							case 2:
-								sss.loadAndRegisterSheet(Services.io.newURI("chrome://tabtree/skin/tt-theme-dark.css", null, null), sss.AUTHOR_SHEET);
-								break;
-						}
 				}
 			}
 		}
 	}), false); // don't forget to remove // there must be only one pref observer for all Firefox windows for sss prefs
 	prefsObserver.observe(null, 'nsPref:changed', 'extensions.tabtree.theme');
+	// Refresh the Tab Tree theme when the Firefox theme is changed from/to the default theme:
+	AddonManager.addAddonListener((defaultThemeAddonListener = {
+		onEnabled(a) {
+			if (a.id === "{972ce4c6-7e08-4474-a285-3208198ce6fd}") {
+				prefsObserver.observe(null, 'nsPref:changed', 'extensions.tabtree.theme');
+			}
+		},
+		onDisabled(a) {
+			if (a.id === "{972ce4c6-7e08-4474-a285-3208198ce6fd}") {
+				prefsObserver.observe(null, 'nsPref:changed', 'extensions.tabtree.theme');
+			}
+		},
+	}));
 
 	Cu.import(data.resourceURI.spec + "modules/NavBarHeight/NavBarHeight.jsm");
 	NavBarHeight.data = data;
@@ -236,6 +257,7 @@ function shutdown(data, reason)
 	ssHack.SessionStoreInternal.undoCloseTab = ssHack.SessionStoreInternal.ttOrigOfUndoCloseTab;
 
 	Services.prefs.removeObserver('extensions.tabtree.', prefsObserver); // sss related prefs
+	AddonManager.removeAddonListener(defaultThemeAddonListener);
 
 	if (ss.getGlobalValue('tt-saved-widgets')) {
 		let save = JSON.parse(ss.getGlobalValue('tt-saved-widgets'));

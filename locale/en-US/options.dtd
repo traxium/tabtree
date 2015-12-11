@@ -1,3 +1,8 @@
+<!ENTITY theme.title "Theme:">
+<!ENTITY theme.desc "When using the Developer Edition theme it's recommended to select &#171;mimic&#187; (mimic by default)">
+<!ENTITY theme.default "Default">
+<!ENTITY theme.mimic "Try to mimic the Firefox theme">
+<!ENTITY theme.dark "Dark">
 <!ENTITY treelines.title "Draw the nesting lines along the side of the tree:">
 <!ENTITY treelines.desc "The lines connecting child rows to parent rows (checked by default)">
 <!ENTITY highlight-unloaded-tabs.title "Highlight unloaded tabs:">

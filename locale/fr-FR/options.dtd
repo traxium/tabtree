@@ -1,3 +1,8 @@
+<!ENTITY theme.title "Theme:">
+<!ENTITY theme.desc "When using the Developer Edition theme it's recommended to select &#171;mimic&#187; (mimic by default)">
+<!ENTITY theme.default "Default">
+<!ENTITY theme.mimic "Try to mimic the Firefox theme">
+<!ENTITY theme.dark "Dark">
 <!ENTITY treelines.title "Dessiner les lignes d’imbrication sur le côté de l’arbre:">
 <!ENTITY treelines.desc "Les lignes connectant les rangées filles aux rangées mères (coché par défaut)">
 <!ENTITY highlight-unloaded-tabs.title "Coloration des onglets non-chargés:">

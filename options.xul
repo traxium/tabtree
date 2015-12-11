@@ -11,6 +11,15 @@
 ]>
 
 <vbox xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+    <setting type="menulist" pref="extensions.tabtree.theme" title="&theme.title;" desc="&theme.desc;">
+        <menulist>
+            <menupopup>
+                <menuitem value="0" label="&theme.default;"/>
+                <menuitem value="1" label="&theme.mimic;"/>
+                <menuitem value="2" label="&theme.dark;"/>
+            </menupopup>
+        </menulist>
+    </setting>
     <setting type="bool" pref="extensions.tabtree.treelines" title="&treelines.title;" desc="&treelines.desc;" />
     <setting type="radio" pref="extensions.tabtree.highlight-unloaded-tabs" title="&highlight-unloaded-tabs.title;" desc="&highlight-unloaded-tabs.desc;">
         <radiogroup>

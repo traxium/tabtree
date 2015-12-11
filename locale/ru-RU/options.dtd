@@ -1,3 +1,8 @@
+<!ENTITY theme.title "Тема:">
+<!ENTITY theme.desc "При использовании темы Developer Edition рекомендуется выбирать второй вариант (второй вариант по умолчанию)">
+<!ENTITY theme.default "Стандартная">
+<!ENTITY theme.mimic "Использовать текущую тему Firefox">
+<!ENTITY theme.dark "Тёмная">
 <!ENTITY treelines.title "Рисовать сбоку пунктирные линии:">
 <!ENTITY treelines.desc "Линии, соединяющие родительские и дочерние вкладки (отмечено по умолчанию)">
 <!ENTITY highlight-unloaded-tabs.title "Выделять незагруженные вкладки:">
