@@ -7,7 +7,7 @@
      xmlns:em="http://www.mozilla.org/2004/em-rdf#">
   <Description about="urn:mozilla:install-manifest">
     <em:id>TabsTree@traxium</em:id>
-    <em:version>1.4.0</em:version>
+    <em:version>1.4.1b</em:version>
     <em:name>Tab Tree</em:name>
     <em:description>Tabs how they must be.</em:description>
     <em:creator>Sergey Zelentsov</em:creator>

@@ -1,3 +1,8 @@
+1.4.1b
+- Pinned tabs on multiple rows
+- Dark theme
+- Fixed wrong context menu options on pinned tabs
+
 1.4.0
 - Middle-click on the empty space opens a new tab
 - A tab context menu options to open a new tab as a sibling/child of the current tab
