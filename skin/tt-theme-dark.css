@@ -215,6 +215,9 @@
 #tt-toolbar,
 #tt-toolbar toolbarbutton {
 	-moz-appearance: none;
+	min-height: 0;
+	line-height: 0; /* to prevent a gap between a toolbar button and #tt-toolbar that disrupts drag'n'drop */
+	padding: 0; /* to prevent a gap between a toolbar button and #tt-toolbar that disrupts drag'n'drop on Linux */
 }
 
 #tt-toolbox {
@@ -228,6 +231,8 @@
 
 #tt-toolbar toolbarbutton {
 	padding: 3px 2px 1px 2px; /* Preventing changing padding on hover */
+	border: 1px solid transparent; /* To maintain 22px toolbar height on Linux (it's 20px otherwise) */
+	margin: 0; /* OS X fix */
 }
 
 #tt-toolbar toolbarbutton[checked="true"] {

@@ -181,10 +181,11 @@ function startup(data, reason)
 					case "extensions.tabtree.theme":
 						// Get default theme:
 						AddonManager.getAddonByID("{972ce4c6-7e08-4474-a285-3208198ce6fd}", (x) => {
-							console.log(x.id);
 							[
 								"chrome://tabtree/skin/tt-theme-mimic.css",
 								"chrome://tabtree/skin/tt-theme-dark.css",
+								"chrome://tabtree/skin/tt-theme-default.css",
+								"chrome://tabtree/skin/tt-theme-osx.css",
 							].forEach((x) => {
 								let uri = Services.io.newURI(x, null, null);
 								if (sss.sheetRegistered(uri, sss.AUTHOR_SHEET)) {
@@ -195,11 +196,22 @@ function startup(data, reason)
 								case 1: // try to mimic the current Firefox theme
 									if (x.userDisabled) { // if the default Firefox theme is enabled then do nothing
 										sss.loadAndRegisterSheet(Services.io.newURI("chrome://tabtree/skin/tt-theme-mimic.css", null, null), sss.AUTHOR_SHEET);
+									} else {
+										sss.loadAndRegisterSheet(Services.io.newURI("chrome://tabtree/skin/tt-theme-default.css", null, null), sss.AUTHOR_SHEET);
+										if (Services.appinfo.OS == "Darwin") {
+											sss.loadAndRegisterSheet(Services.io.newURI("chrome://tabtree/skin/tt-theme-osx.css", null, null), sss.AUTHOR_SHEET);
+										}
 									}
 									break;
 								case 2: // force the dark theme
 									sss.loadAndRegisterSheet(Services.io.newURI("chrome://tabtree/skin/tt-theme-dark.css", null, null), sss.AUTHOR_SHEET);
 									break;
+								default:
+									sss.loadAndRegisterSheet(Services.io.newURI("chrome://tabtree/skin/tt-theme-default.css", null, null), sss.AUTHOR_SHEET);
+							}
+							if (Services.appinfo.OS == "Darwin") { // Mac
+								aDOMWindow.document.documentElement.removeAttribute("tabsintitlebar"); // show a native titlebar like in Safari
+								aDOMWindow.updateTitlebarDisplay();
 							}
 						});
 				}
@@ -212,6 +224,9 @@ function startup(data, reason)
 		onEnabled(a) {
 			if (a.id === "{972ce4c6-7e08-4474-a285-3208198ce6fd}") {
 				prefsObserver.observe(null, 'nsPref:changed', 'extensions.tabtree.theme');
+			}
+			if (a.type === "theme") {
+				Services.obs.notifyObservers(null, "tt-theme-changed")
 			}
 		},
 		onDisabled(a) {
@@ -238,6 +253,8 @@ function shutdown(data, reason)
 		"chrome://tabtree/skin/tt-tree.css",
 		"chrome://tabtree/skin/tt-theme-mimic.css",
 		"chrome://tabtree/skin/tt-theme-dark.css",
+		"chrome://tabtree/skin/tt-theme-default.css",
+		"chrome://tabtree/skin/tt-theme-osx.css",
 		"chrome://tabtree/skin/tt-other.css",
 		"chrome://tabtree/skin/tt-navbar-private.css",
 		"chrome://tabtree/skin/tt-options.css",
