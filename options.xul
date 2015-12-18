@@ -71,6 +71,7 @@
     </setting>
     <setting type="bool" pref="browser.tabs.drawInTitlebar" title="&drawInTitlebar.title;" desc="&drawInTitlebar.desc;" />
     <setting type="bool" pref="extensions.tabtree.flst" title="&flst.title;" desc="&flst.desc;" />
+    <setting type="bool" pref="extensions.tabtree.closestTab" title="&closestTab.title;" desc="&closestTab.desc;" />
     <setting type="bool" pref="extensions.tabtree.new-tab-button" title="&new-tab-button.title;" desc="&new-tab-button.desc;" />
     <setting type="bool" pref="extensions.tabtree.close-tab-buttons" title="&close-tab-buttons.title;" desc="&close-tab-buttons.desc;" />
     <setting type="integer" min="-1" pref="extensions.tabtree.max-indent" title="&max-indent.title;" desc="&max-indent.desc;" />

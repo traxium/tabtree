@@ -115,6 +115,7 @@ function startup(data, reason)
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.search-autohide', false); // setting default pref
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.show-default-tabs', false); // hidden pref for test purposes
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.flst', true); // focus last selected tab after closing a current tab
+	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.closestTab', false); //focus closest tab in tree after closing a current tab
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.highlight-unread-tabs', false);
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.new-tab-button', true);
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.close-tab-buttons', true);
@@ -1934,6 +1935,18 @@ var windowListener = {
 		aDOMWindow.tt.toRestore.g.removeTab = g.removeTab;
 		g.removeTab =  new Proxy(g.removeTab, { // for FLST after closing tab AND for nullifying 'browser.tabs.animate' about:config pref
 			apply: function(target, thisArg, argumentsList) {
+				if (Services.prefs.getBoolPref('extensions.tabtree.closestTab')) {
+					let tab = argumentsList[0];
+					let level = tt.levelInt;
+					if (g.mCurrentTab === tab) {
+						let pos = g.mCurrentTab._tPos
+						if(pos+1 < g.tabs.length && level(g.mCurrentTab) <= level(pos + 1)){
+							g.selectedTab = g.tabs[pos+1];
+						}else if(pos > 0){
+							g.selectedTab = g.tabs[pos-1];
+						}
+					}
+				}else 
 				if (Services.prefs.getBoolPref('extensions.tabtree.flst')) {
 					let tab = argumentsList[0];
 					if (g.mCurrentTab === tab) {
