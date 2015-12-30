@@ -1,3 +1,8 @@
+1.4.2
+- "When closing current tab, focus the closest tab (first child -> sibling below -> sibling above -> parent)" option added
+- "When closing current tab, focus the tab right above" option added
+- "extensions.tabtree.flst" changed to "extensions.tabtree.after-close"
+
 1.4.1b
 - Pinned tabs on multiple rows
 - Dark theme
