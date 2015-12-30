@@ -33,6 +33,8 @@
 <!ENTITY drawInTitlebar.desc "It's &quot;browser.tabs.drawInTitlebar&quot; in about:config (checked by default)">
 <!ENTITY flst.title "FLST after closing a current tab:">
 <!ENTITY flst.desc "FLST means &quot;focus last selected tab&quot; (checked by default)">
+<!ENTITY closestTab.title "Go to closest tab in tree when closing selected tab">
+<!ENTITY closestTab.desc "If available, will go to first child, then sibling below in tree, then sibling above in tree, then parent. Overrides FLST.">
 <!ENTITY new-tab-button.title "Show the &quot;Open a new tab (Ctrl+T)&quot; button:">
 <!ENTITY new-tab-button.desc "You can also double-click the empty area below the tabs to open a new tab (checked by default)">
 <!ENTITY close-tab-buttons.title "Show the &quot;Close tab&quot; buttons:">
