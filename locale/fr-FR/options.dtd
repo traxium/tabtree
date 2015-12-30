@@ -36,6 +36,7 @@
 <!ENTITY after-close.0 "Default (opener/right tab)">
 <!ENTITY after-close.1 "Last selected tab">
 <!ENTITY after-close.2 "Closest tab (first child -> sibling below -> sibling above -> parent)">
+<!ENTITY after-close.3 "Tab right above">
 <!ENTITY new-tab-button.title "Montrer le bouton &#171;Ouvrir un nouvel onglet (Ctrl+T)&#187;:">
 <!ENTITY new-tab-button.desc "Vous pouvez aussi double-cliquer dans une zone vide en dessous des onglets pour ouvrir un nouvel onglet (coché par défaut)">
 <!ENTITY close-tab-buttons.title "Montrer le bouton &#171;Fermer l'onglet&#187;:">

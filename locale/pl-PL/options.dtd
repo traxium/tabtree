@@ -36,6 +36,7 @@
 <!ENTITY after-close.0 "Default (opener/right tab)">
 <!ENTITY after-close.1 "Last selected tab">
 <!ENTITY after-close.2 "Closest tab (first child -> sibling below -> sibling above -> parent)">
+<!ENTITY after-close.3 "Tab right above">
 <!ENTITY new-tab-button.title "Pokaż przycisk &quot;Otwórz nową kartę (Ctrl+T)&quot;:">
 <!ENTITY new-tab-button.desc "Możesz również użyć dwukliku na pustej przestrzeni poniżej kart, żeby otworzyć nową kartę (domyślnie zaznaczony)">
 <!ENTITY close-tab-buttons.title "Pokaż przycisk &quot;Zamknij kartę&quot;:">

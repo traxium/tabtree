@@ -76,6 +76,7 @@
                 <menuitem value="0" label="&after-close.0;"/>
                 <menuitem value="1" label="&after-close.1;"/>
                 <menuitem value="2" label="&after-close.2;"/>
+                <menuitem value="3" label="&after-close.3;"/>
             </menupopup>
         </menulist>
     </setting>

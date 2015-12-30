@@ -36,6 +36,7 @@
 <!ENTITY after-close.0 "Default (opener/right tab)">
 <!ENTITY after-close.1 "Last selected tab">
 <!ENTITY after-close.2 "Closest tab (first child -> sibling below -> sibling above -> parent)">
+<!ENTITY after-close.3 "Tab right above">
 <!ENTITY new-tab-button.title "Show the &quot;Open a new tab (Ctrl+T)&quot; button:">
 <!ENTITY new-tab-button.desc "You can also double-click the empty area below the tabs to open a new tab (checked by default)">
 <!ENTITY close-tab-buttons.title "Show the &quot;Close tab&quot; buttons:">

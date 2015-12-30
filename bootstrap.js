@@ -114,7 +114,7 @@ function startup(data, reason)
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.search-position', 0);
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.search-autohide', false); // setting default pref
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.show-default-tabs', false); // hidden pref for test purposes
-	// 0 - default, 1 - flst, 2 - the closest tab in the tree (first child -> sibling below -> sibling above -> parent)
+	// 0 - default, 1 - flst, 2 - the closest tab in the tree (first child -> sibling below -> sibling above -> parent), 3 - the previous tab
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.after-close', 1); //focus closest tab in tree after closing a current tab
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.highlight-unread-tabs', false);
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.new-tab-button', true);
@@ -1921,16 +1921,21 @@ var windowListener = {
 				let tab = argumentsList[0];
 				if (g.mCurrentTab === tab) {
 					switch (Services.prefs.getIntPref("extensions.tabtree.after-close")) {
-						case 1:
+						case 1: // flst
 							let recentlyUsedTabs = Array.filter(g.tabs, (tab) => !tab.closing).sort((tab1, tab2) => tab2.lastAccessed - tab1.lastAccessed);
 							g.selectedTab = recentlyUsedTabs[0] === g.mCurrentTab ? recentlyUsedTabs[1] : recentlyUsedTabs[0];
 							break;
-						case 2:
+						case 2: // the closest tab
 							let pos = g.mCurrentTab._tPos;
 							if (pos + 1 < g.tabs.length && tt.levelInt(g.mCurrentTab) <= tt.levelInt(pos + 1)) {
 								g.selectedTab = g.tabs[pos + 1];
 							} else if (pos > 0) {
 								g.selectedTab = g.tabs[pos - 1];
+							}
+							break;
+						case 3: // previous tab
+							if(tab.previousSibling) {
+								g.mTabContainer.selectedIndex--;
 							}
 							break;
 					}
