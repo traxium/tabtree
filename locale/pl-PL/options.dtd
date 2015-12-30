@@ -31,8 +31,11 @@
 <!ENTITY search-autohide.desc "Ctrl+Shift+Alt+F sprawia, że się pojawia (domyślnie odznaczone)">
 <!ENTITY drawInTitlebar.title "Ukryj natywny dla systemu pasek tytułu gdy Firefox jest zmaksymalizowany:">
 <!ENTITY drawInTitlebar.desc "To &quot;browser.tabs.drawInTitlebar&quot; w about:config (domyślnie zaznaczony)">
-<!ENTITY flst.title "FLST po zamknięciu otwartej karty:">
-<!ENTITY flst.desc "FLST znaczy &quot;wróć do ostatniej zamkniętej kart (ang. focus last selected tab)&quot; (domyślnie zaznaczony)">
+<!ENTITY after-close.title "When closing current tab, focus:">
+<!ENTITY after-close.desc "(&#171;Last selected tab&#187; by default)">
+<!ENTITY after-close.0 "Default (opener/right tab)">
+<!ENTITY after-close.1 "Last selected tab">
+<!ENTITY after-close.2 "Closest tab (first child -> sibling below -> sibling above -> parent)">
 <!ENTITY new-tab-button.title "Pokaż przycisk &quot;Otwórz nową kartę (Ctrl+T)&quot;:">
 <!ENTITY new-tab-button.desc "Możesz również użyć dwukliku na pustej przestrzeni poniżej kart, żeby otworzyć nową kartę (domyślnie zaznaczony)">
 <!ENTITY close-tab-buttons.title "Pokaż przycisk &quot;Zamknij kartę&quot;:">

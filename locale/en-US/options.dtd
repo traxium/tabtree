@@ -31,10 +31,11 @@
 <!ENTITY search-autohide.desc "Ctrl+Shift+Alt+F brings it up (unchecked by default)">
 <!ENTITY drawInTitlebar.title "Hide the OS native titlebar when Firefox is maximized:">
 <!ENTITY drawInTitlebar.desc "It's &quot;browser.tabs.drawInTitlebar&quot; in about:config (checked by default)">
-<!ENTITY flst.title "FLST after closing a current tab:">
-<!ENTITY flst.desc "FLST means &quot;focus last selected tab&quot; (checked by default)">
-<!ENTITY closestTab.title "Go to closest tab in tree when closing selected tab">
-<!ENTITY closestTab.desc "If available, will go to first child, then sibling below in tree, then sibling above in tree, then parent. Overrides FLST.">
+<!ENTITY after-close.title "When closing current tab, focus:">
+<!ENTITY after-close.desc "(&#171;Last selected tab&#187; by default)">
+<!ENTITY after-close.0 "Default (opener/right tab)">
+<!ENTITY after-close.1 "Last selected tab">
+<!ENTITY after-close.2 "Closest tab (first child -> sibling below -> sibling above -> parent)">
 <!ENTITY new-tab-button.title "Show the &quot;Open a new tab (Ctrl+T)&quot; button:">
 <!ENTITY new-tab-button.desc "You can also double-click the empty area below the tabs to open a new tab (checked by default)">
 <!ENTITY close-tab-buttons.title "Show the &quot;Close tab&quot; buttons:">

@@ -31,8 +31,11 @@
 <!ENTITY search-autohide.desc "Utilisez Ctrl+Shift+Alt+F pour la réafficher (non-coché par défaut)">
 <!ENTITY drawInTitlebar.title "Cacher la barre de titre native du système quand Firefox est maximisé:">
 <!ENTITY drawInTitlebar.desc "Option &#171;browser.tabs.drawInTitlebar&#187; dans about:config (coché par défaut)">
-<!ENTITY flst.title "FLST après la fermeture de l’onglet courant:">
-<!ENTITY flst.desc "FLST signifie &quot;sélection du dernier onglet actif&quot; (coché par défaut)">
+<!ENTITY after-close.title "When closing current tab, focus:">
+<!ENTITY after-close.desc "(&#171;Last selected tab&#187; by default)">
+<!ENTITY after-close.0 "Default (opener/right tab)">
+<!ENTITY after-close.1 "Last selected tab">
+<!ENTITY after-close.2 "Closest tab (first child -> sibling below -> sibling above -> parent)">
 <!ENTITY new-tab-button.title "Montrer le bouton &#171;Ouvrir un nouvel onglet (Ctrl+T)&#187;:">
 <!ENTITY new-tab-button.desc "Vous pouvez aussi double-cliquer dans une zone vide en dessous des onglets pour ouvrir un nouvel onglet (coché par défaut)">
 <!ENTITY close-tab-buttons.title "Montrer le bouton &#171;Fermer l'onglet&#187;:">

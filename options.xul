@@ -70,8 +70,15 @@
         </menulist>
     </setting>
     <setting type="bool" pref="browser.tabs.drawInTitlebar" title="&drawInTitlebar.title;" desc="&drawInTitlebar.desc;" />
-    <setting type="bool" pref="extensions.tabtree.flst" title="&flst.title;" desc="&flst.desc;" />
-    <setting type="bool" pref="extensions.tabtree.closestTab" title="&closestTab.title;" desc="&closestTab.desc;" />
+    <setting type="menulist" pref="extensions.tabtree.after-close" title="&after-close.title;" desc="&after-close.desc;">
+        <menulist>
+            <menupopup>
+                <menuitem value="0" label="&after-close.0;"/>
+                <menuitem value="1" label="&after-close.1;"/>
+                <menuitem value="2" label="&after-close.2;"/>
+            </menupopup>
+        </menulist>
+    </setting>
     <setting type="bool" pref="extensions.tabtree.new-tab-button" title="&new-tab-button.title;" desc="&new-tab-button.desc;" />
     <setting type="bool" pref="extensions.tabtree.close-tab-buttons" title="&close-tab-buttons.title;" desc="&close-tab-buttons.desc;" />
     <setting type="integer" min="-1" pref="extensions.tabtree.max-indent" title="&max-indent.title;" desc="&max-indent.desc;" />

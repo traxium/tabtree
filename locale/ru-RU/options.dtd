@@ -31,8 +31,11 @@
 <!ENTITY search-autohide.desc "Ctrl+Shift+Alt+F показывает её (не отмечено по умолчанию)">
 <!ENTITY drawInTitlebar.title "Скрывать строку заголовка окна при развёрнутом Firefox:">
 <!ENTITY drawInTitlebar.desc "Эта опция всего лишь переключает &quot;browser.tabs.drawInTitlebar&quot; в about:config (отмечено по умолчанию)">
-<!ENTITY flst.title "Переходить на последнюю выделенную вкладку после закрытия текущей вкладки (FLST):">
-<!ENTITY flst.desc "(отмечено по умолчанию)">
+<!ENTITY after-close.title "При закрытии текущей вкладки, перейти на:">
+<!ENTITY after-close.desc "(&#171;Последнюю выделенную вкладку&#187; по умолчанию)">
+<!ENTITY after-close.0 "По умолчанию (родительскую вкладку/вкладку справа)">
+<!ENTITY after-close.1 "Последнюю выделенную вкладку">
+<!ENTITY after-close.2 "Ближайшую вкладку (первую дочернюю -> вкладку снизу/сверху на том же уровне -> родительскую)">
 <!ENTITY new-tab-button.title "Показывать кнопку для открытия новой вкладки:">
 <!ENTITY new-tab-button.desc "Новую вкладку также можно открыть двойным щелчком пустой области под вкладками (отмечено по умолчанию)">
 <!ENTITY close-tab-buttons.title "Показывать кнопки для закрытия вкладок:">

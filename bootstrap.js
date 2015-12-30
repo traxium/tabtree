@@ -114,8 +114,8 @@ function startup(data, reason)
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.search-position', 0);
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.search-autohide', false); // setting default pref
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.show-default-tabs', false); // hidden pref for test purposes
-	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.flst', true); // focus last selected tab after closing a current tab
-	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.closestTab', false); //focus closest tab in tree after closing a current tab
+	// 0 - default, 1 - flst, 2 - the closest tab in the tree (first child -> sibling below -> sibling above -> parent)
+	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.after-close', 1); //focus closest tab in tree after closing a current tab
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.highlight-unread-tabs', false);
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.new-tab-button', true);
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.close-tab-buttons', true);
@@ -134,33 +134,16 @@ function startup(data, reason)
 
 	// migration code :
 	try {
-		// 0 - None, 1 - The Smallest, 2 - Small, 3 - Medium, 4 - Big (round), 5 - The Biggest (round):
-		switch (Services.prefs.getIntPref('extensions.tabtree.navbar-style')) {
-		case 0:
-			Services.prefs.setIntPref('extensions.navbarheight.height', -1);
-			break;
-		case 1:
-			Services.prefs.setIntPref('extensions.navbarheight.height', 24);
-			break;
-		case 2:
-			Services.prefs.setIntPref('extensions.navbarheight.height', 26);
-			break;
-		case 3:
-			Services.prefs.setIntPref('extensions.navbarheight.height', 30);
-			break;
-		case 4:
-			Services.prefs.setIntPref('extensions.navbarheight.height', 32);
-			break;
-		case 5:
-			Services.prefs.setIntPref('extensions.navbarheight.height', 34);
-			break;
-		default:
-			Services.prefs.setIntPref('extensions.navbarheight.height', 28);
+		// 0 - default, 1 - flst
+		if (Services.prefs.getBoolPref("extensions.tabtree.flst")) {
+			Services.prefs.setIntPref("extensions.tabtree.after-close", 1);
+		} else {
+			Services.prefs.setIntPref("extensions.tabtree.after-close", 0);
 		}
-		Services.prefs.deleteBranch('extensions.tabtree.navbar-style');
+		Services.prefs.deleteBranch("extensions.tabtree.flst");
 	} catch (e) {
 	}
-	// - end migration code // don't forget to delete when v1.3.6 isn't in use anymore
+	// - end migration code // don't forget to delete when v1.4.1b or older aren't in use anymore
 
 	let uriTabsToolbar = Services.io.newURI("chrome://tabtree/skin/tt-TabsToolbar.css", null, null);
 	if (!Services.prefs.getBoolPref('extensions.tabtree.show-default-tabs')) {
@@ -1935,23 +1918,21 @@ var windowListener = {
 		aDOMWindow.tt.toRestore.g.removeTab = g.removeTab;
 		g.removeTab =  new Proxy(g.removeTab, { // for FLST after closing tab AND for nullifying 'browser.tabs.animate' about:config pref
 			apply: function(target, thisArg, argumentsList) {
-				if (Services.prefs.getBoolPref('extensions.tabtree.closestTab')) {
-					let tab = argumentsList[0];
-					let level = tt.levelInt;
-					if (g.mCurrentTab === tab) {
-						let pos = g.mCurrentTab._tPos
-						if(pos+1 < g.tabs.length && level(g.mCurrentTab) <= level(pos + 1)){
-							g.selectedTab = g.tabs[pos+1];
-						}else if(pos > 0){
-							g.selectedTab = g.tabs[pos-1];
-						}
-					}
-				}else 
-				if (Services.prefs.getBoolPref('extensions.tabtree.flst')) {
-					let tab = argumentsList[0];
-					if (g.mCurrentTab === tab) {
-						let recentlyUsedTabs = Array.filter(g.tabs, (tab) => !tab.closing).sort((tab1, tab2) => tab2.lastAccessed - tab1.lastAccessed);
-						g.selectedTab = recentlyUsedTabs[0] === g.mCurrentTab ? recentlyUsedTabs[1] : recentlyUsedTabs[0];
+				let tab = argumentsList[0];
+				if (g.mCurrentTab === tab) {
+					switch (Services.prefs.getIntPref("extensions.tabtree.after-close")) {
+						case 1:
+							let recentlyUsedTabs = Array.filter(g.tabs, (tab) => !tab.closing).sort((tab1, tab2) => tab2.lastAccessed - tab1.lastAccessed);
+							g.selectedTab = recentlyUsedTabs[0] === g.mCurrentTab ? recentlyUsedTabs[1] : recentlyUsedTabs[0];
+							break;
+						case 2:
+							let pos = g.mCurrentTab._tPos;
+							if (pos + 1 < g.tabs.length && tt.levelInt(g.mCurrentTab) <= tt.levelInt(pos + 1)) {
+								g.selectedTab = g.tabs[pos + 1];
+							} else if (pos > 0) {
+								g.selectedTab = g.tabs[pos - 1];
+							}
+							break;
 					}
 				}
 				if (argumentsList[1] && argumentsList[1].animate) { // nullifying 'browser.tabs.animate' about:config pref
