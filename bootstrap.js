@@ -178,9 +178,9 @@ function startup(data, reason)
 							});
 							switch (Services.prefs.getIntPref("extensions.tabtree.theme")) {
 								case 1: // try to mimic the current Firefox theme
-									if (x.userDisabled) { // if the default Firefox theme is enabled then do nothing
+									if (x.userDisabled) { // if the default Firefox theme is disabled then load mimic CSS
 										sss.loadAndRegisterSheet(Services.io.newURI("chrome://tabtree/skin/tt-theme-mimic.css", null, null), sss.AUTHOR_SHEET);
-									} else {
+									} else { // if the default Firefox theme is enabled then load default CSS
 										sss.loadAndRegisterSheet(Services.io.newURI("chrome://tabtree/skin/tt-theme-default.css", null, null), sss.AUTHOR_SHEET);
 										if (Services.appinfo.OS == "Darwin") {
 											sss.loadAndRegisterSheet(Services.io.newURI("chrome://tabtree/skin/tt-theme-osx.css", null, null), sss.AUTHOR_SHEET);

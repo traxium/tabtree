@@ -1,0 +1,69 @@
+/*
+ * This file is part of Tab Tree,
+ * Copyright (C) 2015 Sergey Zelentsov <crayfishexterminator@gmail.com>
+ */
+
+/* ************ Pinned Tabs ***************************************************************************************** */
+
+#tt-toolbox,
+#tt-toolbar {
+	padding: 0;
+	line-height: 0;
+}
+
+#tt-toolbar toolbarbutton {
+	line-height: 0;
+	margin: 0; /* OS X fix */
+}
+
+/* ****************************************************************************************************************** */
+
+/* ************ Ordinary Tabs *************************************************************************************** */
+
+/* Audio indicators */
+
+#tt-treechildren::-moz-tree-image(tt-soundplaying),
+#tt-treechildren-feedback::-moz-tree-image(tt-soundplaying) {
+	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio);
+}
+
+#tt-treechildren::-moz-tree-image(tt-soundplaying, hover),
+#tt-treechildren-feedback::-moz-tree-image(tt-soundplaying, hover) {
+	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio-hover);
+}
+
+#tt-treechildren::-moz-tree-image(tt-muted),
+#tt-treechildren-feedback::-moz-tree-image(tt-muted) {
+	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio-muted);
+}
+
+#tt-treechildren::-moz-tree-image(tt-muted, hover),
+#tt-treechildren-feedback::-moz-tree-image(tt-muted, hover) {
+	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio-muted-hover);
+}
+
+/* I don't know why but .tt-treechildren doesn't work with audio indicator icons. IDs are required here. */
+
+/* ****************************************************************************************************************** */
+
+/* ************ Drop Indicator ************************************************************************************** */
+
+:root[devtoolstheme="dark"] #tt-drop-indicator {
+	position: relative;
+	z-index: 999999;
+	margin-bottom: -18px;
+	margin-top: -6px; /* 18 + 6 = 24 */
+	list-style-image: url(chrome://tabtree/skin/tt-drop-indicator-white.png); /* 24*11px */
+	margin-left: -5px;
+}
+
+:root[devtoolstheme="light"] #tt-drop-indicator {
+	position: relative;
+	z-index: 999999;
+	margin-bottom: -18px;
+	margin-top: -6px; /* 18 + 6 = 24 */
+	list-style-image: url(chrome://tabtree/skin/tt-drop-indicator.png); /* 24*11px */
+	margin-left: -5px;
+}
+
+/* ****************************************************************************************************************** */

@@ -197,19 +197,23 @@
 	-moz-image-region: rect(0, 32px, 16px, 16px);
 }
 
-:root[devtoolstheme="dark"] .tt-treechildren::-moz-tree-image(tt-soundplaying) {
+:root[devtoolstheme="dark"] #tt-treechildren::-moz-tree-image(tt-soundplaying),
+:root[devtoolstheme="dark"] #tt-treechildren-feedback::-moz-tree-image(tt-soundplaying) {
 	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio-white);
 }
 
-:root[devtoolstheme="dark"] .tt-treechildren::-moz-tree-image(tt-soundplaying, hover) {
+:root[devtoolstheme="dark"] #tt-treechildren::-moz-tree-image(tt-soundplaying, hover),
+:root[devtoolstheme="dark"] #tt-treechildren-feedback::-moz-tree-image(tt-soundplaying, hover) {
 	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio-white-hover);
 }
 
-:root[devtoolstheme="dark"] .tt-treechildren::-moz-tree-image(tt-muted) {
+:root[devtoolstheme="dark"] #tt-treechildren::-moz-tree-image(tt-muted),
+:root[devtoolstheme="dark"] #tt-treechildren-feedback::-moz-tree-image(tt-muted) {
 	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio-muted-white);
 }
 
-:root[devtoolstheme="dark"] .tt-treechildren::-moz-tree-image(tt-muted, hover) {
+:root[devtoolstheme="dark"] #tt-treechildren::-moz-tree-image(tt-muted, hover),
+:root[devtoolstheme="dark"] #tt-treechildren-feedback::-moz-tree-image(tt-muted, hover) {
 	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio-muted-white-hover);
 }
 
@@ -230,21 +234,27 @@
 	-moz-image-region: rect(0, 32px, 16px, 16px);
 }
 
-:root[devtoolstheme="light"] .tt-treechildren::-moz-tree-image(tt-soundplaying) {
+:root[devtoolstheme="light"] #tt-treechildren::-moz-tree-image(tt-soundplaying),
+:root[devtoolstheme="light"] #tt-treechildren-feedback::-moz-tree-image(tt-soundplaying) {
 	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio);
 }
 
-:root[devtoolstheme="light"] .tt-treechildren::-moz-tree-image(tt-soundplaying, hover) {
+:root[devtoolstheme="light"] #tt-treechildren::-moz-tree-image(tt-soundplaying, hover),
+:root[devtoolstheme="light"] #tt-treechildren-feedback::-moz-tree-image(tt-soundplaying, hover) {
 	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio-hover);
 }
 
-:root[devtoolstheme="light"] .tt-treechildren::-moz-tree-image(tt-muted) {
+:root[devtoolstheme="light"] #tt-treechildren::-moz-tree-image(tt-muted),
+:root[devtoolstheme="light"] #tt-treechildren-feedback::-moz-tree-image(tt-muted) {
 	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio-muted);
 }
 
-:root[devtoolstheme="light"] .tt-treechildren::-moz-tree-image(tt-muted, hover) {
+:root[devtoolstheme="light"] #tt-treechildren::-moz-tree-image(tt-muted, hover),
+:root[devtoolstheme="light"] #tt-treechildren-feedback::-moz-tree-image(tt-muted, hover) {
 	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio-muted-hover);
 }
+
+/* I don't know why but .tt-treechildren doesn't work with audio indicator icons. IDs are required here. */
 
 /* ****************************************************************************************************************** */
 
