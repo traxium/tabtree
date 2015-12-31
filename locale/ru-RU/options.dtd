@@ -14,6 +14,10 @@
 <!ENTITY highlight-unread-tabs.desc "(не отмечено по умолчанию)">
 <!ENTITY dblclick.title "Закрытие вкладки по двойному щелчку мыши">
 <!ENTITY dblclick.desc "Рекомендуется включать эту настройку, только если у вас нет мышки (не отмечено по умочанию)">
+<!ENTITY middle-click-tabbar.title "Щелчёк средней кнопкой мыши по панели вкладок:">
+<!ENTITY middle-click-tabbar.desc "(&#171;стандартное действие Firefox&#187; по умолчанию)">
+<!ENTITY middle-click-tabbar.0 "Стандартное действие Firefox (Открыть новую вкладку)">
+<!-- middle-click-tabbar.1 === undoCloseTab.label -->
 <!ENTITY delay.title "Задержка для двойного клика (миллисекунды)">
 <!ENTITY delay.desc "Задержка перед тем как выделенная вкладка активируется. Если вы не хотите видеть вкладку перед её закрытием, то установите это значение в 160 или больше (0 by default)">
 <!ENTITY position.left "Слева">

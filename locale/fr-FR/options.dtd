@@ -14,6 +14,10 @@
 <!ENTITY highlight-unread-tabs.desc "(non-coché par défaut)">
 <!ENTITY dblclick.title "Double clic pour fermer un onglet">
 <!ENTITY dblclick.desc "Recommandé uniquement si vous n’avez pas une souris équipée d’une molette (non-coché par défaut)">
+<!ENTITY middle-click-tabbar.title "Middle-click on the tabbar:">
+<!ENTITY middle-click-tabbar.desc "(&#171;Firefox default&#187; by default)">
+<!ENTITY middle-click-tabbar.0 "Firefox default (open a new tab)">
+<!-- middle-click-tabbar.1 === undoCloseTab.label -->
 <!ENTITY delay.title "Délai du double clic (millisecondes)">
 <!ENTITY delay.desc "En réalité, c’est le délai avant qu’un onglet sélectionné soit affiché. Mettez-le autour de 160 si vous ne voulez pas voir votre onglet changer pendant la fermeture de l’onglet (0 par défaut)">
 <!ENTITY position.left "Gauche">

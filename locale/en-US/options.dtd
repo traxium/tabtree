@@ -14,6 +14,10 @@
 <!ENTITY highlight-unread-tabs.desc "(unchecked by default)">
 <!ENTITY dblclick.title "Double click to close a tab">
 <!ENTITY dblclick.desc "Only recommended if you don't have a mouse with a wheel (unchecked by default)">
+<!ENTITY middle-click-tabbar.title "Middle-click on the tabbar:">
+<!ENTITY middle-click-tabbar.desc "(&#171;Firefox default&#187; by default)">
+<!ENTITY middle-click-tabbar.0 "Firefox default (open a new tab)">
+<!-- middle-click-tabbar.1 === undoCloseTab.label -->
 <!ENTITY delay.title "Double click delay (milliseconds)">
 <!ENTITY delay.desc "Actually it is a delay until a selected tab is displayed. Set it to around 160 if you don't want to see a tab flipping while closing a tab (0 by default)">
 <!ENTITY position.left "Left">

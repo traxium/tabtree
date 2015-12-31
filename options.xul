@@ -8,6 +8,8 @@
  %optionsDTD;
 <!ENTITY % navbarheightDTD SYSTEM "chrome://tabtree/locale/navbarheight.dtd" >
  %navbarheightDTD;
+<!ENTITY % browserDTD SYSTEM "chrome://browser/locale/browser.dtd" >
+ %browserDTD;
 ]>
 
 <vbox xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
@@ -30,6 +32,14 @@
     </setting>
     <setting type="bool" pref="extensions.tabtree.highlight-unread-tabs" title="&highlight-unread-tabs.title;" desc="&highlight-unread-tabs.desc;" />
     <setting type="bool" pref="extensions.tabtree.dblclick" title="&dblclick.title;" desc="&dblclick.desc;" onpreferencechanged="this.setAttribute('value', this.value.toString());" />
+    <setting type="menulist" pref="extensions.tabtree.middle-click-tabbar" title="&middle-click-tabbar.title;" desc="&middle-click-tabbar.desc;">
+        <menulist>
+            <menupopup>
+                <menuitem value="0" label="&middle-click-tabbar.0;"/>
+                <menuitem value="1" label="&undoCloseTab.label;"/>
+            </menupopup>
+        </menulist>
+    </setting>
     <setting type="integer" pref="extensions.tabtree.delay" title="&delay.title;" desc="&delay.desc;" />
     <setting type="menulist" pref="extensions.tabtree.position" title="&position.title;" desc="&position.desc;">
         <menulist>

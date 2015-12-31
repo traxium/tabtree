@@ -108,6 +108,7 @@ function startup(data, reason)
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.treelines', true); // setting default pref
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.highlight-unloaded-tabs', 0); // setting default pref
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.dblclick', false); // setting default pref
+	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.middle-click-tabbar', false); // #36
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.delay', 0); // setting default pref
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.position', 0); // setting default pref // 0 - Left, 1 - Right
 	// 0 - Top, 1 - Bottom (before "New tab" button), 2 - Bottom (after "New tab" button):
@@ -2226,8 +2227,14 @@ var windowListener = {
 		tree.addEventListener('click', function onMiddleClick(event) {
 			if (event.button === 1) { // middle click
 				let idx = tree.treeBoxObject.getRowAt(event.clientX, event.clientY);
-				if (idx === -1) { // on empty space
-					aDOMWindow.BrowserOpenNewTabOrWindow(event);
+				if (idx === -1) { // on empty space (i.e. the tabbar)
+					switch (Services.prefs.getIntPref("extensions.tabtree.middle-click-tabbar")) {
+						case 1: // reopen last closed tab
+							aDOMWindow.undoCloseTab();
+							break;
+						default: // open a new tab (or a window)
+							aDOMWindow.BrowserOpenNewTabOrWindow(event);
+					}
 				} else { // on a tab
 					let tPos = idx + tt.nPinned;
 					g.removeTab(g.tabs[tPos]);
