@@ -195,10 +195,6 @@ function startup(data, reason)
 								default:
 									sss.loadAndRegisterSheet(Services.io.newURI("chrome://tabtree/skin/tt-theme-default.css", null, null), sss.AUTHOR_SHEET);
 							}
-							if (Services.appinfo.OS == "Darwin") { // Mac
-								aDOMWindow.document.documentElement.removeAttribute("tabsintitlebar"); // show a native titlebar like in Safari
-								aDOMWindow.updateTitlebarDisplay();
-							}
 						});
 				}
 			}
@@ -212,7 +208,7 @@ function startup(data, reason)
 				prefsObserver.observe(null, 'nsPref:changed', 'extensions.tabtree.theme');
 			}
 			if (a.type === "theme") {
-				Services.obs.notifyObservers(null, "tt-theme-changed")
+				Services.obs.notifyObservers(null, "tt-theme-changed", null);
 			}
 		},
 		onDisabled(a) {
@@ -315,6 +311,11 @@ var windowListener = {
 		// Remember the first visible row of the <tree id="tt">:
 		ss.setWindowValue(aDOMWindow, 'tt-first-visible-row', aDOMWindow.document.querySelector('#tt').treeBoxObject.getFirstVisibleRow().toString());
 		Services.prefs.removeObserver('', aDOMWindow.tt.toRemove.prefsObserver); // it can also be removed in 'unloadFromWindow'
+
+		// "themeChangedObserver" must be removed in
+		// 1) "onCloseWindow" in case Tab Tree is enabled and one Firefox window is being closed
+		// 2) "unloadFromWindow" in case Tab Tree is being disabled
+		Services.obs.removeObserver(aDOMWindow.tt.toRemove.themeChangedObserver, "tt-theme-changed");
 	},
 	
 	onWindowTitleChange: function (aXULWindow, aNewTitle) {},
@@ -414,6 +415,11 @@ var windowListener = {
 		aDOMWindow.tt.toRemove.sidebarWidthObserver.disconnect();
 		aDOMWindow.tt.toRemove.numberOfTabsObserver.disconnect();
 
+		// "themeChangedObserver" must be removed in
+		// 1) "onCloseWindow" in case Tab Tree is enabled and one Firefox window is being closed
+		// 2) "unloadFromWindow" in case Tab Tree is being disabled
+		Services.obs.removeObserver(aDOMWindow.tt.toRemove.themeChangedObserver, "tt-theme-changed");
+
 		delete aDOMWindow.tt;
 	},
 	
@@ -433,7 +439,14 @@ var windowListener = {
 		let sidebar_box = aDOMWindow.document.querySelector('#sidebar-box');
 		let sidebar_header = aDOMWindow.document.querySelector('#sidebar-header');
 		aDOMWindow.tt = {
-			toRemove: {eventListeners: {}, prefsObserver: null, tabsProgressListener: null, _menuObserver: null, _toolboxObserver: null, sidebarWidthObserver: null},
+			toRemove: {
+				eventListeners: {},
+				prefsObserver: null,
+				tabsProgressListener: null,
+				_menuObserver: null,_toolboxObserver: null,
+				sidebarWidthObserver: null,
+				themeChangedObserver: null,
+			},
 			toRestore: {g: {}, TabContextMenu: {}, tabsintitlebar: true}
 		};
 
@@ -2557,6 +2570,18 @@ var windowListener = {
 			// if there's only one tab then hide the tab bar
 			sidebar.collapsed = splitter.collapsed = g.tabs.length <= 1 && Services.prefs.getBoolPref("extensions.tabtree.hide-tabtree-with-one-tab");
 		})).observe(g.tabContainer, {childList: true}); // removed in unloadFromWindow()
+
+		// OS X tabs not in titlebar fix:
+		Services.obs.addObserver((aDOMWindow.tt.toRemove.themeChangedObserver = {
+			observe(subject, topic, data) {
+				if (topic === "tt-theme-changed") {
+					if (Services.appinfo.OS == "Darwin") { // or AppConstants.platform === "macosx"
+						aDOMWindow.document.documentElement.removeAttribute("chromemargin"); // show a native titlebar like in Safari
+					}
+				}
+			}
+		}), "tt-theme-changed", false);
+		aDOMWindow.tt.toRemove.themeChangedObserver.observe(null, "tt-theme-changed", null);
 
 
 		//aDOMWindow.tt.ss = ss; // uncomment while debugging
