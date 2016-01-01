@@ -194,6 +194,9 @@ function startup(data, reason)
 									break;
 								default:
 									sss.loadAndRegisterSheet(Services.io.newURI("chrome://tabtree/skin/tt-theme-default.css", null, null), sss.AUTHOR_SHEET);
+									if (Services.appinfo.OS == "Darwin") {
+										sss.loadAndRegisterSheet(Services.io.newURI("chrome://tabtree/skin/tt-theme-osx.css", null, null), sss.AUTHOR_SHEET);
+									}
 							}
 						});
 				}
