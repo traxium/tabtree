@@ -65,3 +65,5 @@
 <!ENTITY insertRelatedAfterCurrent.desc "(&quot;Bottom&quot; by default)">
 <!ENTITY insertRelatedAfterCurrent.top "Top">
 <!ENTITY insertRelatedAfterCurrent.bottom "Bottom">
+<!ENTITY prefix-context-menu-items.title "Prefix context menu items with &#171;Tab Tree:&#187;:">
+<!ENTITY prefix-context-menu-items.desc "If you want &#171;Tab Tree: Close Children&#187; instead of just &#171;Close Children&#187; (unchecked by default)">

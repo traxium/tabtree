@@ -4,12 +4,12 @@
 - Copyright (C) 2015 Sergey Zelentsov <crayfishexterminator@gmail.com> -->
         
 <!DOCTYPE options [
-<!ENTITY % optionsDTD SYSTEM "chrome://tabtree/locale/options.dtd" >
- %optionsDTD;
-<!ENTITY % navbarheightDTD SYSTEM "chrome://tabtree/locale/navbarheight.dtd" >
- %navbarheightDTD;
-<!ENTITY % browserDTD SYSTEM "chrome://browser/locale/browser.dtd" >
- %browserDTD;
+    <!ENTITY % optionsDTD SYSTEM "chrome://tabtree/locale/options.dtd" >
+        %optionsDTD;
+    <!ENTITY % navbarheightDTD SYSTEM "chrome://tabtree/locale/navbarheight.dtd" >
+        %navbarheightDTD;
+    <!ENTITY % browserDTD SYSTEM "chrome://browser/locale/browser.dtd" >
+        %browserDTD;
 ]>
 
 <vbox xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
@@ -111,4 +111,5 @@
             <radio value="false" label="&insertRelatedAfterCurrent.bottom;"/>
         </radiogroup>
     </setting>
+    <setting type="bool" pref="extensions.tabtree.prefix-context-menu-items" title="&prefix-context-menu-items.title;" desc="&prefix-context-menu-items.desc;" />
 </vbox>

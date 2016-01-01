@@ -36,10 +36,10 @@
 <!ENTITY drawInTitlebar.title "Скрывать строку заголовка окна при развёрнутом Firefox:">
 <!ENTITY drawInTitlebar.desc "Эта опция всего лишь переключает &quot;browser.tabs.drawInTitlebar&quot; в about:config (отмечено по умолчанию)">
 <!ENTITY after-close.title "При закрытии текущей вкладки, перейти на:">
-<!ENTITY after-close.desc "(&#171;Последнюю выделенную вкладку&#187; по умолчанию)">
+<!ENTITY after-close.desc "*Порядок определения ближайшей вкладки: 1. Первая дочерняя 2. Вклдака снизу/сверху на том же уровне 3. Родительская вкладка (&#171;Последнюю выделенную вкладку&#187; по умолчанию)">
 <!ENTITY after-close.0 "По умолчанию (родительскую вкладку/вкладку справа)">
 <!ENTITY after-close.1 "Последнюю выделенную вкладку">
-<!ENTITY after-close.2 "Ближайшую вкладку (первую дочернюю -> вкладку снизу/сверху на том же уровне -> родительскую)">
+<!ENTITY after-close.2 "Ближайшую вкладку*">
 <!ENTITY after-close.3 "Вкладку сверху">
 <!ENTITY new-tab-button.title "Показывать кнопку для открытия новой вкладки:">
 <!ENTITY new-tab-button.desc "Новую вкладку также можно открыть двойным щелчком пустой области под вкладками (отмечено по умолчанию)">
@@ -65,3 +65,5 @@
 <!ENTITY insertRelatedAfterCurrent.desc "(&quot;Снизу&quot; по умолчанию)">
 <!ENTITY insertRelatedAfterCurrent.top "Сверху">
 <!ENTITY insertRelatedAfterCurrent.bottom "Снизу">
+<!ENTITY prefix-context-menu-items.title "Добавлять префикс &#171;Tab Tree:&#187; к опциям в контестном меню:">
+<!ENTITY prefix-context-menu-items.desc "&#171;Tab Tree: Закрыть дочерние вкладки&#187; вместо &#171;Закрыть дочерние вкладки&#187; (не отмечено по умолчанию)">
