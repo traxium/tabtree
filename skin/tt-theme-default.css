@@ -48,16 +48,7 @@
 
 /* ************ Drop Indicator ************************************************************************************** */
 
-:root[devtoolstheme="dark"] #tt-drop-indicator {
-	position: relative;
-	z-index: 999999;
-	margin-bottom: -18px;
-	margin-top: -6px; /* 18 + 6 = 24 */
-	list-style-image: url(chrome://tabtree/skin/tt-drop-indicator-white.png); /* 24*11px */
-	margin-left: -5px;
-}
-
-:root[devtoolstheme="light"] #tt-drop-indicator {
+#tt-drop-indicator {
 	position: relative;
 	z-index: 999999;
 	margin-bottom: -18px;
