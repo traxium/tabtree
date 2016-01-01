@@ -208,7 +208,7 @@ function startup(data, reason)
 				prefsObserver.observe(null, 'nsPref:changed', 'extensions.tabtree.theme');
 			}
 			if (a.type === "theme") {
-				Services.obs.notifyObservers(null, "tt-theme-changed", null);
+				Services.obs.notifyObservers(null, "tt-theme-changed", a.id);
 			}
 		},
 		onDisabled(a) {
@@ -2571,17 +2571,34 @@ var windowListener = {
 			sidebar.collapsed = splitter.collapsed = g.tabs.length <= 1 && Services.prefs.getBoolPref("extensions.tabtree.hide-tabtree-with-one-tab");
 		})).observe(g.tabContainer, {childList: true}); // removed in unloadFromWindow()
 
-		// OS X tabs not in titlebar fix:
+		// OS X tabs not in titlebar fix
+		// And tab search box styling:
 		Services.obs.addObserver((aDOMWindow.tt.toRemove.themeChangedObserver = {
 			observe(subject, topic, data) {
 				if (topic === "tt-theme-changed") {
 					if (Services.appinfo.OS == "Darwin") { // or AppConstants.platform === "macosx"
 						aDOMWindow.document.documentElement.removeAttribute("chromemargin"); // show a native titlebar like in Safari
 					}
+					if (data === "{972ce4c6-7e08-4474-a285-3208198ce6fd}") {
+						quickSearchBox.setAttribute("type", "search");
+						quickSearchBox.classList.add("compact");
+					} else {
+						quickSearchBox.removeAttribute("type");
+						quickSearchBox.classList.remove("compact");
+					}
 				}
 			}
 		}), "tt-theme-changed", false);
-		aDOMWindow.tt.toRemove.themeChangedObserver.observe(null, "tt-theme-changed", null);
+
+		// Determine ID of the current theme:
+		AddonManager.getAddonsByTypes(["theme"], (themes) => {
+			for (let theme of themes) {
+				if (!theme.userDisabled) {
+					aDOMWindow.tt.toRemove.themeChangedObserver.observe(null, "tt-theme-changed", theme.id);
+					break;
+				}
+			}
+		});
 
 
 		//aDOMWindow.tt.ss = ss; // uncomment while debugging
