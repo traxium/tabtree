@@ -319,7 +319,7 @@
 	border: 0;
 	-moz-border-end: 1px solid var(--tt-chrome-secondary-background-color);  /* #A9B7C9; */
 	min-width: 0;
-	width: 3px;
+	width: 4px;
 	background-color: transparent;
 	-moz-margin-start: -3px;
 	position: relative;
