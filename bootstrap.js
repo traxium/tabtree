@@ -414,6 +414,8 @@ var windowListener = {
 		if (Services.appinfo.OS == 'WINNT') { // all Windows despite name 'WINNT' 
 			aDOMWindow.tt.toRemove._menuObserver.disconnect();
 			aDOMWindow.tt.toRemove._toolboxObserver.disconnect();
+		} else if (Services.appinfo.OS == "Darwin") { // disconnect OS X specific MutationObserver
+			aDOMWindow.tt.toRemove.osxMutationObserver.disconnect();
 		}
 		aDOMWindow.tt.toRemove.sidebarWidthObserver.disconnect();
 		aDOMWindow.tt.toRemove.numberOfTabsObserver.disconnect();
@@ -446,9 +448,11 @@ var windowListener = {
 				eventListeners: {},
 				prefsObserver: null,
 				tabsProgressListener: null,
-				_menuObserver: null,_toolboxObserver: null,
+				_menuObserver: null,
+				_toolboxObserver: null,
 				sidebarWidthObserver: null,
 				themeChangedObserver: null,
+				osxMutationObserver: null,
 			},
 			toRestore: {g: {}, TabContextMenu: {}, tabsintitlebar: true}
 		};
@@ -674,24 +678,18 @@ var windowListener = {
 			aDOMWindow.document.documentElement.removeAttribute("tabsintitlebar"); // show a native titlebar like in Safari
 
 			// It seems that Firefox restores "chromemargin" and "tabsintitlebar" attributes by itself
-			// We have to remove them upon "sizemodechange" event:
-			aDOMWindow.addEventListener("sizemodechange", (aDOMWindow.tt.toRemove.eventListeners.onSizemodechange = function(event) {
-				switch (aDOMWindow.windowState) {
-					case aDOMWindow.STATE_MAXIMIZED:
-					case aDOMWindow.STATE_NORMAL:
+			// It sometimes happens when resizing a Firefox window
+			// So we can't rely upon the "sizemodechange" event
+			// And we use MutationObvserver instead:
+			(aDOMWindow.tt.toRemove.osxMutationObserver = new aDOMWindow.MutationObserver((mutations) => {
+				for (let mutation of mutations) {
+					if (mutation.attributeName === "tabsintitlebar" || mutation.attributeName === "chromemargin") {
 						aDOMWindow.document.documentElement.removeAttribute("chromemargin");
 						aDOMWindow.document.documentElement.removeAttribute("tabsintitlebar");
-						// There are problems when exiting full screen mode
-						// So we delete the attributes the second time:
-						aDOMWindow.setTimeout(() => {
-							aDOMWindow.document.documentElement.removeAttribute("chromemargin");
-							aDOMWindow.document.documentElement.removeAttribute("tabsintitlebar");
-						}, 60);
-						break;
-					case aDOMWindow.STATE_FULLSCREEN:
-						break;
+						return;
+					}
 				}
-			}), false); // removed in unloadFromWindow()
+			})).observe(aDOMWindow.document.documentElement, {attributes: true}); // removed in unloadFromWindow()
 
 			aDOMWindow.updateTitlebarDisplay();
 		} else { // Linux
