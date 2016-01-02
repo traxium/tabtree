@@ -672,6 +672,27 @@ var windowListener = {
 			// it's probably possible to move minimize/maximize/close buttons to #nav-bar
 			// but it would probably look ugly therefore we just mimic Safari
 			aDOMWindow.document.documentElement.removeAttribute("tabsintitlebar"); // show a native titlebar like in Safari
+
+			// It seems that Firefox restores "chromemargin" and "tabsintitlebar" attributes by itself
+			// We have to remove them upon "sizemodechange" event:
+			aDOMWindow.addEventListener("sizemodechange", (aDOMWindow.tt.toRemove.eventListeners.onSizemodechange = function(event) {
+				switch (aDOMWindow.windowState) {
+					case aDOMWindow.STATE_MAXIMIZED:
+					case aDOMWindow.STATE_NORMAL:
+						aDOMWindow.document.documentElement.removeAttribute("chromemargin");
+						aDOMWindow.document.documentElement.removeAttribute("tabsintitlebar");
+						// There are problems when exiting full screen mode
+						// So we delete the attributes the second time:
+						aDOMWindow.setTimeout(() => {
+							aDOMWindow.document.documentElement.removeAttribute("chromemargin");
+							aDOMWindow.document.documentElement.removeAttribute("tabsintitlebar");
+						}, 60);
+						break;
+					case aDOMWindow.STATE_FULLSCREEN:
+						break;
+				}
+			}), false); // removed in unloadFromWindow()
+
 			aDOMWindow.updateTitlebarDisplay();
 		} else { // Linux
 		    // Set tab position to buttom to fix compatibility with certain extensions:

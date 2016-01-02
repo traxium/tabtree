@@ -1,0 +1,206 @@
+/*
+ * This file is part of Tab Tree,
+ * Copyright (C) 2015 Sergey Zelentsov <crayfishexterminator@gmail.com>
+ */
+
+/* ************ chrome://browser/skin/places/places.css ************************************************************* */
+
+.tt-tree,
+.tt-treechildren::-moz-tree-row {
+	background-color: transparent;
+	border-color: transparent;
+	padding-bottom: 1px;
+	-moz-appearance: none;
+	margin: 0;
+	border: none !important;
+}
+
+.tt-treechildren::-moz-tree-separator {
+	border-top: 1px solid #505d6d;
+	margin: 0 10px;
+}
+
+.tt-tree {
+	border-top: 1px solid #bebebe;
+}
+
+.tt-treechildren::-moz-tree-row(selected),
+.tt-treechildren::-moz-tree-row(selected,focus) {
+	background: linear-gradient(#6494D4, #2559AC) repeat-x;
+	border-top: 1px solid #5382C5 !important;
+}
+
+.tt-treechildren:-moz-system-metric(mac-graphite-theme)::-moz-tree-row(selected),
+.tt-treechildren:-moz-system-metric(mac-graphite-theme)::-moz-tree-row(selected,focus) {
+	background: linear-gradient(#8293A6, #425972) repeat-x;
+	border-top: 1px solid #6B798D !important;
+}
+
+.tt-treechildren::-moz-tree-cell-text(selected) {
+	font-weight: bold !important;
+	color: #ffffff !important;
+}
+
+.tt-new-tab-button {
+	-moz-appearance: none;
+	border: 1px solid #7F7F7F;
+	border-radius: 10px;
+	background: linear-gradient(#FFF, #ADADAD) repeat-x;
+	min-width: 0;
+	min-height: 0;
+	-moz-padding-start: 5px;
+	-moz-padding-end: 0px;
+	padding-top: 0; /* was 1px */
+	padding-bottom: 0; /* was 1px */
+}
+
+.tt-new-tab-button:focus {
+	outline: 2px solid #4A8BC7;
+	outline-offset: -2px;
+	-moz-outline-radius: 10px;
+}
+
+/* ****************************************************************************************************************** */
+
+/* ************ chrome://browser/skin/browser.css ******************************************************************* */
+
+/* 605 */
+
+#tt-toolbar toolbarbutton {
+	max-width: 16px;
+	margin: 0;
+}
+
+/* 620 */
+
+#tt-toolbar toolbarbutton {
+	border: 1px solid transparent;
+	border-radius: 3px;
+	transition-property: background, border-color;
+	transition-duration: 250ms;
+}
+
+/* 639 */
+
+/*.tt-new-tab-button:hover,*/
+#tt-toolbar toolbarbutton:hover {
+	background: var(--toolbarbutton-hover-background);
+	border-color: var(--toolbarbutton-hover-bordercolor);
+	box-shadow: var(--toolbarbutton-hover-boxshadow);
+}
+
+/* 656 */
+.tt-new-tab-button:hover:active,
+#tt-toolbar toolbarbutton:-moz-any([checked="true"],:hover:active) {
+	background: var(--toolbarbutton-active-background);
+	border-color: var(--toolbarbutton-active-bordercolor);
+	box-shadow: var(--toolbarbutton-active-boxshadow);
+	transition-duration: 10ms;
+}
+
+/* 668 */
+
+#tt-toolbar toolbarbutton[checked]:not(:active):hover {
+	background-color: var(--toolbarbutton-checkedhover-backgroundcolor);
+	transition: background-color 250ms;
+}
+
+/* ****************************************************************************************************************** */
+
+/* ************ Sidebar ********************************************************************************************* */
+
+#tt-sidebar {
+	-moz-appearance: -moz-mac-vibrancy-light;
+	background-color: #e2e7ed;
+}
+
+#tt-sidebar:-moz-window-inactive {
+	background-color: #e8e8e8;
+}
+
+/* ****************************************************************************************************************** */
+
+/* ************ Pinned Tabs ***************************************************************************************** */
+
+#tt-toolbox,
+#tt-toolbar {
+	-moz-appearance: none;
+	background-color: transparent;
+}
+
+/* ****************************************************************************************************************** */
+
+/* ************ Ordinary Tabs *************************************************************************************** */
+
+/* Highlighting matched tabs */
+/* "background-color" instead of "border-color" in OS X */
+
+.tt-treechildren::-moz-tree-row(quickSearch) {
+	background-color: #EF0FFF; /* default Firefox color for "Highlight all" option in <findbar> */
+}
+
+.tt-tree[treelines="true"] > .tt-treechildren::-moz-tree-line {
+	visibility: visible;
+}
+
+.tt-treechildren::-moz-tree-cell-text(hover) {
+	text-decoration: none;
+}
+
+/* ****************************************************************************************************************** */
+
+/* ************ Tab Search Box ************************************************************************************** */
+
+#tt-quicksearchbox {
+	margin: 1px;
+}
+
+/* ****************************************************************************************************************** */
+
+/* ************ New Tab Button ************************************************************************************** */
+
+#tt-new-tab-button-container {
+	background-color: transparent;
+}
+
+/*.tt-new-tab-button:hover {*/
+	/*background-color: var(--tab-hover-background-color);*/
+	/*border-color: var(--toolbarbutton-active-bordercolor);*/
+	/*box-shadow: var(--toolbarbutton-active-boxshadow);*/
+	/*transition-duration: 40ms;*/
+/*}*/
+
+.tt-new-tab-button {
+	list-style-image: url(chrome://tabtree/skin/newtab.png);
+	margin: 1px;
+}
+
+/* ****************************************************************************************************************** */
+
+/* ************ Splitter ******************************************************************************************** */
+
+/* 3617 */
+
+#tt-splitter {
+  -moz-border-start: none;
+  -moz-border-end: 1px solid #bdbdbd;
+  min-width: 1px;
+  width: 4px;
+  background-image: none !important;
+  background-color: transparent;
+  -moz-margin-start: -3px;
+  position: relative;
+}
+
+#tt-splitter[orient=vertical] { /* orient=vertical means a splitter is horizontal */
+  -moz-border-start: none;
+  -moz-border-end: 1px solid #bdbdbd;
+  min-height: 1px;
+  height: 4px;
+  background-image: none !important;
+  background-color: transparent;
+  margin-top: -3px;
+  position: relative;
+}
+
+/* ****************************************************************************************************************** */
