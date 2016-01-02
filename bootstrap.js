@@ -2585,9 +2585,18 @@ var windowListener = {
 					if (data === "{972ce4c6-7e08-4474-a285-3208198ce6fd}") {
 						quickSearchBox.setAttribute("type", "search");
 						quickSearchBox.classList.add("compact");
+						// Workaround for Firefox bug when clicking "_clearSearch" button on textbox[type="search"] doesn't rise the "input" event
+						// setTimeout is necessary because otherwise "searchClearButton" is null:
+						aDOMWindow.setTimeout(() => {
+							let searchClearButton = aDOMWindow.document.getAnonymousElementByAttribute(quickSearchBox, "class", "textbox-search-clear");
+							searchClearButton.addEventListener("click", () => {
+								tree.treeBoxObject.invalidate();
+							});
+						}, 60);
 					} else {
 						quickSearchBox.removeAttribute("type");
 						quickSearchBox.classList.remove("compact");
+						// searchClearButton is destroyed upon removing "type" attribute (and so listener is removed)
 					}
 				}
 			}
@@ -2606,6 +2615,7 @@ var windowListener = {
 
 		//aDOMWindow.tt.ss = ss; // uncomment while debugging
 		//aDOMWindow.tt.quickSearchBox = quickSearchBox; // uncomment while debugging
+		//aDOMWindow.tt.newTab = newTab;
 		//aDOMWindow.tt.tt = tree; // uncomment while debugging
 		//aDOMWindow.tt.treechildren = treechildren; // uncomment while debugging
 		//aDOMWindow.tt.tabContextMenu = tabContextMenu; // uncomment while debugging
