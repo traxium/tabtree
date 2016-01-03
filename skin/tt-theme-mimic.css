@@ -96,7 +96,8 @@
 /* ::::: lines connecting cells ::::: */
 
 .tt-treechildren::-moz-tree-line {
-	border: 1px dotted ThreeDShadow;
+	/* We have to use explicit hex color here because OS X has different ThreeDShadow color */
+	border: 1px dotted #aca899; /* ThreeDShadow === aca899*/
 }
 
 .tt-treechildren::-moz-tree-line(selected),

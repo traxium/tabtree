@@ -3,29 +3,6 @@
  * Copyright (C) 2015 Sergey Zelentsov <crayfishexterminator@gmail.com>
  */
 
-/* ************ Ordinary Tabs *************************************************************************************** */
-
-/* Highlighting matched tabs */
-/* "background-color" instead of "border-color" in OS X */
-
-.tt-treechildren::-moz-tree-row(quickSearch) {
-	background-color: #EF0FFF; /* default Firefox color for "Highlight all" option in <findbar> */
-}
-
-.tt-tree[treelines="true"] > .tt-treechildren::-moz-tree-line {
-	visibility: visible;
-}
-
-.tt-treechildren::-moz-tree-row(hover) {
-	background: var(--toolbarbutton-hover-background);
-}
-
-.tt-treechildren::-moz-tree-cell-text(hover) {
-	text-decoration: none;
-}
-
-/* ****************************************************************************************************************** */
-
 /* ************ chrome://browser/skin/places/places.css ************************************************************* */
 
 .tt-tree,
@@ -52,6 +29,14 @@
 .tt-treechildren::-moz-tree-row(current),
 .tt-treechildren::-moz-tree-row(current, focus) {
 	background-color: var(--toolbarbutton-checkedhover-backgroundcolor);
+}
+
+.tt-treechildren::-moz-tree-row(hover) {
+	background: var(--toolbarbutton-hover-background);
+}
+
+.tt-treechildren::-moz-tree-cell-text(hover) {
+	text-decoration: none;
 }
 
 .tt-treechildren::-moz-tree-row(selected),
@@ -146,6 +131,17 @@
 
 #tt-sidebar:-moz-window-inactive {
 	background-color: #e8e8e8;
+}
+
+/* ****************************************************************************************************************** */
+
+/* ************ Ordinary Tabs *************************************************************************************** */
+
+/* Highlighting matched tabs */
+
+/* "background-color" instead of "border-color" in OS X */
+.tt-treechildren::-moz-tree-row(quickSearch) {
+	background-color: #EF0FFF; /* default Firefox color for "Highlight all" option in <findbar> */
 }
 
 /* ****************************************************************************************************************** */

@@ -183,6 +183,12 @@
 	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio-muted-hover);
 }
 
+/* Nesting lines for mimic, dark and OS X themes */
+
+.tt-tree[treelines="true"] > .tt-treechildren::-moz-tree-line {
+	visibility: visible;
+}
+
 /* Tab search box */
 
 #tt-quicksearchbox {
