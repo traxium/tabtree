@@ -1,7 +1,12 @@
 1.4.2
+- Added official OS X support
 - "When closing current tab, focus the closest tab (first child -> sibling below -> sibling above -> parent)" option added
 - "When closing current tab, focus the tab right above" option added
-- "extensions.tabtree.flst" changed to "extensions.tabtree.after-close"
+- "extensions.tabtree.flst" option changed to "extensions.tabtree.after-close"
+- "Middle-click on the tabbar to: 1) Undo Close Tab 2) Open a new tab (Firefox default)" option added
+- "Prefix context menu items with 'Tab Tree:'" option added (and disabled by default)
+- Tab search box styling improved
+- Fixed the bug introduced in Tab Tree 1.4.1b with transparent audio indicators
 
 1.4.1b
 - Pinned tabs on multiple rows
