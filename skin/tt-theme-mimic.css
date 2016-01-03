@@ -240,14 +240,24 @@
 	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio);
 }
 
-:root[devtoolstheme="light"] #tt-treechildren::-moz-tree-image(tt-soundplaying, hover),
-:root[devtoolstheme="light"] #tt-treechildren-feedback::-moz-tree-image(tt-soundplaying, hover) {
-	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio-hover);
-}
-
 :root[devtoolstheme="light"] #tt-treechildren::-moz-tree-image(tt-muted),
 :root[devtoolstheme="light"] #tt-treechildren-feedback::-moz-tree-image(tt-muted) {
 	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio-muted);
+}
+
+:root[devtoolstheme="light"] #tt-treechildren::-moz-tree-image(tt-soundplaying, selected),
+:root[devtoolstheme="light"] #tt-treechildren-feedback::-moz-tree-image(tt-soundplaying, selected) {
+	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio-white-hover);
+}
+
+:root[devtoolstheme="light"] #tt-treechildren::-moz-tree-image(tt-muted, selected),
+:root[devtoolstheme="light"] #tt-treechildren-feedback::-moz-tree-image(tt-muted, selected) {
+	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio-muted-white-hover);
+}
+
+:root[devtoolstheme="light"] #tt-treechildren::-moz-tree-image(tt-soundplaying, hover),
+:root[devtoolstheme="light"] #tt-treechildren-feedback::-moz-tree-image(tt-soundplaying, hover) {
+	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio-hover);
 }
 
 :root[devtoolstheme="light"] #tt-treechildren::-moz-tree-image(tt-muted, hover),
