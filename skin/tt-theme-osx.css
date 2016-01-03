@@ -3,6 +3,29 @@
  * Copyright (C) 2015 Sergey Zelentsov <crayfishexterminator@gmail.com>
  */
 
+/* ************ Ordinary Tabs *************************************************************************************** */
+
+/* Highlighting matched tabs */
+/* "background-color" instead of "border-color" in OS X */
+
+.tt-treechildren::-moz-tree-row(quickSearch) {
+	background-color: #EF0FFF; /* default Firefox color for "Highlight all" option in <findbar> */
+}
+
+.tt-tree[treelines="true"] > .tt-treechildren::-moz-tree-line {
+	visibility: visible;
+}
+
+.tt-treechildren::-moz-tree-row(hover) {
+	background: var(--toolbarbutton-hover-background);
+}
+
+.tt-treechildren::-moz-tree-cell-text(hover) {
+	text-decoration: none;
+}
+
+/* ****************************************************************************************************************** */
+
 /* ************ chrome://browser/skin/places/places.css ************************************************************* */
 
 .tt-tree,
@@ -22,6 +45,13 @@
 
 .tt-tree {
 	border-top: 1px solid #bebebe;
+}
+
+/* ::-moz-tree-row(current) should be above ::-moz-tree-row(selected) in order the latter) to take priority */
+/* and below ::-moz-tree-row { background-color: transparent; } */
+.tt-treechildren::-moz-tree-row(current),
+.tt-treechildren::-moz-tree-row(current, focus) {
+	background-color: var(--toolbarbutton-checkedhover-backgroundcolor);
 }
 
 .tt-treechildren::-moz-tree-row(selected),
@@ -126,25 +156,6 @@
 #tt-toolbar {
 	-moz-appearance: none;
 	background-color: transparent;
-}
-
-/* ****************************************************************************************************************** */
-
-/* ************ Ordinary Tabs *************************************************************************************** */
-
-/* Highlighting matched tabs */
-/* "background-color" instead of "border-color" in OS X */
-
-.tt-treechildren::-moz-tree-row(quickSearch) {
-	background-color: #EF0FFF; /* default Firefox color for "Highlight all" option in <findbar> */
-}
-
-.tt-tree[treelines="true"] > .tt-treechildren::-moz-tree-line {
-	visibility: visible;
-}
-
-.tt-treechildren::-moz-tree-cell-text(hover) {
-	text-decoration: none;
 }
 
 /* ****************************************************************************************************************** */
