@@ -198,6 +198,16 @@ function startup(data, reason)
 										sss.loadAndRegisterSheet(Services.io.newURI("chrome://tabtree/skin/tt-theme-osx.css", null, null), sss.AUTHOR_SHEET);
 									}
 							}
+
+							// Determine ID of the current theme:
+							AddonManager.getAddonsByTypes(["theme"], (themes) => {
+								for (let theme of themes) {
+									if (!theme.userDisabled) {
+										Services.obs.notifyObservers(null, "tt-theme-changed", theme.id);
+										break;
+									}
+								}
+							});
 						});
 				}
 			}
@@ -2601,7 +2611,7 @@ var windowListener = {
 					if (Services.appinfo.OS == "Darwin") { // or AppConstants.platform === "macosx"
 						aDOMWindow.document.documentElement.removeAttribute("chromemargin"); // show a native titlebar like in Safari
 					}
-					if (data === "{972ce4c6-7e08-4474-a285-3208198ce6fd}") {
+					if (Services.prefs.getIntPref("extensions.tabtree.theme") === 0 || data === "{972ce4c6-7e08-4474-a285-3208198ce6fd}") {
 						quickSearchBox.setAttribute("type", "search");
 						quickSearchBox.classList.add("compact");
 						// Workaround for Firefox bug when clicking "_clearSearch" button on textbox[type="search"] doesn't rise the "input" event
@@ -2611,7 +2621,7 @@ var windowListener = {
 							searchClearButton.addEventListener("click", () => {
 								tree.treeBoxObject.invalidate();
 							});
-						}, 60);
+						}, 600);
 					} else {
 						quickSearchBox.removeAttribute("type");
 						quickSearchBox.classList.remove("compact");
