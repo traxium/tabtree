@@ -2630,6 +2630,9 @@ var windowListener = {
 				}
 			}
 		}), "tt-theme-changed", false);
+		// "themeChangedObserver" is removed in
+		// 1) "onCloseWindow" in case Tab Tree is enabled and one Firefox window is being closed
+		// 2) "unloadFromWindow" in case Tab Tree is being disabled
 
 		// Determine ID of the current theme:
 		AddonManager.getAddonsByTypes(["theme"], (themes) => {
