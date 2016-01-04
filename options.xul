@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <!-- This file is part of Tab Tree,
-- Copyright (C) 2015 Sergey Zelentsov <crayfishexterminator@gmail.com> -->
+- Copyright (C) 2015-2016 Sergey Zelentsov <crayfishexterminator@gmail.com> -->
         
 <!DOCTYPE options [
     <!ENTITY % optionsDTD SYSTEM "chrome://tabtree/locale/options.dtd" >
