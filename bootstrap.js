@@ -927,6 +927,21 @@ var windowListener = {
 		tree.appendChild(treechildren);
 		sidebar.appendChild(tree);
 
+		// #63 [Ubuntu] Glitch with page up or down
+		// We can't override <handler event="keydown" keycode="VK_PAGE_UP" modifiers="accel any">
+		// in chrome://global/content/bindings/tree.xml#tree
+		// because if we attempt to override it two handlers will be attached instead:
+		tree._moveByPage = new Proxy(tree._moveByPage, { // #63 [Ubuntu] Glitch with page up or down
+			apply: function(target, thisArg, argumentsList) {
+				g.mCurrentBrowser.focus();
+			}
+		}); // there's no need to restore it
+
+		tree._moveByOffset = new Proxy(tree._moveByOffset, { // #63 [Ubuntu] Glitch with page up or down
+			apply: function(target, thisArg, argumentsList) {
+				g.mCurrentBrowser.focus();
+			}
+		}); // there's no need to restore it
 		//////////////////// END TREE /////////////////////////////////////////////////////////////////
 
 		//////////////////// DRAG FEEDBACK TREE ////////////////////////////////////////////////////////////////////////
@@ -2654,6 +2669,7 @@ var windowListener = {
 		//aDOMWindow.tt.sidebar = sidebar; // uncomment while debugging
 		//aDOMWindow.tt.customizer = aDOMWindow.document.getElementById("customization-container"); // uncomment while debugging
 		//aDOMWindow.tt.treecol = treecol; // uncomment while debugging
+		//aDOMWindow.tt.app = appcontent;
 
 	} // loadIntoWindow: function(aDOMWindow)
 }; // var windowListener =
