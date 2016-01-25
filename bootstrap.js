@@ -2468,20 +2468,20 @@ var windowListener = {
 							break;
 						case 'extensions.tabtree.fullscreen-show':
 							if (Services.prefs.getBoolPref('extensions.tabtree.fullscreen-show')) {
-								splitter.style.visibility = 'visible';
-								sidebar.style.visibility = 'visible';
-								fullscrToggler.style.visibility = 'visible';
+								splitter.setAttribute('fullscreen-show', 'true');
+								sidebar.setAttribute('fullscreen-show', 'true');
+								fullscrToggler.style.visibility = 'collapse';
 							} else {
-								splitter.removeAttribute('style');
-								sidebar.removeAttribute('style');
+								splitter.removeAttribute('fullscreen-show');
+								sidebar.removeAttribute('fullscreen-show');
 								fullscrToggler.removeAttribute('style');
 							}
 							break;
 						case 'extensions.tabtree.hide-tabtree-with-one-tab':
 							if (Services.prefs.getBoolPref('extensions.tabtree.hide-tabtree-with-one-tab')) {
-								sidebar.collapsed = splitter.collapsed = g.tabs.length <= 1;
+								sidebar.collapsed = splitter.collapsed = fullscrToggler.collapsed = g.tabs.length <= 1;
 							} else {
-								sidebar.collapsed = splitter.collapsed = false;
+								sidebar.collapsed = splitter.collapsed = fullscrToggler.collapsed = false;
 							}
 							break;
 						case 'extensions.tabtree.highlight-unloaded-tabs':
@@ -2612,10 +2612,10 @@ var windowListener = {
 			}
 		})).observe(sidebar, {attributes: true}); // removed in unloadFromWindow()
 
-		sidebar.collapsed = splitter.collapsed = g.tabs.length <= 1 && Services.prefs.getBoolPref("extensions.tabtree.hide-tabtree-with-one-tab");
+		sidebar.collapsed = splitter.collapsed = fullscrToggler.collapsed = g.tabs.length <= 1 && Services.prefs.getBoolPref("extensions.tabtree.hide-tabtree-with-one-tab");
 		(aDOMWindow.tt.toRemove.numberOfTabsObserver = new aDOMWindow.MutationObserver(function(aMutations) {
 			// if there's only one tab then hide the tab bar
-			sidebar.collapsed = splitter.collapsed = g.tabs.length <= 1 && Services.prefs.getBoolPref("extensions.tabtree.hide-tabtree-with-one-tab");
+			sidebar.collapsed = splitter.collapsed = fullscrToggler.collapsed = g.tabs.length <= 1 && Services.prefs.getBoolPref("extensions.tabtree.hide-tabtree-with-one-tab");
 		})).observe(g.tabContainer, {childList: true}); // removed in unloadFromWindow()
 
 		// OS X tabs not in titlebar fix

@@ -43,13 +43,13 @@
 	visibility: collapse;
 }
 
-#main-window[inFullscreen] #tt-sidebar,
-#main-window[inFullscreen] #tt-splitter {
+#main-window[inFullscreen] #tt-sidebar:not([fullscreen-show]),
+#main-window[inFullscreen] #tt-splitter:not([fullscreen-show]) {
 	visibility: collapse;
 }
 
-#main-window[inFullscreen] #tt-fullscr-toggler:hover ~ #tt-sidebar, /* "~" is necessary when tabtree.position = 1 */
-#main-window[inFullscreen] #tt-sidebar:hover {
+#main-window[inFullscreen] #tt-fullscr-toggler:hover ~ #tt-sidebar:not([collapsed]), /* "~" is necessary when tabtree.position = 1 */
+#main-window[inFullscreen] #tt-sidebar:hover:not([collapsed]) {
 	visibility: visible;
 }
 
