@@ -2074,18 +2074,64 @@ var windowListener = {
 				}
 			}
 		};
-		
-		// I'm just disabling all unnecessary tab movement functions:
+
+		// The next 2 Proxies fix #68 (Cannot move tab with ctrl-shift-pageup/down):
+
+		// Ctrl+Shift+PageDown behaviour:
 		aDOMWindow.tt.toRestore.g.moveTabForward = g.moveTabForward;
 		g.moveTabForward = new Proxy(g.moveTabForward, {
 			apply: function(target, thisArg, argumentsList) {
+				// based upon tabbrowser.xml#2923:
+				let tab = g.mCurrentTab;
+				let nextTab = g.tabs[tt.lastDescendantPos(tab)+1];
+				if (nextTab) {
+					if (tt.levelInt(tab) === tt.levelInt(nextTab)) {
+						// moveBranchToPlus also handles moving into a subtree case
+						// therefore one more "else" isn't necessary
+						tt.moveBranchToPlus(tab, nextTab._tPos, tree.view.DROP_AFTER);
+					} else if (tt.levelInt(tab) === tt.levelInt(nextTab) + 1) {
+						tt.moveBranchToPlus(tab, nextTab._tPos, tree.view.DROP_BEFORE);
+					} else if (tt.levelInt(tab) > tt.levelInt(nextTab) + 1) {
+						let grandparend = tt.parentTab(tt.parentTab(tab));
+						tt.moveBranchToPlus(tab, grandparend._tPos, tree.view.DROP_ON);
+					}
+				} else if (g.arrowKeysShouldWrap) {
+					g.moveTabToStart();
+				}
+				tree.treeBoxObject.invalidate();
 			}
 		}); // don't forget to restore
+
+		// Ctrl+Shift+PageUp behaviour:
 		aDOMWindow.tt.toRestore.g.moveTabBackward = g.moveTabBackward;
 		g.moveTabBackward = new Proxy(g.moveTabBackward, {
 			apply: function(target, thisArg, argumentsList) {
+				// based upon tabbrowser.xml#2938:
+				let tab = g.mCurrentTab;
+				let previousTab = tab.previousSibling;
+				while (previousTab && previousTab.hidden) {
+					previousTab = previousTab.previousSibling;
+				}
+				if (previousTab) {
+					if (tt.levelInt(tab) === tt.levelInt(previousTab)) {
+						tt.moveBranchToPlus(tab, previousTab._tPos, tree.view.DROP_BEFORE);
+					} else if (tt.levelInt(tab) < tt.levelInt(previousTab)) { // move into a subtree
+						let previousTabOnTheSameLevel = previousTab.previousSibling;
+						while (previousTabOnTheSameLevel && tt.levelInt(tab) < tt.levelInt(previousTabOnTheSameLevel)) {
+							previousTabOnTheSameLevel = previousTabOnTheSameLevel.previousSibling;
+						}
+						tt.moveBranchToPlus(tab, previousTabOnTheSameLevel._tPos, tree.view.DROP_ON);
+					} else if (tt.levelInt(tab) > tt.levelInt(previousTab)) { // move out of a subtree
+						tt.moveBranchToPlus(tab, previousTab._tPos, tree.view.DROP_BEFORE);
+					}
+				} else if (g.arrowKeysShouldWrap) {
+					g.moveTabToEnd();
+				}
+				tree.treeBoxObject.invalidate();
 			}
 		}); // don't forget to restore
+
+		// I'm just disabling all unnecessary tab movement functions until better times:
 		aDOMWindow.tt.toRestore.g.moveTabToStart = g.moveTabToStart;
 		g.moveTabToStart = new Proxy(g.moveTabToStart, {
 			apply: function(target, thisArg, argumentsList) {
