@@ -1052,6 +1052,99 @@ var windowListener = {
 			if (keyboardEvent.ctrlKey && keyboardEvent.altKey && keyboardEvent.shiftKey && keyboardEvent.code == 'KeyF') {
 				quickSearchBox.collapsed = false;
 				quickSearchBox.focus();
+			} else if (keyboardEvent.ctrlKey && keyboardEvent.altKey && keyboardEvent.shiftKey && keyboardEvent.key === "PageDown") {
+				// #68 Ctrl+Alt+Shift+PageDown - slow moving speed:
+				let tab = g.mCurrentTab;
+				let nextTab = g.tabs[tt.lastDescendantPos(tab)+1];
+				if (nextTab) {
+					if (tt.levelInt(tab) === tt.levelInt(nextTab)) {
+						if (tt.hasAnyChildren(nextTab._tPos)) {
+							tt.moveBranchToPlus(tab, nextTab._tPos, tree.view.DROP_AFTER);
+						} else {
+							tt.moveBranchToPlus(tab, nextTab._tPos, tree.view.DROP_ON);
+						}
+					} else if (tt.levelInt(tab) === tt.levelInt(nextTab) + 1) {
+						tt.moveBranchToPlus(tab, nextTab._tPos, tree.view.DROP_BEFORE);
+					} else if (tt.levelInt(tab) > tt.levelInt(nextTab) + 1) {
+						let grandparend = tt.parentTab(tt.parentTab(tab));
+						tt.moveBranchToPlus(tab, grandparend._tPos, tree.view.DROP_ON);
+					}
+				} else if (g.arrowKeysShouldWrap) {
+					g.moveTabToStart();
+				}
+				tree.treeBoxObject.invalidate();
+			} else if (keyboardEvent.ctrlKey && keyboardEvent.altKey && keyboardEvent.shiftKey && keyboardEvent.key === "PageUp") {
+				// #68 Ctrl+Alt+Shift+PageUp - slow moving speed:
+				let tab = g.mCurrentTab;
+				let previousTab = tab.previousSibling;
+				while (previousTab && previousTab.hidden) {
+					previousTab = previousTab.previousSibling;
+				}
+				if (previousTab) {
+					if (tt.levelInt(tab) === tt.levelInt(previousTab)) {
+						if (tt.hasAnyChildren(previousTab._tPos)) {
+							tt.moveBranchToPlus(tab, previousTab._tPos, tree.view.DROP_BEFORE);
+						} else {
+							tt.moveBranchToPlus(tab, previousTab._tPos, tree.view.DROP_ON);
+						}
+					} else if (tt.levelInt(tab) < tt.levelInt(previousTab)) { // move into a subtree
+						let previousTabOnTheSameLevel = previousTab.previousSibling;
+						while (previousTabOnTheSameLevel && tt.levelInt(tab) < tt.levelInt(previousTabOnTheSameLevel)) {
+							previousTabOnTheSameLevel = previousTabOnTheSameLevel.previousSibling;
+						}
+						tt.moveBranchToPlus(tab, previousTabOnTheSameLevel._tPos, tree.view.DROP_ON);
+					} else if (tt.levelInt(tab) > tt.levelInt(previousTab)) { // move out of a subtree
+						tt.moveBranchToPlus(tab, previousTab._tPos, tree.view.DROP_BEFORE);
+					}
+				} else if (g.arrowKeysShouldWrap) {
+					g.moveTabToEnd();
+				}
+				tree.treeBoxObject.invalidate();
+			} else if (keyboardEvent.altKey && keyboardEvent.shiftKey && keyboardEvent.key === "PageDown") {
+				// #68 Shift+Alt+PageDown - fast moving speed:
+				let tab = g.mCurrentTab;
+				let nextTab = g.tabs[tt.lastDescendantPos(tab)+1];
+				if (nextTab) {
+					if (tt.levelInt(tab) === tt.levelInt(nextTab)) {
+						// Not the cleanest solution (but it's needed to move after the last tab without errors):
+						let lastDescendantTab = g.tabs[tt.lastDescendantPos(nextTab)];
+						let oldLevel = tt.levelInt(lastDescendantTab);
+						tt.setLevel(lastDescendantTab, tt.levelInt(nextTab));
+						tt.moveBranchToPlus(tab, lastDescendantTab._tPos, tree.view.DROP_AFTER);
+						tt.setLevel(lastDescendantTab, oldLevel);
+					} else if (tt.levelInt(tab) === tt.levelInt(nextTab) + 1) {
+						tt.moveBranchToPlus(tab, nextTab._tPos, tree.view.DROP_BEFORE);
+					} else if (tt.levelInt(tab) > tt.levelInt(nextTab) + 1) {
+						let grandparent = tt.parentTab(tt.parentTab(tab));
+						tt.moveBranchToPlus(tab, grandparent._tPos, tree.view.DROP_ON);
+					}
+				} else if (g.arrowKeysShouldWrap) {
+					g.moveTabToStart();
+				}
+				tree.treeBoxObject.invalidate();
+			} else if (keyboardEvent.altKey && keyboardEvent.shiftKey && keyboardEvent.key === "PageUp") {
+				// #68 Shift+Alt+PageUp - fast moving speed:
+				let tab = g.mCurrentTab;
+				let previousTab = tab.previousSibling;
+				while (previousTab && previousTab.hidden) {
+					previousTab = previousTab.previousSibling;
+				}
+				if (previousTab) {
+					if (tt.levelInt(tab) === tt.levelInt(previousTab)) {
+						tt.moveBranchToPlus(tab, previousTab._tPos, tree.view.DROP_BEFORE);
+					} else if (tt.levelInt(tab) < tt.levelInt(previousTab)) { // move far away
+						let previousTabOnTheSameLevel = previousTab.previousSibling;
+						while (previousTabOnTheSameLevel && tt.levelInt(tab) < tt.levelInt(previousTabOnTheSameLevel)) {
+							previousTabOnTheSameLevel = previousTabOnTheSameLevel.previousSibling;
+						}
+						tt.moveBranchToPlus(tab, previousTabOnTheSameLevel._tPos, tree.view.DROP_BEFORE);
+					} else if (tt.levelInt(tab) > tt.levelInt(previousTab)) { // move out of a subtree
+						tt.moveBranchToPlus(tab, previousTab._tPos, tree.view.DROP_BEFORE);
+					}
+				} else if (g.arrowKeysShouldWrap) {
+					g.moveTabToEnd();
+				}
+				tree.treeBoxObject.invalidate();
 			}
 		}), false);
 
@@ -2076,6 +2169,9 @@ var windowListener = {
 		};
 
 		// The next 2 Proxies fix #68 (Cannot move tab with ctrl-shift-pageup/down):
+		// Ctrl+Shift+PageUp/Down - normal speed
+		// Ctrl+Alt+Shift+PageUp/Down - slow speed
+		// Shift+Alt+PageUp/Down - fast speed
 
 		// Ctrl+Shift+PageDown behaviour:
 		aDOMWindow.tt.toRestore.g.moveTabForward = g.moveTabForward;
@@ -2092,8 +2188,8 @@ var windowListener = {
 					} else if (tt.levelInt(tab) === tt.levelInt(nextTab) + 1) {
 						tt.moveBranchToPlus(tab, nextTab._tPos, tree.view.DROP_BEFORE);
 					} else if (tt.levelInt(tab) > tt.levelInt(nextTab) + 1) {
-						let grandparend = tt.parentTab(tt.parentTab(tab));
-						tt.moveBranchToPlus(tab, grandparend._tPos, tree.view.DROP_ON);
+						let grandparent = tt.parentTab(tt.parentTab(tab));
+						tt.moveBranchToPlus(tab, grandparent._tPos, tree.view.DROP_ON);
 					}
 				} else if (g.arrowKeysShouldWrap) {
 					g.moveTabToStart();
