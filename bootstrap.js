@@ -2264,10 +2264,10 @@ var windowListener = {
 					if (!event.shiftKey) return;
 			}
 			
-			if (event.deltaY < 0) { // wheel up
+			if (event.deltaY < 0 || event.deltaX < 0) { // wheel up // #64 [OS X] deltaX fixes OS X
 				g.tabContainer.advanceSelectedTab(-1, true);
 				event.preventDefault();
-			} else if (event.deltaY > 0) { // wheel down
+			} else if (event.deltaY > 0 || event.deltaX > 0) { // wheel down // #64 [OS X] deltaX fixes OS X
 				g.tabContainer.advanceSelectedTab(1, true);
 				event.preventDefault();
 			}
