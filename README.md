@@ -1,4 +1,4 @@
-# Tab Tree for Firefox [![License](https://img.shields.io/badge/License-GPL%20v3%2B-blue.svg?style=flat-square)](https://github.com/traxium/tabtree/blob/master/LICENSE.md)
+# Tab Tree for Firefox [![License](https://img.shields.io/badge/License-GPL%20v3%2B-blue.svg?style=flat-square)](LICENSE.md)
 
 ## Download, details and screenshots at https://addons.mozilla.org/en-US/firefox/addon/tab-tree/
 
