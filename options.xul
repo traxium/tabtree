@@ -23,6 +23,7 @@
         </menulist>
     </setting>
     <setting type="bool" pref="extensions.tabtree.treelines" title="&treelines.title;" desc="&treelines.desc;" />
+    <setting type="integer" min="-1" pref="extensions.tabtree.tab-height" title="&tab-height.title;" desc="&tab-height.desc;" />
     <setting type="radio" pref="extensions.tabtree.highlight-unloaded-tabs" title="&highlight-unloaded-tabs.title;" desc="&highlight-unloaded-tabs.desc;">
         <radiogroup>
             <radio value="0" label="&highlight-unloaded-tabs.no;"/>

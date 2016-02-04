@@ -5,6 +5,8 @@
 <!ENTITY theme.dark "Dark">
 <!ENTITY treelines.title "Draw the nesting lines along the side of the tree:">
 <!ENTITY treelines.desc "The lines connecting child rows to parent rows (checked by default)">
+<!ENTITY tab-height.title "Tab height:">
+<!ENTITY tab-height.desc "Set to &#171;-1&#187; or &#171;0&#187; to use the default theme value (&#171;-1&#187; by default)">
 <!ENTITY highlight-unloaded-tabs.title "Highlight unloaded tabs:">
 <!ENTITY highlight-unloaded-tabs.desc "If you use &quot;Don't load tabs until selected&quot; Firefox option (&quot;no&quot; by default)">
 <!ENTITY highlight-unloaded-tabs.no "no">

@@ -5,6 +5,8 @@
 <!ENTITY theme.dark "Dark">
 <!ENTITY treelines.title "Pokazuj linie łączące karty wzdłuż drzewa:">
 <!ENTITY treelines.desc "Linie łączące karty podrzędne z kartą nadrzędną (domyślnie zaznaczone)">
+<!ENTITY tab-height.title "Tab height:">
+<!ENTITY tab-height.desc "Set to &#171;-1&#187; or &#171;0&#187; to use the default theme value (&#171;-1&#187; by default)">
 <!ENTITY highlight-unloaded-tabs.title "Podświetl niezaładowane karty:">
 <!ENTITY highlight-unloaded-tabs.desc "Gdy używasz opcji Firefox &quot;Nie wczytuj kart, dopóki nie zostały wybrane&quot; (domyślnie &quot;Nie&quot;)">
 <!ENTITY highlight-unloaded-tabs.no "Nie">

@@ -5,6 +5,8 @@
 <!ENTITY theme.dark "Dark">
 <!ENTITY treelines.title "Dessiner les lignes d’imbrication sur le côté de l’arbre:">
 <!ENTITY treelines.desc "Les lignes connectant les rangées filles aux rangées mères (coché par défaut)">
+<!ENTITY tab-height.title "Tab height:">
+<!ENTITY tab-height.desc "Set to &#171;-1&#187; or &#171;0&#187; to use the default theme value (&#171;-1&#187; by default)">
 <!ENTITY highlight-unloaded-tabs.title "Coloration des onglets non-chargés:">
 <!ENTITY highlight-unloaded-tabs.desc "Si vous utilisez l’option de Firefox &#171;Ne pas charger les onglets tant qu'ils ne sont pas sélectionnés&#187; (&#171;non&#187; par défaut)">
 <!ENTITY highlight-unloaded-tabs.no "non">

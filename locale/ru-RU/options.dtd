@@ -5,6 +5,8 @@
 <!ENTITY theme.dark "Тёмная">
 <!ENTITY treelines.title "Рисовать сбоку пунктирные линии:">
 <!ENTITY treelines.desc "Линии, соединяющие родительские и дочерние вкладки (отмечено по умолчанию)">
+<!ENTITY tab-height.title "Высота вкладки:">
+<!ENTITY tab-height.desc "При значении &#171;-1&#187;/&#171;0&#187; высота вкладок задаётся темой (&#171;-1&#187; по умолчанию)">
 <!ENTITY highlight-unloaded-tabs.title "Выделять незагруженные вкладки:">
 <!ENTITY highlight-unloaded-tabs.desc "Если вы пользуетесь опцией браузера &quot;Не загружать вкладки без запроса&quot; (&quot;нет&quot; по умолчанию)">
 <!ENTITY highlight-unloaded-tabs.no "нет">

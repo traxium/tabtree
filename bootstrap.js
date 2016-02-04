@@ -23,6 +23,7 @@ const sss = Cc["@mozilla.org/content/style-sheet-service;1"].getService(Ci.nsISt
 var stringBundle = Services.strings.createBundle('chrome://tabtree/locale/global.properties?' + Math.random()); // Randomize URI to work around bug 719376
 var prefsObserver;
 var defaultThemeAddonListener;
+var tabHeightGlobal = {value: -1, uri: null};
 
 const TT_POS_LEFT = 0;
 const TT_POS_RIGHT = 1;
@@ -133,6 +134,7 @@ function startup(data, reason)
 	// 0 - default, 1 - try to mimic Firefox theme, 2 - dark
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.theme', 1); // #35 #50
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.prefix-context-menu-items', false); // #60 (Garbage in menu items)
+	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.tab-height', -1); // #67 [Feature] Provide a way to change the items height
 
 	// migration code :
 	try {
@@ -260,6 +262,9 @@ function shutdown(data, reason)
 			sss.unregisterSheet(uri, sss.AUTHOR_SHEET);
 		}
 	});
+	if (tabHeightGlobal.uri && sss.sheetRegistered(tabHeightGlobal.uri, sss.AUTHOR_SHEET)) {
+		sss.unregisterSheet(tabHeightGlobal.uri, sss.AUTHOR_SHEET);
+	}
 
 	if (ssHack.SessionStoreInternal.initializeWindow) { // Fix for Firefox 41+
 		ssHack.SessionStoreInternal.initializeWindow = ssOrig;
@@ -2673,6 +2678,29 @@ var windowListener = {
 									sidebar.insertBefore(quickSearchBox, sidebar.firstChild); // at the top
 							}
 							break;
+						case "extensions.tabtree.tab-height":
+							// I could've implemented this pref handler in startup() because CSS needs to be loaded only once
+							// but in order to use aDOMWindow.Blob and aDOMWindow.URL a reference to aDOMWindow is required
+							// and it's quite problematic to get reference to any aDOMWindow at startup()
+							// and also the tab tree in every FF window must be "redrawn" after applying CSS:
+							let tabHeight = Services.prefs.getIntPref("extensions.tabtree.tab-height");
+							if (tabHeightGlobal.value !== tabHeight) {
+								tabHeightGlobal.value = tabHeight;
+								if (tabHeightGlobal.uri && sss.sheetRegistered(tabHeightGlobal.uri, sss.AUTHOR_SHEET)) {
+									sss.unregisterSheet(tabHeightGlobal.uri, sss.AUTHOR_SHEET);
+								}
+								if (tabHeightGlobal.value > 0) {
+									let blob = new aDOMWindow.Blob([`#tt-treechildren::-moz-tree-row,#tt-treechildren-feedback::-moz-tree-row{min-height:1px;height:${tabHeight}px;}`]);
+									let url = aDOMWindow.URL.createObjectURL(blob);
+									tabHeightGlobal.uri = Services.io.newURI(url, null, null);
+									sss.loadAndRegisterSheet(tabHeightGlobal.uri, sss.AUTHOR_SHEET);
+								}
+							}
+							let redrawHack = tree.style.borderStyle; // hack to force to redraw <tree>
+							tree.style.borderStyle = 'none';
+							tree.style.borderStyle = redrawHack;
+							tree.treeBoxObject.invalidate();
+							break;
 						case 'extensions.tabtree.treelines':
 							tree.setAttribute('treelines', Services.prefs.getBoolPref('extensions.tabtree.treelines').toString());
 							dragFeedbackTree.setAttribute('treelines', Services.prefs.getBoolPref('extensions.tabtree.treelines').toString());
@@ -2687,6 +2715,7 @@ var windowListener = {
 		}), false); // don't forget to remove // it can be removed in 'onCloseWindow' or in 'unloadFromWindow'(upon addon shutdown)
 		aDOMWindow.tt.toRemove.prefsObserver.observe(null, 'nsPref:changed', 'extensions.tabtree.fullscreen-show');
 		aDOMWindow.tt.toRemove.prefsObserver.observe(null, 'nsPref:changed', 'extensions.tabtree.prefix-context-menu-items');
+		aDOMWindow.tt.toRemove.prefsObserver.observe(null, "nsPref:changed", "extensions.tabtree.tab-height");
 
 		tt.redrawToolbarbuttons(); // needed when addon is enabled from about:addons (not when firefox is being loaded)
 		tree.treeBoxObject.invalidate(); // just in case
