@@ -1751,13 +1751,25 @@ var windowListener = {
 				// If I just wrote "return g.tabs[tPos].image;" then there would be a small period of time when
 				// a page is already loaded (and attribute 'busy' removed), but the favicon is still loading and
 				// in that period of time a row wouldn't have any icon and for user it would look like a tab title jumping to the left for a split of a second
-				let im = new aDOMWindow.Image();
-				im.src = tab.image;
-				if (im.complete) {
-					return tab.image;
+				
+				// tab.image and tab.getAttribute("image") add "#-moz-resolution=16,16" to the end of iconURL (but not always)
+				// browser.mIconURL and g.getIcon(aTab) don't add anything
+				
+				// tab.image/tab.getAttribute("image") and browser.mIconURL/g.getIcon(aTab) behave different when accessing tabs without favicons
+				// the former returns "" for such tabs
+				// the latter returns null for such tabs as "new tab" and "about:config"
+				// but for tabs with ordinary web sites without favicons it returns something like "http://www.site-without-favicon.com/favicon.ico"
+				
+				// adding "#-moz-resolution=16,16" to the end of an image src does wonders
+				// so I decided to throw away "new Image()" and "if (im.complete)" staff due to bug #69 (Gif animations don’t animate)
+				
+				if (tab.image) {
+					return g.getIcon(tab) + "#-moz-resolution=16,16";
 				} else {
-					return 'chrome://mozapps/skin/places/defaultFavicon.png';
-					// or 'chrome://tabtree/skin/completelyTransparent.png' // it would look exactly like what Firefox does for its default tabs
+					return g.mFaviconService.defaultFavicon.spec;
+					// g.mFaviconService.defaultFavicon.spec is "chrome://mozapps/skin/places/defaultFavicon.png"
+					// Or we could return something like 'chrome://tabtree/skin/completelyTransparent.png'
+					// in that case it would look exactly like what Firefox does for its default tabs
 				}
 				
 				// using animated png's causes abnormal CPU load (due to too frequent rows invalidating)
