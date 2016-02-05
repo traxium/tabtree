@@ -1,3 +1,15 @@
+1.4.3
+- Added #68 keyboard shortcuts:
+    Ctrl+Shift+PageUp/Down — moves tabs as expected (from my understanding)
+    Ctrl+Alt+Shift+PageUp/Down — moves tabs "slow", i.e. entering a subtree wherever it's possible
+    Shift+Alt+PageUp/Down — moves tabs "fast", i.e. not entering subtrees
+- Added #67 an option to change the tabs height
+- Fixed #63 Page Up/Down and Arrow Up/Down behaviour when the tree is focused
+- Fixed #74 "Hide the tab tree when there's only one tab" has no effect with "Show the tab tree in fullscreen"
+- Fixed #66 [OS X} The broken back button image on "Retina"/HiDPI displays
+- Fixed #64 [OS X] Shift + Scroll over the list doesn’t do 
+- Fixed #69 Gif animations don’t animate
+
 1.4.2
 - Added official OS X support
 - "When closing current tab, focus the closest tab (first child -> sibling below -> sibling above -> parent)" option added
