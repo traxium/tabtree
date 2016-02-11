@@ -906,7 +906,7 @@ var windowListener = {
 		Object.keys(propsToSet).forEach( (p)=>{treecol.tabtitle.setAttribute(p, propsToSet[p]);} );
 		treecol.overlay.setAttribute('hideheader', 'true');
 		treecol.overlay.id = 'tt-overlay';
-		// Hiding TT_COL_OVERLAY column when there's no at least 1 audio indicator and vice verse
+		// Hiding TT_COL_OVERLAY column when there's no at least 1 audio indicator and vice versa
 		// Duplicate this code in onTabAttrModified, pinTab and unpinTab
 		treecol.overlay.collapsed = !Array.some(g.tabs, (x) => !x.pinned && (x.hasAttribute('muted') || x.hasAttribute('soundplaying')));
 		treecol.closebtn.setAttribute('hideheader', 'true');
@@ -1455,17 +1455,16 @@ var windowListener = {
 				if (isPending) {
 					// If `draggedTab` is pending (i.e. has not been restored, yet)
 					// then `draggedTab.linkedBrowser.isRemoteBrowser === false`
-					// but if `draggedTab` is not pending then `draggedTab.linkedBrowser.isRemoteBrowser === true`
+					// but if `draggedTab` is not pending then `draggedTab.linkedBrowser.isRemoteBrowser === true` (in e10s)
 					// and `swapBrowsersAndCloseOther` has line:
 					// `if (ourBrowser.isRemoteBrowser != otherBrowser.isRemoteBrowser) return;`
 					// and therefore `swapBrowsersAndCloseOther` does nothing
 					// so we have to use `updateBrowserRemoteness` in order this code to work with pending tabs:
-					// TODO: non-e10s
 					
 					// And for some reason after invoking `updateBrowserRemoteness()` `tabData.image` in SS becomes `null`
 					// i.e. Firefox forgets that the tab has an favicon so it should be remembered and placed back:
 					let mIconURL = draggedTab.linkedBrowser.mIconURL;
-					draggedG.updateBrowserRemoteness(draggedTab.linkedBrowser, true);
+					draggedG.updateBrowserRemoteness(draggedTab.linkedBrowser, aDOMWindowTo.gMultiProcessBrowser);
 					draggedG.setIcon(draggedTab, mIconURL);
 				} else {
 					// Actually everything works if it's just `draggedG.updateBrowserRemoteness(draggedTab.linkedBrowser, true);`
@@ -1985,8 +1984,9 @@ var windowListener = {
 							}
 						}
 					} else {
-						// Enabling drag and drop tabs to another window:
-						return true;
+						// Enabling drag and drop tabs to another window
+						// Firefox can't move tabs from e10s to non-e10s windows and vice versa
+						return draggedTab.ownerDocument.defaultView.gMultiProcessBrowser === aDOMWindow.gMultiProcessBrowser;
 					}
 				}
 				
@@ -2091,7 +2091,7 @@ var windowListener = {
 				target.apply(thisArg, argumentsList); // dispatches 'TabPinned' event, returns nothing
 				tree.treeBoxObject.rowCountChanged(row, -1);
 
-				// Hiding TT_COL_OVERLAY column when there's no at least 1 audio indicator and vice verse
+				// Hiding TT_COL_OVERLAY column when there's no at least 1 audio indicator and vice versa 
 				// Duplicate this code in onTabAttrModified, pinTab and unpinTab
 				treecol.overlay.collapsed = !Array.some(g.tabs, (x) => !x.pinned && (x.hasAttribute('muted') || x.hasAttribute('soundplaying')));
 			}
@@ -2116,7 +2116,7 @@ var windowListener = {
 				}
 				target.apply(thisArg, argumentsList); // returns nothing // dispatches 'TabUnpinned' event
 
-				// Hiding TT_COL_OVERLAY column when there's no at least 1 audio indicator and vice verse
+				// Hiding TT_COL_OVERLAY column when there's no at least 1 audio indicator and vice versa
 				// Duplicate this code in onTabAttrModified, pinTab and unpinTab
 				treecol.overlay.collapsed = !Array.some(g.tabs, (x) => !x.pinned && (x.hasAttribute('muted') || x.hasAttribute('soundplaying')));
 			}
@@ -2543,7 +2543,7 @@ var windowListener = {
 				}
 			}
 
-			// Hiding TT_COL_OVERLAY column when there's no at least 1 audio indicator and vice verse
+			// Hiding TT_COL_OVERLAY column when there's no at least 1 audio indicator and vice versa
 			// Duplicate this code in onTabAttrModified, pinTab and unpinTab
 			treecol.overlay.collapsed = !Array.some(g.tabs, (x) => !x.pinned && (x.hasAttribute('muted') || x.hasAttribute('soundplaying')));
 
