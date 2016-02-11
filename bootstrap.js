@@ -469,7 +469,8 @@ var windowListener = {
 				themeChangedObserver: null,
 				osxMutationObserver: null,
 			},
-			toRestore: {g: {}, TabContextMenu: {}, tabsintitlebar: true}
+			toRestore: {g: {}, TabContextMenu: {}, tabsintitlebar: true},
+			dropEvent: {},
 		};
 
 		if (!ss.getGlobalValue('tt-saved-widgets')) {
@@ -1436,7 +1437,104 @@ var windowListener = {
 				}, 500);
 				*/
 				// <- It didn't fix bug #12/#53/#2 anyway
-			}
+			},
+			
+			moveTabToAnotherWindow: function(draggedTab, newIndex, mode, aDOMWindowTo) {
+				let draggedG = draggedTab.ownerDocument.defaultView.gBrowser;
+				let isPending = draggedTab.hasAttribute("pending");
+				
+				// swap the dropped tab with a new one we create and then close
+				// it in the other window (making it seem to have moved between
+				// windows)
+				let newTab = aDOMWindowTo.gBrowser.addTab("about:blank");
+				
+				// If we're an e10s browser window, an exception will be thrown
+				// if we attempt to drag a non-remote browser in, so we need to
+				// ensure that the remoteness of the newly created browser is
+				// appropriate for the URL of the tab being dragged in.
+				if (isPending) {
+					// If `draggedTab` is pending (i.e. has not been restored, yet)
+					// then `draggedTab.linkedBrowser.isRemoteBrowser === false`
+					// but if `draggedTab` is not pending then `draggedTab.linkedBrowser.isRemoteBrowser === true`
+					// and `swapBrowsersAndCloseOther` has line:
+					// `if (ourBrowser.isRemoteBrowser != otherBrowser.isRemoteBrowser) return;`
+					// and therefore `swapBrowsersAndCloseOther` does nothing
+					// so we have to use `updateBrowserRemoteness` in order this code to work with pending tabs:
+					// TODO: non-e10s
+					
+					// And for some reason after invoking `updateBrowserRemoteness()` `tabData.image` in SS becomes `null`
+					// i.e. Firefox forgets that the tab has an favicon so it should be remembered and placed back:
+					let mIconURL = draggedTab.linkedBrowser.mIconURL;
+					draggedG.updateBrowserRemoteness(draggedTab.linkedBrowser, true);
+					draggedG.setIcon(draggedTab, mIconURL);
+				} else {
+					// Actually everything works if it's just `draggedG.updateBrowserRemoteness(draggedTab.linkedBrowser, true);`
+					// for pending and not pending tabs but I'm trying to be as close to the original (tabbrowser.xml && ext-tabs.js) as possible:
+					let newBrowser = aDOMWindowTo.gBrowser.getBrowserForTab(newTab);
+					let draggedBrowserURL = draggedTab.linkedBrowser.currentURI.spec;
+					aDOMWindowTo.gBrowser.updateBrowserRemotenessByURL(newBrowser, draggedBrowserURL);
+				}
+				
+				// Stop the about:blank load
+				aDOMWindowTo.gBrowser.stop();
+				// make sure it has a docshell
+				//noinspection BadExpressionStatementJS
+				aDOMWindowTo.gBrowser.docShell;
+				
+				//let numPinned = gBrowserTo.gBrowser._numPinnedTabs;
+				//if (newIndex < numPinned || tab.pinned && newIndex == numPinned)
+				//	gBrowserTo.gBrowser.pinTab(newTab);
+				// TODO: pinned
+				tt.moveTabToPlus(newTab, newIndex, mode);
+				
+				// `swapBrowsersAndCloseOther` copies `ttLevel` from `draggedTab` and overrides correct `ttLevel`
+				// so let's remember and restore our `ttLevel`:
+				let lvl = tt.levelInt(newTab);
+				aDOMWindowTo.gBrowser.swapBrowsersAndCloseOther(newTab, draggedTab);
+				tt.setLevel(newTab, lvl);
+				
+				return newTab;
+			},
+			
+			moveBranchToAnotherWindow: function(tab, newIndex, mode, aDOMWindowTo) {
+				let oldIndex = tab._tPos;
+				let oldG = tab.ownerDocument.defaultView.gBrowser;
+				let oldLevel = parseInt(ss.getTabValue(tab, "ttLevel"));
+				let lastChildPos = oldG.tabs.length - 1;
+				for (let i=oldIndex+1; oldG.tabs[i]; ++i) {
+					if (parseInt(ss.getTabValue(oldG.tabs[i], "ttLevel")) <= oldLevel) {
+						lastChildPos = i - 1;
+						break;
+					}
+				}
+				let levelTo = parseInt(ss.getTabValue(aDOMWindowTo.gBrowser.tabs[newIndex], "ttLevel"));
+				
+				if (mode === tree.view.DROP_ON) {
+					let newLevels = [];
+					for (let i = oldIndex; i <= lastChildPos; ++i) {
+						newLevels.push(levelTo + (parseInt(ss.getTabValue(oldG.tabs[i], "ttLevel")) - oldLevel) + 1);
+					}
+					for (let i = 0; i <= lastChildPos - oldIndex; ++i) {
+						let newTab = tt.moveTabToAnotherWindow(oldG.tabs[oldIndex], newIndex, tree.view.DROP_ON, aDOMWindow);
+						ss.setTabValue(newTab, "ttLevel", newLevels[i].toString());
+					}
+				} else if (mode === tree.view.DROP_BEFORE) {
+					let newLevels = [];
+					for (let i = oldIndex; i <= lastChildPos; ++i) {
+						newLevels.push(levelTo + (parseInt(ss.getTabValue(oldG.tabs[i], "ttLevel")) - oldLevel));
+					}
+					for (let i = 0; i <= lastChildPos - oldIndex; ++i) {
+						let newTab = tt.moveTabToAnotherWindow(oldG.tabs[oldIndex], newIndex + i, tree.view.DROP_BEFORE, aDOMWindow);
+						ss.setTabValue(newTab, "ttLevel", newLevels[i].toString());
+					}
+				} else if (mode === tree.view.DROP_AFTER) {
+					for (let i = lastChildPos; i >= oldIndex; --i) {
+						let newLevel = levelTo + (parseInt(ss.getTabValue(oldG.tabs[i], "ttLevel")) - oldLevel);
+						let newTab = tt.moveTabToAnotherWindow(oldG.tabs[i], newIndex, tree.view.DROP_AFTER, aDOMWindow);
+						ss.setTabValue(newTab, "ttLevel", newLevel.toString());
+					}
+				}
+			},
 		}; // let tt =
 
 		treechildren.addEventListener('dragstart', function(event) { // if the event was attached to 'tree' then the popup would be shown while you scrolling
@@ -1540,7 +1638,13 @@ var windowListener = {
 			// uncomment if you always want to highlight 'gBrowser.mCurrentTab':
 			//g.mCurrentTab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(g.mCurrentTab._tPos - tt.nPinned); // NEW
 			event.stopPropagation();
-		}, false); // tree.addEventListener('dragstart', function(event)
+		}, false); // treechildren.addEventListener('dragstart', function(event)
+		
+		treechildren.addEventListener("drop", function(event) {
+			// This event listener fires before tree.view.drop()
+			// save `event` because tree.view.drop() doesn't have `event` parameter and use it later:
+			aDOMWindow.tt.dropEvent = event;
+		}, false);
 		
 		tree.addEventListener('dragend', function(event) {
 			if (event.dataTransfer.dropEffect == 'none') { // the drag was cancelled
@@ -1880,6 +1984,9 @@ var windowListener = {
 								return true;
 							}
 						}
+					} else {
+						// Enabling drag and drop tabs to another window:
+						return true;
 					}
 				}
 				
@@ -1891,30 +1998,60 @@ var windowListener = {
 
 				return false;
 			},
-			drop: function(row, orientation, dataTransfer) {
+			drop: function(row, orientation, dt) {
 				let tPosTo = row + tt.nPinned;
-				let dt = dataTransfer;
 				
-				if (dt.mozTypesAt(0)[0]===aDOMWindow.TAB_DROP_TYPE && dt.dropEffect==='move') {
-					let sourceTab = dt.mozGetDataAt(aDOMWindow.TAB_DROP_TYPE, 0);
-					if (tt.hasAnyChildren(sourceTab._tPos)) {
-						tt.moveBranchToPlus(sourceTab, tPosTo, orientation);
-					} else {
-						tt.moveTabToPlus(sourceTab, tPosTo, orientation);
+				let dropEffect = dt.dropEffect;
+				let draggedTab;
+				if (dt.mozTypesAt(0)[0] == aDOMWindow.TAB_DROP_TYPE) { // tab copy or move
+					draggedTab = dt.mozGetDataAt(aDOMWindow.TAB_DROP_TYPE, 0);
+					// not our drop then
+					if (!draggedTab) {
+						return;
 					}
-				} else if (dt.mozTypesAt(0).contains('text/uri-list')) { // for links
-					let url = dt.mozGetDataAt('URL', 0);
+				}
+				
+				if (draggedTab && dropEffect == "copy") {
+					// copy the dropped tab (wherever it's from)
 					
-					// there is no "event" parameter therefore there is no "event.shiftKey" therefore we always load link in background
-					// (unlike default behaviour where holding shift allows loading links in foreground, depending on "browser.tabs.loadInBackground" pref)
-					// but with some effort (using drag-over or mouse-over default events for example) I think it can be implemented but I leave it out for now
-
+					// here will be #39 ([Bug]Ctrl+drag to duplicate tab)
+					
+				}  else if (draggedTab && draggedTab.parentNode == g.tabContainer) {
+					// Here moving tab/tabs in one window
+					if (tt.hasAnyChildren(draggedTab._tPos)) {
+						tt.moveBranchToPlus(draggedTab, tPosTo, orientation);
+					} else {
+						tt.moveTabToPlus(draggedTab, tPosTo, orientation);
+					}
+				} else if (draggedTab) {
+					// Here moving tab/tabs between two windows
+					tt.moveBranchToAnotherWindow(draggedTab, tPosTo, orientation, aDOMWindow);
+				} else {
+					// Here we dropping links
+					
+					// Pass true to disallow dropping javascript: or data: urls
+					let url;
+					try {
+						url = aDOMWindow.browserDragAndDrop.drop(aDOMWindow.tt.dropEvent, {}, true);
+					} catch (ex) {
+					}
+					
+					if (!url)
+						return;
+					
+					let bgLoad = Services.prefs.getBoolPref("browser.tabs.loadInBackground");
+					
+					if (aDOMWindow.tt.dropEvent.shiftKey) {
+						bgLoad = !bgLoad;
+					}
+					
 					// We're adding a new tab.
-					let newTab = g.loadOneTab(url, {inBackground: true, allowThirdPartyFixup: true});
+					let newTab = g.loadOneTab(url, {inBackground: bgLoad, allowThirdPartyFixup: true});
 					tt.moveTabToPlus(newTab, tPosTo, orientation);
 				}
 				g.mCurrentTab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(g.mCurrentTab._tPos - tt.nPinned); // NEW
-			} // drop(row, orientation, dataTransfer)
+				delete aDOMWindow.tt.dropEvent;
+			},
 		}; // let view =
 		tree.view = view;
 
