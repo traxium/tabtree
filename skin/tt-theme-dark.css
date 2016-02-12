@@ -119,7 +119,7 @@
 /* ::::: drop feedback ::::: */
 
 .tt-treechildren::-moz-tree-row(dropOn) {
-	background-color: var(--tt-chrome-secondary-background-color);
+	background-color: var(--tab-selection-background-color);
 }
 
 .tt-treechildren::-moz-tree-row(dropOn),

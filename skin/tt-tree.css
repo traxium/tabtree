@@ -94,7 +94,10 @@
 }
 /**********************************************************************************************************************/
 
-.tt-treechildren::-moz-tree-row(dropOn),
+.tt-treechildren::-moz-tree-row(dropOn) {
+	border: 1px dashed HighlightText;
+}
+
 .tt-treechildren::-moz-tree-row(dropBefore),
 .tt-treechildren::-moz-tree-row(dropAfter) {
 	border: 1px dashed Highlight;
