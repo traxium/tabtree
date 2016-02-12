@@ -2681,8 +2681,7 @@ var windowListener = {
 			let tab = aDOMWindow.TabContextMenu.contextTab;
 			let tPos = tab._tPos;
 			let lvl = ss.getTabValue(tab, "ttLevel");
-			aDOMWindow.BrowserOpenTab(); // our new tab will be opened at position g.tabs.length - 1
-			let newTab = g.tabs[g.tabs.length - 1];
+			let newTab = g.addTab("about:newtab"); // our new tab will be opened at position g.tabs.length - 1
 			for (let i = tPos + 1; i < g.tabs.length - 1; ++i) {
 				if (parseInt(ss.getTabValue(g.tabs[i], "ttLevel")) <= parseInt(lvl)) {
 					g.moveTabTo(newTab, i);
@@ -2690,6 +2689,7 @@ var windowListener = {
 				}
 			}
 			ss.setTabValue(newTab, "ttLevel", lvl);
+			g.selectedTab = newTab;
 		}, false);
 
 		let menuItemOpenNewTabChild = aDOMWindow.document.createElement("menuitem"); // removed in unloadFromWindow()
@@ -2698,10 +2698,14 @@ var windowListener = {
 		menuItemOpenNewTabChild.addEventListener("command", function (event) {
 			let tab = aDOMWindow.TabContextMenu.contextTab;
 			let lvl = ss.getTabValue(tab, "ttLevel");
-			aDOMWindow.BrowserOpenTab(); // our new tab will be opened at position g.tabs.length - 1
-			let newTab = g.tabs[g.tabs.length - 1];
-			g.moveTabTo(newTab, tt.lastDescendantPos(tab) + 1);
+			let newTab = g.addTab("about:newtab"); // our new tab will be opened at position g.tabs.length - 1
+			if (Services.prefs.getBoolPref("extensions.tabtree.insertRelatedAfterCurrent")) {
+				g.moveTabTo(newTab, tab._tPos + 1);
+			} else {
+				g.moveTabTo(newTab, tt.lastDescendantPos(tab) + 1);
+			}
 			ss.setTabValue(newTab, "ttLevel", (parseInt(lvl) + 1).toString());
+			g.selectedTab = newTab;
 		}, false);
 
 		let tabContextMenu = aDOMWindow.document.querySelector('#tabContextMenu');
