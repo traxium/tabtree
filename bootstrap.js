@@ -1179,10 +1179,14 @@ var windowListener = {
 				return c;
 			},
 
-			hasAnyChildren: function(tPos) {
-				let l = parseInt(ss.getTabValue(g.tabs[tPos], 'ttLevel'));
-				return !!( g.tabs[tPos + 1] && l + 1 == parseInt(ss.getTabValue(g.tabs[tPos + 1], 'ttLevel')) );
-			}, // hasAnyChildren(tPos)
+			hasAnyChildren: function(tPos, gBrowser = g) {
+				// `hasAnyChildren` is used when moving tabs between windows
+				// so it's very possible that a tab has `gBrowser` from another window:
+				let tab = gBrowser.tabs[tPos];
+				let lvl = parseInt(ss.getTabValue(tab, "ttLevel"));
+				let nextTab = gBrowser.tabs[tPos + 1];
+				return !!(!tab.pinned && nextTab && parseInt(ss.getTabValue(nextTab, "ttLevel")) === lvl + 1);
+			},
 
 			hasAnySiblings: function(tPos) {
 				let level = parseInt(ss.getTabValue(g.tabs[tPos], 'ttLevel'));
@@ -1440,39 +1444,23 @@ var windowListener = {
 			},
 			
 			moveTabToAnotherWindow: function(draggedTab, newIndex, mode, aDOMWindowTo) {
-				let draggedG = draggedTab.ownerDocument.defaultView.gBrowser;
-				let isPending = draggedTab.hasAttribute("pending");
-				
 				// swap the dropped tab with a new one we create and then close
 				// it in the other window (making it seem to have moved between
 				// windows)
 				let newTab = aDOMWindowTo.gBrowser.addTab("about:blank");
+				// - after this line `newTab.linkedBrowser.isRemoteBrowser === true` (for e10s of course)
 				
 				// If we're an e10s browser window, an exception will be thrown
 				// if we attempt to drag a non-remote browser in, so we need to
 				// ensure that the remoteness of the newly created browser is
 				// appropriate for the URL of the tab being dragged in.
-				if (isPending) {
-					// If `draggedTab` is pending (i.e. has not been restored, yet)
-					// then `draggedTab.linkedBrowser.isRemoteBrowser === false`
-					// but if `draggedTab` is not pending then `draggedTab.linkedBrowser.isRemoteBrowser === true` (in e10s)
-					// and `swapBrowsersAndCloseOther` has line:
-					// `if (ourBrowser.isRemoteBrowser != otherBrowser.isRemoteBrowser) return;`
-					// and therefore `swapBrowsersAndCloseOther` does nothing
-					// so we have to use `updateBrowserRemoteness` in order this code to work with pending tabs:
-					
-					// And for some reason after invoking `updateBrowserRemoteness()` `tabData.image` in SS becomes `null`
-					// i.e. Firefox forgets that the tab has an favicon so it should be remembered and placed back:
-					let mIconURL = draggedTab.linkedBrowser.mIconURL;
-					draggedG.updateBrowserRemoteness(draggedTab.linkedBrowser, aDOMWindowTo.gMultiProcessBrowser);
-					draggedG.setIcon(draggedTab, mIconURL);
-				} else {
-					// Actually everything works if it's just `draggedG.updateBrowserRemoteness(draggedTab.linkedBrowser, true);`
-					// for pending and not pending tabs but I'm trying to be as close to the original (tabbrowser.xml && ext-tabs.js) as possible:
-					let newBrowser = aDOMWindowTo.gBrowser.getBrowserForTab(newTab);
-					let draggedBrowserURL = draggedTab.linkedBrowser.currentURI.spec;
-					aDOMWindowTo.gBrowser.updateBrowserRemotenessByURL(newBrowser, draggedBrowserURL);
-				}
+				
+				// This assumption taken from chrome://browser/content/tabbrowser.xml is wrong
+				// because pending (i.e. not restored, yet) tabs always have `false` remoteness regardless of URL
+				// and `swapBrowsersAndCloseOther` has line:
+				// `if (ourBrowser.isRemoteBrowser != otherBrowser.isRemoteBrowser) return;`
+				// so we just copy remoteness from `draggedTab` to `newTab`:
+				aDOMWindowTo.gBrowser.updateBrowserRemoteness(newTab.linkedBrowser, draggedTab.linkedBrowser.isRemoteBrowser);
 				
 				// Stop the about:blank load
 				aDOMWindowTo.gBrowser.stop();
@@ -1480,11 +1468,12 @@ var windowListener = {
 				//noinspection BadExpressionStatementJS
 				aDOMWindowTo.gBrowser.docShell;
 				
-				//let numPinned = gBrowserTo.gBrowser._numPinnedTabs;
-				//if (newIndex < numPinned || tab.pinned && newIndex == numPinned)
-				//	gBrowserTo.gBrowser.pinTab(newTab);
-				// TODO: pinned
-				tt.moveTabToPlus(newTab, newIndex, mode);
+				if (newIndex < aDOMWindowTo.gBrowser._numPinnedTabs) {
+					aDOMWindowTo.gBrowser.pinTab(newTab);
+					tt.movePinnedToPlus(newTab, newIndex, mode);
+				} else {
+					tt.moveTabToPlus(newTab, newIndex, mode);
+				}
 				
 				// `swapBrowsersAndCloseOther` copies `ttLevel` from `draggedTab` and overrides correct `ttLevel`
 				// so let's remember and restore our `ttLevel`:
@@ -1987,6 +1976,8 @@ var windowListener = {
 						// Enabling drag and drop tabs to another window
 						// Firefox can't move tabs from e10s to non-e10s windows and vice versa
 						return draggedTab.ownerDocument.defaultView.gMultiProcessBrowser === aDOMWindow.gMultiProcessBrowser;
+						// Although it's possible to do moving pending and about:x tabs between any types of windows
+						// But I doubt it's worth the trouble
 					}
 				}
 				
@@ -2025,26 +2016,26 @@ var windowListener = {
 					}
 				} else if (draggedTab) {
 					// Here moving tab/tabs between two windows
-					tt.moveBranchToAnotherWindow(draggedTab, tPosTo, orientation, aDOMWindow);
+					if (tt.hasAnyChildren(draggedTab._tPos, draggedTab.parentNode.tabbrowser)) {
+						tt.moveBranchToAnotherWindow(draggedTab, tPosTo, orientation, aDOMWindow);
+					} else {
+						tt.moveTabToAnotherWindow(draggedTab, tPosTo, orientation, aDOMWindow);
+					}
 				} else {
 					// Here we dropping links
-					
 					// Pass true to disallow dropping javascript: or data: urls
 					let url;
 					try {
 						url = aDOMWindow.browserDragAndDrop.drop(aDOMWindow.tt.dropEvent, {}, true);
 					} catch (ex) {
 					}
-					
-					if (!url)
+					if (!url) {
 						return;
-					
+					}
 					let bgLoad = Services.prefs.getBoolPref("browser.tabs.loadInBackground");
-					
 					if (aDOMWindow.tt.dropEvent.shiftKey) {
 						bgLoad = !bgLoad;
 					}
-					
 					// We're adding a new tab.
 					let newTab = g.loadOneTab(url, {inBackground: bgLoad, allowThirdPartyFixup: true});
 					tt.moveTabToPlus(newTab, tPosTo, orientation);
@@ -2135,7 +2126,18 @@ var windowListener = {
 		toolbar.addEventListener('dragover', (event) => {
 			let dt = event.dataTransfer;
 			let ot = event.originalTarget;
-
+			
+			// Forbid moving tabs from e10s to non-e10s and vice versa
+			// although it's possible to do moving pending and about:x tabs between any types of windows
+			// but I doubt it's worth the trouble:
+			if (dt.mozTypesAt(0)[0] == aDOMWindow.TAB_DROP_TYPE) { // tab copy or move
+				let draggedTab = dt.mozGetDataAt(aDOMWindow.TAB_DROP_TYPE, 0);
+				// not our drop then
+				if (!draggedTab || draggedTab.ownerDocument.defaultView.gMultiProcessBrowser !== aDOMWindow.gMultiProcessBrowser) {
+					return;
+				}
+			}
+			
 			if ((dt.mozTypesAt(0).contains(aDOMWindow.TAB_DROP_TYPE) || dt.mozTypesAt(0).contains('text/uri-list')) &&
 				 dt.mozGetDataAt("application/x-moz-node", 0) !== ot
 			) {
@@ -2167,61 +2169,64 @@ var windowListener = {
 			dropIndicator.collapsed = true;
 		}, false);
 
-		toolbar.addEventListener('drop', function f(event) {
+		toolbar.addEventListener("drop", function onDrop(event) {
 			let dt = event.dataTransfer;
-
-			if (dt.mozTypesAt(0).contains(aDOMWindow.TAB_DROP_TYPE)) {
-				// rearranging pinned tabs:
-				event.preventDefault();
-				event.stopPropagation();
-
-				let sourceTab = dt.mozGetDataAt(aDOMWindow.TAB_DROP_TYPE, 0);
-
-				if (!dt.mozTypesAt(0).contains('application/x-moz-node') || dt.mozGetDataAt('application/x-moz-node', 0).tagName!='toolbarbutton') {
-					// moving a tab from 'tree' to 'toolbar'
-					g.pinTab(sourceTab);
-				}
-
-				if (event.originalTarget.tagName == 'xul:toolbarbutton' || event.originalTarget.tagName == 'toolbar') {
-					if (event.originalTarget.tagName == 'xul:toolbarbutton') {
-						let tPos = event.originalTarget.tPos; // see bindings.xml
-						if (event.screenX <= event.originalTarget.boxObject.screenX + event.originalTarget.boxObject.width / 2) {
-							tt.movePinnedToPlus(sourceTab, tPos, tt.DROP_BEFORE);
-						} else {
-							tt.movePinnedToPlus(sourceTab, tPos, tt.DROP_AFTER);
-						}
-					} else if (event.originalTarget.tagName == 'toolbar') {
-						tt.movePinnedToPlus(sourceTab, tt.nPinned-1, tt.DROP_AFTER);
-					}
-					dropIndicator.collapsed = true;
-				}
-			} else if (dt.mozTypesAt(0).contains('text/uri-list')) {
-				// adding new pinned tab:
-				// there is no "event" parameter therefore there is no "event.shiftKey" therefore we always load link in background
-				// (unlike default behaviour where holding shift allows loading links in foreground, depending on "browser.tabs.loadInBackground" pref)
-				// but with some effort (using drag-over or mouse-over default events for example) I think it can be implemented but I leave it out for now
-				event.preventDefault();
-				event.stopPropagation();
-
-				let url = dt.mozGetDataAt('URL', 0);
-				// We're adding a new tab.
-				let newTab = g.loadOneTab(url, {inBackground: true, allowThirdPartyFixup: true, relatedToCurrent: false});
-				g.pinTab(newTab);
-
-				if (event.originalTarget.tagName == 'xul:toolbarbutton' || event.originalTarget.tagName == 'toolbar') {
-					if (event.originalTarget.tagName == 'xul:toolbarbutton') {
-						let tPos = event.originalTarget.tPos; // see bindings.xml
-						if (event.screenX <= event.originalTarget.boxObject.screenX + event.originalTarget.boxObject.width / 2) {
-							tt.movePinnedToPlus(newTab, tPos, tt.DROP_BEFORE);
-						} else {
-							tt.movePinnedToPlus(newTab, tPos, tt.DROP_AFTER);
-						}
-					} else if (event.originalTarget.tagName == 'toolbar') {
-						tt.movePinnedToPlus(newTab, tt.nPinned-1, tt.DROP_AFTER);
-					}
-					dropIndicator.collapsed = true;
+			let dropEffect = dt.dropEffect;
+			let draggedTab;
+			if (dt.mozTypesAt(0)[0] == aDOMWindow.TAB_DROP_TYPE) { // tab copy or move
+				draggedTab = dt.mozGetDataAt(aDOMWindow.TAB_DROP_TYPE, 0);
+				// not our drop then
+				if (!draggedTab) {
+					return;
 				}
 			}
+			let newIndex = g._numPinnedTabs - 1;
+			let orientation = tt.DROP_AFTER;
+			if (event.originalTarget.localName === "toolbarbutton") {
+				newIndex = event.originalTarget.tPos; // see bindings.xml
+				if (event.screenX <= event.originalTarget.boxObject.screenX + event.originalTarget.boxObject.width / 2) {
+					orientation = tt.DROP_BEFORE;
+				} else {
+					orientation = tt.DROP_AFTER;
+				}
+			}
+			
+			if (draggedTab && dropEffect == "copy") {
+				// copy the dropped tab (wherever it's from)
+				
+				// here will be #39 ([Bug]Ctrl+drag to duplicate tab)
+				
+			}  else if (draggedTab && draggedTab.parentNode == g.tabContainer) {
+				// Here dropping a tab from the same window
+				g.pinTab(draggedTab);
+				tt.movePinnedToPlus(draggedTab, newIndex, orientation);
+			} else if (draggedTab) {
+				// Here dropping a tab from another window
+				draggedTab.parentNode.tabbrowser.pinTab(draggedTab);
+				tt.moveTabToAnotherWindow(draggedTab, newIndex, orientation, aDOMWindow);
+			} else {
+				// Here dropping links
+				// Pass true to disallow dropping javascript: or data: urls
+				let url;
+				try {
+					url = aDOMWindow.browserDragAndDrop.drop(event, {}, true);
+				} catch (ex) {
+				}
+				if (!url) {
+					return;
+				}
+				let bgLoad = Services.prefs.getBoolPref("browser.tabs.loadInBackground");
+				if (event.shiftKey) {
+					bgLoad = !bgLoad;
+				}
+				// We're adding a new tab.
+				let newTab = g.loadOneTab(url, {inBackground: bgLoad, allowThirdPartyFixup: true});
+				g.pinTab(newTab);
+				tt.movePinnedToPlus(newTab, newIndex, orientation);
+			}
+			g.mCurrentTab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(g.mCurrentTab._tPos - tt.nPinned);
+			delete aDOMWindow.tt.dropEvent;
+			dropIndicator.collapsed = true;
 		}, false);
 
 		aDOMWindow.tt.toRestore.g.removeTab = g.removeTab;
