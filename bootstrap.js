@@ -2720,6 +2720,8 @@ var windowListener = {
 			menuItemCloseTree.hidden = menuItemCloseChildren.hidden = !tt.hasAnyChildren(tab._tPos);
 			menuItemOpenNewTabChild.hidden = tab.pinned;
 			menuItemOpenNewTabSibling.hidden = tab._tPos < tt.nPinned - 1;
+			
+			g.mCurrentTab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(g.mCurrentTab._tPos - g._numPinnedTabs);
 		}), false); // removed in unloadFromWindow()
 		//////////////////// END TAB CONTEXT MENU //////////////////////////////////////////////////////////////////////
 
