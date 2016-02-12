@@ -135,6 +135,7 @@ function startup(data, reason)
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.theme', 1); // #35 #50
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.prefix-context-menu-items', false); // #60 (Garbage in menu items)
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.tab-height', -1); // #67 [Feature] Provide a way to change the items height
+	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.tab-flip', true);
 
 	// migration code :
 	try {
@@ -2464,7 +2465,15 @@ var windowListener = {
 							if (processOverlayClickTree(tab)) return;
 							// Intentional fall-through otherwise
 						default:
-							g.selectTabAtIndex(tPos);
+							if (tab === g.mCurrentTab) {
+								// Tab flip
+								if (Services.prefs.getBoolPref("extensions.tabtree.tab-flip")) {
+									let recentlyUsedTabs = Array.filter(g.tabs, (tab) => !tab.closing).sort((tab1, tab2) => tab2.lastAccessed - tab1.lastAccessed);
+									g.selectedTab = recentlyUsedTabs[0] === g.mCurrentTab ? recentlyUsedTabs[1] : recentlyUsedTabs[0];
+								}
+							} else {
+								g.selectTabAtIndex(tPos);
+							}
 							return;
 					}
 				}
@@ -2491,7 +2500,17 @@ var windowListener = {
 								if (processOverlayClickTree(tab)) return;
 								// Intentional fall-through otherwise
 							default:
-								f.timer = aDOMWindow.setTimeout(function(){g.selectTabAtIndex(tPos);}, Services.prefs.getIntPref('extensions.tabtree.delay'));
+								f.timer = aDOMWindow.setTimeout(function () {
+									if (tab === g.mCurrentTab) {
+										// Tab flip
+										if (Services.prefs.getBoolPref("extensions.tabtree.tab-flip")) {
+											let recentlyUsedTabs = Array.filter(g.tabs, (tab) => !tab.closing).sort((tab1, tab2) => tab2.lastAccessed - tab1.lastAccessed);
+											g.selectedTab = recentlyUsedTabs[0] === g.mCurrentTab ? recentlyUsedTabs[1] : recentlyUsedTabs[0];
+										}
+									} else {
+										g.selectTabAtIndex(tPos);
+									}
+								}, Services.prefs.getIntPref('extensions.tabtree.delay'));
 								return;
 						}
 					} else if (event.detail == 2) { // the second click - remove a tab

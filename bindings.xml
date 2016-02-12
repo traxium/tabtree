@@ -107,7 +107,19 @@
     </implementation>
 
     <handlers>
-      <handler event="command" action="if(this.tab) this._browser.selectTabAtIndex(this.tab._tPos)"/>
+      <handler event="command"><![CDATA[
+        if (this.tab) {
+          if (this.tab === this._browser.mCurrentTab) {
+            // Tab flip
+            if (Services.prefs.getBoolPref("extensions.tabtree.tab-flip")) {
+              let recentlyUsedTabs = Array.filter(this._browser.tabs, (tab) => !tab.closing).sort((tab1, tab2) => tab2.lastAccessed - tab1.lastAccessed);
+              this._browser.selectedTab = recentlyUsedTabs[0] === this._browser.mCurrentTab ? recentlyUsedTabs[1] : recentlyUsedTabs[0];
+            }
+          } else {
+            this._browser.selectTabAtIndex(this.tab._tPos);
+          }
+        }
+      ]]></handler>
       <handler event="click" button="0"><![CDATA[
         if (event.originalTarget === this._overlay) {
           event.stopPropagation();

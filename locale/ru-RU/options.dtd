@@ -69,3 +69,5 @@
 <!ENTITY insertRelatedAfterCurrent.bottom "Снизу">
 <!ENTITY prefix-context-menu-items.title "Добавлять префикс &#171;Tab Tree:&#187; к опциям в контестном меню:">
 <!ENTITY prefix-context-menu-items.desc "&#171;Tab Tree: Закрыть дочерние вкладки&#187; вместо &#171;Закрыть дочерние вкладки&#187; (не отмечено по умолчанию)">
+<!ENTITY tab-flip.title "Tab flip:">
+<!ENTITY tab-flip.desc "Перейти на предыдущую выделенную вкладку при щелчке по текущей вкладке (отмечено по умолчанию)">

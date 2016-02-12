@@ -69,3 +69,5 @@
 <!ENTITY insertRelatedAfterCurrent.bottom "Bottom">
 <!ENTITY prefix-context-menu-items.title "Prefix context menu items with &#171;Tab Tree:&#187;:">
 <!ENTITY prefix-context-menu-items.desc "If you want &#171;Tab Tree: Close Children&#187; instead of just &#171;Close Children&#187; (unchecked by default)">
+<!ENTITY tab-flip.title "Tab flip:">
+<!ENTITY tab-flip.desc "Selects the previously active tab when clicking the currently active tab (checked by default)">

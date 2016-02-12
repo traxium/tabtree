@@ -33,6 +33,7 @@
     </setting>
     <setting type="bool" pref="extensions.tabtree.highlight-unread-tabs" title="&highlight-unread-tabs.title;" desc="&highlight-unread-tabs.desc;" />
     <setting type="bool" pref="extensions.tabtree.dblclick" title="&dblclick.title;" desc="&dblclick.desc;" onpreferencechanged="this.setAttribute('value', this.value.toString());" />
+    <setting type="integer" pref="extensions.tabtree.delay" title="&delay.title;" desc="&delay.desc;" />
     <setting type="menulist" pref="extensions.tabtree.middle-click-tabbar" title="&middle-click-tabbar.title;" desc="&middle-click-tabbar.desc;">
         <menulist>
             <menupopup>
@@ -41,7 +42,6 @@
             </menupopup>
         </menulist>
     </setting>
-    <setting type="integer" pref="extensions.tabtree.delay" title="&delay.title;" desc="&delay.desc;" />
     <setting type="menulist" pref="extensions.tabtree.position" title="&position.title;" desc="&position.desc;">
         <menulist>
             <menupopup>
@@ -113,4 +113,5 @@
         </radiogroup>
     </setting>
     <setting type="bool" pref="extensions.tabtree.prefix-context-menu-items" title="&prefix-context-menu-items.title;" desc="&prefix-context-menu-items.desc;" />
+    <setting type="bool" pref="extensions.tabtree.tab-flip" title="&tab-flip.title;" desc="&tab-flip.desc;" />
 </vbox>
