@@ -1,3 +1,14 @@
+1.4.4
+- Drag and drop tabs between windows is added (however like in vanilla Firefox it's impossible to move a tab from e10s to non-e10s windows and vice versa)
+- Drag and drop links: restored Shift key behaviour (holding shift inverts "browser.tabs.loadInBackground" about:config preference)
+- Tab flip (optionally, enabled by default)
+- Added Ctrl+Shift+Left/Right keyboard shortcut to decrease/increase the indentation level of a current tab +/- one level
+- Slightly changed drop feedback styles
+- "Open a new tab as a child" respects "extensions.tabtree.insertRelatedAfterCurrent" preference
+- Hiding the tree when there's only one tab ("extensions.tabtree.hide-tabtree-with-one-tab") is enabled by default
+- Fixed wrong selected tab highlighting after right-clicking (to see context menu) a tab
+- Fixed bugs when after using "Open a new tab as the next sibling" or "Open a new tab as a child" the tree was scrolled to the bottom
+
 1.4.3
 - Added #68 keyboard shortcuts:
     Ctrl+Shift+PageUp/Down — moves tabs as expected (from my understanding)
