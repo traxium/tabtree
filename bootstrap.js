@@ -1152,6 +1152,21 @@ var windowListener = {
 					g.moveTabToEnd();
 				}
 				tree.treeBoxObject.invalidate();
+			} else if (keyboardEvent.ctrlKey && keyboardEvent.altKey && keyboardEvent.key === "ArrowLeft") {
+				// #68 Decrease tab indentation one level:
+				let lvl = parseInt(ss.getTabValue(g.mCurrentTab, "ttLevel"));
+				if (lvl <= 0) {
+					return;
+				}
+				let newLvl = (lvl - 1).toString();
+				ss.setTabValue(g.mCurrentTab, "ttLevel", newLvl);
+				tree.treeBoxObject.invalidateRow(g.mCurrentTab._tPos - g._numPinnedTabs);
+			} else if (keyboardEvent.ctrlKey && keyboardEvent.altKey && keyboardEvent.key === "ArrowRight") {
+				// #68 Increase tab indentation one level:
+				let lvl = parseInt(ss.getTabValue(g.mCurrentTab, "ttLevel"));
+				let newLvl = (lvl + 1).toString();
+				ss.setTabValue(g.mCurrentTab, "ttLevel", newLvl);
+				tree.treeBoxObject.invalidateRow(g.mCurrentTab._tPos - g._numPinnedTabs);
 			}
 		}), false);
 
