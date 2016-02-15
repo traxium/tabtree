@@ -1662,9 +1662,29 @@ var windowListener = {
 			}
 		}, false);
 
-		for (let i=0; i<g.tabs.length; ++i) {
-			if ( ss.getTabValue(g.tabs[i], 'ttLevel') === '' ) {
-				ss.setTabValue(g.tabs[i], 'ttLevel', '0');
+		// #71 Feature request: Import tree structure from TST on first run
+		// If it's the first run and there was TST installed before
+		if (ss.getTabValue(g.tabs[0], "ttLevel") === "" && ss.getTabValue(g.tabs[0], "treestyletab-id")) {
+			let tabsByTSTId = {};
+			for (let tab of g.tabs) {
+				tabsByTSTId[ss.getTabValue(tab, "treestyletab-id")] = tab;
+			}
+			let getTSTLvl  = (tab) => {
+				let parentId = ss.getTabValue(tab, "treestyletab-parent");
+				if (parentId) {
+					return getTSTLvl(tabsByTSTId[parentId]) + 1;
+				} else {
+					return 0;
+				}
+			};
+			for (let tab of g.tabs) {
+				ss.setTabValue(tab, "ttLevel", getTSTLvl(tab).toString());
+			}
+		} else {
+			for (let tab of g.tabs) {
+				if (ss.getTabValue(tab, "ttLevel") === "") {
+					ss.setTabValue(tab, "ttLevel", "0");
+				}
 			}
 		}
 
