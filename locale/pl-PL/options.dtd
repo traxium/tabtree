@@ -71,3 +71,7 @@
 <!ENTITY prefix-context-menu-items.desc "If you want &#171;Tab Tree: Close Children&#187; instead of just &#171;Close Children&#187; (unchecked by default)">
 <!ENTITY tab-flip.title "Tab flip:">
 <!ENTITY tab-flip.desc "Selects the previously active tab when clicking the currently active tab (checked by default)">
+<!ENTITY flatten.title "Flatten the tree:">
+<!ENTITY flatten.desc "Reset all the tabs to level 0">
+<!ENTITY flatten.label "Your tree structure will be lost">
+<!ENTITY flatten.confirm "You can\'t undo this operation. Continue anyway?">

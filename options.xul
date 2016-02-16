@@ -114,4 +114,7 @@
     </setting>
     <setting type="bool" pref="extensions.tabtree.prefix-context-menu-items" title="&prefix-context-menu-items.title;" desc="&prefix-context-menu-items.desc;" />
     <setting type="bool" pref="extensions.tabtree.tab-flip" title="&tab-flip.title;" desc="&tab-flip.desc;" />
+    <setting type="control" title="&flatten.title;" desc="&flatten.desc;" >
+        <button label="&flatten.label;" oncommand="if(!confirm('&flatten.confirm;')) return; let ss = Cc['@mozilla.org/browser/sessionstore;1'].getService(Ci.nsISessionStore); let DOMWindows = Services.wm.getEnumerator('navigator:browser'); while (DOMWindows.hasMoreElements()) {let w = DOMWindows.getNext(); for (let tab of w.gBrowser.tabs) ss.setTabValue(tab, 'ttLevel', '0'); w.document.querySelector('#tt').treeBoxObject.invalidate();}"/>
+    </setting>
 </vbox>
