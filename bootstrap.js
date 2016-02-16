@@ -1548,6 +1548,7 @@ var windowListener = {
 		}; // let tt =
 
 		treechildren.addEventListener('dragstart', function(event) { // if the event was attached to 'tree' then the popup would be shown while you scrolling
+			event.dataTransfer.effectAllowed = "copyMove";
 			let tab = g.tabs[tree.currentIndex+tt.nPinned];
 			event.dataTransfer.mozSetDataAt(aDOMWindow.TAB_DROP_TYPE, tab, 0);
 			// "We must not set text/x-moz-url or text/plain data here,"
@@ -2046,9 +2047,20 @@ var windowListener = {
 				
 				if (draggedTab && dropEffect == "copy") {
 					// copy the dropped tab (wherever it's from)
-					
-					// here will be #39 ([Bug]Ctrl+drag to duplicate tab)
-					
+					// #39 Ctrl+drag to duplicate tab
+					// It duplicates only one tab despite a drag feedback that can represent a subtree
+					let newTab = g.duplicateTab(draggedTab);
+					// `duplicateTab()` is asynchronous and uses SS to do the work
+					// so we have to wait before moving a tab to ensure that "ttLevel" is correct:
+					let shift = aDOMWindow.tt.dropEvent.shiftKey;
+					newTab.addEventListener("SSTabRestoring", function onSSTabRestoring(event) {
+						newTab.removeEventListener("SSTabRestoring", onSSTabRestoring, false);
+						tt.moveTabToPlus(newTab, tPosTo, orientation);
+						if (shift) {
+							g.tabContainer.selectedItem = newTab;
+						}
+						tree.treeBoxObject.invalidate();
+					}, false);
 				}  else if (draggedTab && draggedTab.parentNode == g.tabContainer) {
 					// Here moving tab/tabs in one window
 					if (tt.hasAnyChildren(draggedTab._tPos)) {
@@ -2156,6 +2168,7 @@ var windowListener = {
 		}); // don't forget to restore
 
 		toolbar.addEventListener('dragstart', function(event) {
+			event.dataTransfer.effectAllowed = "copyMove";
 			let toolbarbtn = event.originalTarget;
 			let tPos = toolbarbtn.tPos; // See bindings.xml
 			let tab = g.tabs[tPos];
@@ -2235,9 +2248,22 @@ var windowListener = {
 			
 			if (draggedTab && dropEffect == "copy") {
 				// copy the dropped tab (wherever it's from)
-				
-				// here will be #39 ([Bug]Ctrl+drag to duplicate tab)
-				
+				// #39 Ctrl+drag to duplicate tab
+				// It duplicates only one tab despite a drag feedback that can represent a subtree
+				let newTab = g.duplicateTab(draggedTab);
+				// `duplicateTab()` is asynchronous and uses SS to do the work
+				// so we have to wait before moving a tab to ensure that "ttLevel" is correct:
+				let shift = event.shiftKey;
+				newTab.addEventListener("SSTabRestoring", function onSSTabRestoring(event) {
+					newTab.removeEventListener("SSTabRestoring", onSSTabRestoring, false);
+					g.pinTab(newTab);
+					tt.movePinnedToPlus(newTab, newIndex, orientation);
+					if (shift) {
+						g.tabContainer.selectedItem = newTab;
+					}
+					tree.treeBoxObject.invalidate();
+					tt.redrawToolbarbuttons();
+				}, false);
 			}  else if (draggedTab && draggedTab.parentNode == g.tabContainer) {
 				// Here dropping a tab from the same window
 				g.pinTab(draggedTab);
