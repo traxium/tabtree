@@ -1545,6 +1545,22 @@ var windowListener = {
 					}
 				}
 			},
+			
+			duplicateTab: function (tab, lvl, posTo) {
+				// `gBrowser.duplicateTab()` is asynchronous and uses SS to do the work
+				// so we have to wait a bit to ensure "ttLevel" is correct:
+				let newTab = g.duplicateTab(tab);
+				newTab.addEventListener("SSTabRestoring", function onSSTabRestoring(event) {
+					newTab.removeEventListener("SSTabRestoring", onSSTabRestoring, false);
+					
+					if (posTo) {
+						g.moveTabTo(newTab, posTo);
+					}
+					ss.setTabValue(newTab, "ttLevel", lvl.toString());
+					g.selectedTab = newTab;
+					tree.treeBoxObject.invalidate();
+				}, false);
+			},
 		}; // let tt =
 
 		treechildren.addEventListener('dragstart', function(event) { // if the event was attached to 'tree' then the popup would be shown while you scrolling
@@ -2803,22 +2819,12 @@ var windowListener = {
 			let tab = aDOMWindow.TabContextMenu.contextTab;
 			let tPos = tab._tPos;
 			let lvl = ss.getTabValue(tab, "ttLevel");
-			let newTab = g.duplicateTab(tab); // our newly duplicated tab will be created at position g.tabs.length - 1
-			// `gBrowser.duplicateTab()` is asynchronous and uses SS to do the work
-			// so we have to wait before moving a tab to ensure that "ttLevel" is correct:
-			newTab.addEventListener("SSTabRestoring", function onSSTabRestoring(event) {
-				newTab.removeEventListener("SSTabRestoring", onSSTabRestoring, false);
-				
-				for (let i = tPos + 1; i < g.tabs.length - 1; ++i) {
-					if (parseInt(ss.getTabValue(g.tabs[i], "ttLevel")) <= parseInt(lvl)) {
-						g.moveTabTo(newTab, i);
-						break;
-					}
+			for (let i = tPos + 1; i < g.tabs.length - 1; ++i) {
+				if (parseInt(ss.getTabValue(g.tabs[i], "ttLevel")) <= parseInt(lvl)) {
+					tt.duplicateTab(tab, lvl, i);
+					break;
 				}
-				ss.setTabValue(newTab, "ttLevel", lvl);
-				g.selectedTab = newTab;
-				tree.treeBoxObject.invalidate();
-			}, false);
+			}
 		}, false);
 		
 		let menuItemDuplicateTabAsChild = aDOMWindow.document.createElement("menuitem"); // removed in unloadFromWindow()
@@ -2827,21 +2833,11 @@ var windowListener = {
 		menuItemDuplicateTabAsChild.addEventListener("command", function (event) {
 			let tab = aDOMWindow.TabContextMenu.contextTab;
 			let lvl = ss.getTabValue(tab, "ttLevel");
-			let newTab = g.duplicateTab(tab); // our newly duplicated tab will be created at position g.tabs.length - 1
-			// `gBrowser.duplicateTab()` is asynchronous and uses SS to do the work
-			// so we have to wait before moving a tab to ensure that "ttLevel" is correct:
-			newTab.addEventListener("SSTabRestoring", function onSSTabRestoring(event) {
-				newTab.removeEventListener("SSTabRestoring", onSSTabRestoring, false);
-				
-				if (Services.prefs.getBoolPref("extensions.tabtree.insertRelatedAfterCurrent")) {
-					g.moveTabTo(newTab, tab._tPos + 1);
-				} else {
-					g.moveTabTo(newTab, tt.lastDescendantPos(tab) + 1);
-				}
-				ss.setTabValue(newTab, "ttLevel", (parseInt(lvl) + 1).toString());
-				g.selectedTab = newTab;
-				tree.treeBoxObject.invalidate();
-			}, false);
+			if (Services.prefs.getBoolPref("extensions.tabtree.insertRelatedAfterCurrent")) {
+				tt.duplicateTab(tab, parseInt(lvl) + 1, tab._tPos + 1);
+			} else {
+				tt.duplicateTab(tab, parseInt(lvl) + 1, tt.lastDescendantPos(tab) + 1);
+			}
 		}, false);
 		
 		let menuItemDuplicateTabToBottom = aDOMWindow.document.createElement("menuitem"); // removed in unloadFromWindow()
@@ -2849,16 +2845,7 @@ var windowListener = {
 		//menuItemDuplicateTabToBottom.setAttribute("label", stringBundle.GetStringFromName("duplicate_bottom"));
 		menuItemDuplicateTabToBottom.addEventListener("command", function (event) {
 			let tab = aDOMWindow.TabContextMenu.contextTab;
-			let newTab = g.duplicateTab(tab); // our newly duplicated tab will be created at position g.tabs.length - 1
-			// `gBrowser.duplicateTab()` is asynchronous and uses SS to do the work
-			// so we have to wait before moving a tab to ensure that "ttLevel" is correct:
-			newTab.addEventListener("SSTabRestoring", function onSSTabRestoring(event) {
-				newTab.removeEventListener("SSTabRestoring", onSSTabRestoring, false);
-				
-				ss.setTabValue(newTab, "ttLevel", "0");
-				g.selectedTab = newTab;
-				tree.treeBoxObject.invalidate();
-			}, false);
+			tt.duplicateTab(tab, 0);
 		}, false);
 
 		let tabContextMenu = aDOMWindow.document.querySelector('#tabContextMenu');
