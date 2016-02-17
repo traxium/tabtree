@@ -2338,6 +2338,7 @@ var windowListener = {
 				
 				if (aPopupMenu.triggerNode.localName == 'treechildren') {
 					let tPos = tree.currentIndex + tt.nPinned;
+					aDOMWindow.document.popupNode = g.tabs[tPos]; // Fixes #84 TabTree removes custom entries from tab context menu
 					// we use 'Object.defineProperty' because aPopupMenu.triggerNode is not a writable property, plain 'aPopupMenu.triggerNode = blaBlaBla' doesn't work
 					// and furthermore it's an inherited getter property:
 					Object.defineProperty(aPopupMenu, 'triggerNode', {
@@ -2350,6 +2351,7 @@ var windowListener = {
 					delete aPopupMenu.triggerNode; // because it was an inherited property we can delete it to restore default value
 				} else if (aPopupMenu.triggerNode.localName == 'ttpinnedtab') {
 					let tPos = aPopupMenu.triggerNode.tPos;
+					aDOMWindow.document.popupNode = g.tabs[tPos]; // Fixes #84 TabTree removes custom entries from tab context menu
 					// we use 'Object.defineProperty' because aPopupMenu.triggerNode is not a writable property, plain 'aPopupMenu.triggerNode = blaBlaBla' doesn't work
 					// and furthermore it's an inherited getter property:
 					Object.defineProperty(aPopupMenu, 'triggerNode', {
