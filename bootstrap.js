@@ -2795,9 +2795,77 @@ var windowListener = {
 			ss.setTabValue(newTab, "ttLevel", (parseInt(lvl) + 1).toString());
 			g.selectedTab = newTab;
 		}, false);
+		
+		let menuItemDuplicateTabAsSibling = aDOMWindow.document.createElement("menuitem"); // removed in unloadFromWindow()
+		menuItemDuplicateTabAsSibling.id = "tt-content-duplicate-Sibling";
+		//menuItemDuplicateTabAsSibling.setAttribute("label", stringBundle.GetStringFromName("duplicate_sibling"));
+		menuItemDuplicateTabAsSibling.addEventListener("command", function (event) {
+			let tab = aDOMWindow.TabContextMenu.contextTab;
+			let tPos = tab._tPos;
+			let lvl = ss.getTabValue(tab, "ttLevel");
+			let newTab = g.duplicateTab(tab); // our newly duplicated tab will be created at position g.tabs.length - 1
+			// `gBrowser.duplicateTab()` is asynchronous and uses SS to do the work
+			// so we have to wait before moving a tab to ensure that "ttLevel" is correct:
+			newTab.addEventListener("SSTabRestoring", function onSSTabRestoring(event) {
+				newTab.removeEventListener("SSTabRestoring", onSSTabRestoring, false);
+				
+				for (let i = tPos + 1; i < g.tabs.length - 1; ++i) {
+					if (parseInt(ss.getTabValue(g.tabs[i], "ttLevel")) <= parseInt(lvl)) {
+						g.moveTabTo(newTab, i);
+						break;
+					}
+				}
+				ss.setTabValue(newTab, "ttLevel", lvl);
+				g.selectedTab = newTab;
+				tree.treeBoxObject.invalidate();
+			}, false);
+		}, false);
+		
+		let menuItemDuplicateTabAsChild = aDOMWindow.document.createElement("menuitem"); // removed in unloadFromWindow()
+		menuItemDuplicateTabAsChild.id = "tt-content-open-child";
+		//menuItemDuplicateTabAsChild.setAttribute("label", stringBundle.GetStringFromName("duplicate_child"));
+		menuItemDuplicateTabAsChild.addEventListener("command", function (event) {
+			let tab = aDOMWindow.TabContextMenu.contextTab;
+			let lvl = ss.getTabValue(tab, "ttLevel");
+			let newTab = g.duplicateTab(tab); // our newly duplicated tab will be created at position g.tabs.length - 1
+			// `gBrowser.duplicateTab()` is asynchronous and uses SS to do the work
+			// so we have to wait before moving a tab to ensure that "ttLevel" is correct:
+			newTab.addEventListener("SSTabRestoring", function onSSTabRestoring(event) {
+				newTab.removeEventListener("SSTabRestoring", onSSTabRestoring, false);
+				
+				if (Services.prefs.getBoolPref("extensions.tabtree.insertRelatedAfterCurrent")) {
+					g.moveTabTo(newTab, tab._tPos + 1);
+				} else {
+					g.moveTabTo(newTab, tt.lastDescendantPos(tab) + 1);
+				}
+				ss.setTabValue(newTab, "ttLevel", (parseInt(lvl) + 1).toString());
+				g.selectedTab = newTab;
+				tree.treeBoxObject.invalidate();
+			}, false);
+		}, false);
+		
+		let menuItemDuplicateTabToBottom = aDOMWindow.document.createElement("menuitem"); // removed in unloadFromWindow()
+		menuItemDuplicateTabToBottom.id = "tt-content-open-child";
+		//menuItemDuplicateTabToBottom.setAttribute("label", stringBundle.GetStringFromName("duplicate_bottom"));
+		menuItemDuplicateTabToBottom.addEventListener("command", function (event) {
+			let tab = aDOMWindow.TabContextMenu.contextTab;
+			let newTab = g.duplicateTab(tab); // our newly duplicated tab will be created at position g.tabs.length - 1
+			// `gBrowser.duplicateTab()` is asynchronous and uses SS to do the work
+			// so we have to wait before moving a tab to ensure that "ttLevel" is correct:
+			newTab.addEventListener("SSTabRestoring", function onSSTabRestoring(event) {
+				newTab.removeEventListener("SSTabRestoring", onSSTabRestoring, false);
+				
+				ss.setTabValue(newTab, "ttLevel", "0");
+				g.selectedTab = newTab;
+				tree.treeBoxObject.invalidate();
+			}, false);
+		}, false);
 
 		let tabContextMenu = aDOMWindow.document.querySelector('#tabContextMenu');
 		let tabContextMenuCloseTab = aDOMWindow.document.querySelector('#context_closeTab');
+		tabContextMenu.insertBefore(menuItemDuplicateTabToBottom, tabContextMenuCloseTab.nextSibling);
+		tabContextMenu.insertBefore(menuItemDuplicateTabAsChild, tabContextMenuCloseTab.nextSibling);
+		tabContextMenu.insertBefore(menuItemDuplicateTabAsSibling, tabContextMenuCloseTab.nextSibling);
 		tabContextMenu.insertBefore(menuItemOpenNewTabChild, tabContextMenuCloseTab.nextSibling);
 		tabContextMenu.insertBefore(menuItemOpenNewTabSibling, tabContextMenuCloseTab.nextSibling);
 		tabContextMenu.insertBefore(menuItemCloseChildren, tabContextMenuCloseTab.nextSibling);
@@ -2808,6 +2876,8 @@ var windowListener = {
 			menuItemCloseTree.hidden = menuItemCloseChildren.hidden = !tt.hasAnyChildren(tab._tPos);
 			menuItemOpenNewTabChild.hidden = tab.pinned;
 			menuItemOpenNewTabSibling.hidden = tab._tPos < tt.nPinned - 1;
+			
+			menuItemDuplicateTabAsChild.hidden = tab.pinned;
 			
 			g.mCurrentTab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(g.mCurrentTab._tPos - g._numPinnedTabs);
 		}), false); // removed in unloadFromWindow()
@@ -2901,6 +2971,9 @@ var windowListener = {
 							menuItemCloseChildren.setAttribute("label", prefix + stringBundle.GetStringFromName("close_children"));
 							menuItemOpenNewTabSibling.setAttribute("label", prefix + stringBundle.GetStringFromName("open_sibling"));
 							menuItemOpenNewTabChild.setAttribute("label", prefix + stringBundle.GetStringFromName("open_child"));
+							menuItemDuplicateTabAsSibling.setAttribute("label", prefix + stringBundle.GetStringFromName("duplicate_sibling"));
+							menuItemDuplicateTabAsChild.setAttribute("label", prefix + stringBundle.GetStringFromName("duplicate_child"));
+							menuItemDuplicateTabToBottom.setAttribute("label", prefix + stringBundle.GetStringFromName("duplicate_bottom"));
 							break;
 						case 'extensions.tabtree.new-tab-button':
 							newTab.collapsed = !Services.prefs.getBoolPref('extensions.tabtree.new-tab-button');
