@@ -111,7 +111,7 @@ function startup(data, reason)
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.dblclick', false); // setting default pref
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.middle-click-tabbar', false); // #36 (Middle click on empty space to open a new tab)
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.delay', 0); // setting default pref
-	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.position', 0); // setting default pref // 0 - Left, 1 - Right
+	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.position', 1); // setting default pref // 0 - Left, 1 - Right
 	// 0 - Top, 1 - Bottom (before "New tab" button), 2 - Bottom (after "New tab" button):
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.search-position', 0);
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.search-autohide', false); // setting default pref
@@ -128,7 +128,6 @@ function startup(data, reason)
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.wheel', 0);
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.search-jump', false); // jump to the first search match
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.search-jump-min-chars', 4); // min chars to jump
-	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.fullscreen-show', false); // #18 hold the tab tree in full screen mode
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.hide-tabtree-with-one-tab', true); // #31
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.insertRelatedAfterCurrent', false); // #19 // false - Bottom, true - Top
 	// 0 - default, 1 - try to mimic Firefox theme, 2 - dark
@@ -136,6 +135,9 @@ function startup(data, reason)
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.prefix-context-menu-items', false); // #60 (Garbage in menu items)
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.tab-height', -1); // #67 [Feature] Provide a way to change the items height
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.tab-flip', true);
+	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.auto-hide-when-fullscreen', true); // #18 hold the tab tree in full screen mode
+	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.auto-hide-when-maximized', false); // #40 #80
+	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.auto-hide-when-normal', false); // #40 #80
 
 	// migration code :
 	try {
@@ -1173,6 +1175,24 @@ var windowListener = {
 				tree.treeBoxObject.invalidate();
 				// - we can't use `tree.treeBoxObject.invalidateRow(g.mCurrentTab._tPos - g._numPinnedTabs);`
 				// because in some cases we also have to redraw nesting lines at least on the previous and the next tab
+			} else if (keyboardEvent.key === "F8") {
+				// #40 #80 toggle the tab tree sidebar
+				// We also have to handle `extensions.tabtree.hide-tabtree-with-one-tab` so a user could use F8 to show the sidebar with one tab
+				if (g.tabs.length <= 1 && sidebar.collapsed) {
+					sidebar.collapsed = splitter.collapsed = fullscrToggler.collapsed = false;
+				} else {
+					switch (aDOMWindow.windowState) {
+					case aDOMWindow.STATE_MAXIMIZED: // === 1
+						Services.prefs.setBoolPref("extensions.tabtree.auto-hide-when-maximized", !Services.prefs.getBoolPref("extensions.tabtree.auto-hide-when-maximized"));
+						break;
+					case aDOMWindow.STATE_NORMAL: // === 3
+						Services.prefs.setBoolPref("extensions.tabtree.auto-hide-when-normal", !Services.prefs.getBoolPref("extensions.tabtree.auto-hide-when-normal"));
+						break;
+					case aDOMWindow.STATE_FULLSCREEN: // === 4
+						Services.prefs.setBoolPref("extensions.tabtree.auto-hide-when-fullscreen", !Services.prefs.getBoolPref("extensions.tabtree.auto-hide-when-fullscreen"));
+						break;
+					}
+				}
 			}
 		}), false);
 
@@ -2875,6 +2895,31 @@ var windowListener = {
 			observe: function(subject, topic, data) {
 				if (topic == 'nsPref:changed') {
 					switch (data) {
+						case "extensions.tabtree.auto-hide-when-fullscreen":
+							if (Services.prefs.getBoolPref("extensions.tabtree.auto-hide-when-fullscreen")) {
+								splitter.removeAttribute('fullscreen-show');
+								sidebar.removeAttribute('fullscreen-show');
+								fullscrToggler.removeAttribute('style');
+							} else {
+								splitter.setAttribute('fullscreen-show', 'true');
+								sidebar.setAttribute('fullscreen-show', 'true');
+								fullscrToggler.style.visibility = 'collapse';
+							}
+						break;
+						case "extensions.tabtree.auto-hide-when-maximized":
+							if (Services.prefs.getBoolPref("extensions.tabtree.auto-hide-when-maximized")) {
+								aDOMWindow.document.documentElement.setAttribute("tt-auto-hide-when-maximized", "true");
+							} else {
+								aDOMWindow.document.documentElement.removeAttribute("tt-auto-hide-when-maximized");
+							}
+						break;
+						case "extensions.tabtree.auto-hide-when-normal":
+							if (Services.prefs.getBoolPref("extensions.tabtree.auto-hide-when-normal")) {
+								aDOMWindow.document.documentElement.setAttribute("tt-auto-hide-when-normal", "true");
+							} else {
+								aDOMWindow.document.documentElement.removeAttribute("tt-auto-hide-when-normal");
+							}
+						break;
 						case 'browser.tabs.drawInTitlebar':
 							if (Services.appinfo.OS == 'WINNT') {
 								if (Services.prefs.getBoolPref('browser.tabs.drawInTitlebar') && aDOMWindow.windowState == aDOMWindow.STATE_MAXIMIZED
@@ -2916,17 +2961,6 @@ var windowListener = {
 							} else {
 								tree.removeEventListener('click', onClickSlow, false);
 								tree.addEventListener('click', onClickFast, false);
-							}
-							break;
-						case 'extensions.tabtree.fullscreen-show':
-							if (Services.prefs.getBoolPref('extensions.tabtree.fullscreen-show')) {
-								splitter.setAttribute('fullscreen-show', 'true');
-								sidebar.setAttribute('fullscreen-show', 'true');
-								fullscrToggler.style.visibility = 'collapse';
-							} else {
-								splitter.removeAttribute('fullscreen-show');
-								sidebar.removeAttribute('fullscreen-show');
-								fullscrToggler.removeAttribute('style');
 							}
 							break;
 						case 'extensions.tabtree.hide-tabtree-with-one-tab':
@@ -3021,7 +3055,9 @@ var windowListener = {
 				}
 			}
 		}), false); // don't forget to remove // it can be removed in 'onCloseWindow' or in 'unloadFromWindow'(upon addon shutdown)
-		aDOMWindow.tt.toRemove.prefsObserver.observe(null, 'nsPref:changed', 'extensions.tabtree.fullscreen-show');
+		aDOMWindow.tt.toRemove.prefsObserver.observe(null, "nsPref:changed", "extensions.tabtree.auto-hide-when-fullscreen");
+		aDOMWindow.tt.toRemove.prefsObserver.observe(null, "nsPref:changed", "extensions.tabtree.auto-hide-when-maximized");
+		aDOMWindow.tt.toRemove.prefsObserver.observe(null, "nsPref:changed", "extensions.tabtree.auto-hide-when-normal");
 		aDOMWindow.tt.toRemove.prefsObserver.observe(null, 'nsPref:changed', 'extensions.tabtree.prefix-context-menu-items');
 		aDOMWindow.tt.toRemove.prefsObserver.observe(null, "nsPref:changed", "extensions.tabtree.tab-height");
 

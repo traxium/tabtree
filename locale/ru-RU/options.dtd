@@ -59,10 +59,14 @@
 <!ENTITY search-jump.desc "(не отмечено по умолчанию)">
 <!ENTITY search-jump-min-chars.title "Минимальной количество символов для переключения вкладки:">
 <!ENTITY search-jump-min-chars.desc "(4 по умолчанию)">
-<!ENTITY fullscreen-show.title "Показывать панель вкладок в полноэкранном режиме:">
-<!ENTITY fullscreen-show.desc "(не отмечено по умолчанию)">
+<!ENTITY auto-hide-when-fullscreen.title "Автоматически скрывать панель вкладок в полноэкранном режиме:">
+<!ENTITY auto-hide-when-fullscreen.desc "(омечено по умолчанию)">
+<!ENTITY auto-hide-when-maximized.title "Автоматически скрывать панель вкладок в развёрнутых на весь экран окнах:">
+<!ENTITY auto-hide-when-maximized.desc "(не отмечено по умолчанию)">
+<!ENTITY auto-hide-when-normal.title "Автоматически скрывать панель вкладок в обычных окнах Firefox:">
+<!ENTITY auto-hide-when-normal.desc "(не отмечено по умолчанию)">
 <!ENTITY hide-tabtree-with-one-tab.title "Скрывать дерево вкладок с одной вкладкой">
-<!ENTITY hide-tabtree-with-one-tab.desc "(в таком случае новую вкладку можно открыть по Ctrl-T)">
+<!ENTITY hide-tabtree-with-one-tab.desc "(Ctrl+T открывает новую вкладку, F8 временно показывает панель вкладок)">
 <!ENTITY insertRelatedAfterCurrent.title "Размещать вкладку, открытую из другой вкладки:">
 <!ENTITY insertRelatedAfterCurrent.desc "(&quot;Снизу&quot; по умолчанию)">
 <!ENTITY insertRelatedAfterCurrent.top "Сверху">

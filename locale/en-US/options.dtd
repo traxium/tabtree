@@ -27,7 +27,7 @@
 <!ENTITY position.sidebar_top "Above the default (e.g. Bookmarks) sidebar (hidden by default)">
 <!ENTITY position.sidebar_bottom "Below the default (e.g. History) sidebar (hidden by default)">
 <!ENTITY position.title "Position:">
-<!ENTITY position.desc "(&quot;Left&quot; by default)">
+<!ENTITY position.desc "(&quot;Right&quot; by default)">
 <!ENTITY search-position.title "Tab search bar position:">
 <!ENTITY search-position.desc "(&quot;Top&quot; by default)">
 <!ENTITY search-position.top "Top">
@@ -59,10 +59,14 @@
 <!ENTITY search-jump.desc "(unchecked by default)">
 <!ENTITY search-jump-min-chars.title "Min number of characters to jump:">
 <!ENTITY search-jump-min-chars.desc "(4 by default)">
-<!ENTITY fullscreen-show.title "Show the tab tree in full screen:">
-<!ENTITY fullscreen-show.desc "(unchecked by default)">
+<!ENTITY auto-hide-when-fullscreen.title "Auto-hide the tab tree in full screen:">
+<!ENTITY auto-hide-when-fullscreen.desc "(checked by default)">
+<!ENTITY auto-hide-when-maximized.title "Auto-hide the tab tree when a window is maximized:">
+<!ENTITY auto-hide-when-maximized.desc "(unchecked by default)">
+<!ENTITY auto-hide-when-normal.title "Auto-hide the tab tree when a window is normal:">
+<!ENTITY auto-hide-when-normal.desc "(unchecked by default)">
 <!ENTITY hide-tabtree-with-one-tab.title "Hide the tab tree when there's only one tab">
-<!ENTITY hide-tabtree-with-one-tab.desc "(press Ctrl+T to open a new tab)">
+<!ENTITY hide-tabtree-with-one-tab.desc "(press Ctrl+T to open a new tab or F8 to temporarily bring up the tab tree)">
 <!ENTITY insertRelatedAfterCurrent.title "Insert a new related tab at the:">
 <!ENTITY insertRelatedAfterCurrent.desc "(&quot;Bottom&quot; by default)">
 <!ENTITY insertRelatedAfterCurrent.top "Top">

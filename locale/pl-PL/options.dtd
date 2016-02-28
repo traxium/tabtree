@@ -59,10 +59,14 @@
 <!ENTITY search-jump.desc "(domyślnie odznaczone)">
 <!ENTITY search-jump-min-chars.title "Minimalna liczba znaków do wykonania przejścia:">
 <!ENTITY search-jump-min-chars.desc "(domyślnie 4)">
-<!ENTITY fullscreen-show.title "Pokaż drzewa kart w trybie pełnoekranowym:">
-<!ENTITY fullscreen-show.desc "(domyślnie odznaczone)">
+<!ENTITY auto-hide-when-fullscreen.title "Auto-hide the tab tree in full screen:">
+<!ENTITY auto-hide-when-fullscreen.desc "(checked by default)">
+<!ENTITY auto-hide-when-maximized.title "Auto-hide the tab tree when a window is maximized:">
+<!ENTITY auto-hide-when-maximized.desc "(unchecked by default)">
+<!ENTITY auto-hide-when-normal.title "Auto-hide the tab tree when a window is normal:">
+<!ENTITY auto-hide-when-normal.desc "(unchecked by default)">
 <!ENTITY hide-tabtree-with-one-tab.title "Hide the tab tree when there's only one tab">
-<!ENTITY hide-tabtree-with-one-tab.desc "(press Ctrl+T to open a new tab)">
+<!ENTITY hide-tabtree-with-one-tab.desc "(press Ctrl+T to open a new tab or F8 to temporarily bring up the tab tree)">
 <!ENTITY insertRelatedAfterCurrent.title "Insert a new related tab at the:">
 <!ENTITY insertRelatedAfterCurrent.desc "(&quot;Bottom&quot; by default)">
 <!ENTITY insertRelatedAfterCurrent.top "Top">
