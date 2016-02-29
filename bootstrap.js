@@ -1151,7 +1151,7 @@ var windowListener = {
 					g.moveTabToEnd();
 				}
 				tree.treeBoxObject.invalidate();
-			} else if (keyboardEvent.ctrlKey && keyboardEvent.shiftKey && keyboardEvent.key === "ArrowLeft") {
+			} else if (keyboardEvent.ctrlKey && keyboardEvent.shiftKey && keyboardEvent.code === "Comma") {
 				// #68 Decrease tab indentation one level:
 				// Ctrl+Alt+Left/Right is already used on OS X — we can't use it
 				let lvl = parseInt(ss.getTabValue(g.mCurrentTab, "ttLevel"));
@@ -1163,7 +1163,7 @@ var windowListener = {
 				tree.treeBoxObject.invalidate();
 				// - we can't use `tree.treeBoxObject.invalidateRow(g.mCurrentTab._tPos - g._numPinnedTabs);`
 				// because in some cases we also have to redraw nesting lines at least on the previous and the next tab
-			} else if (keyboardEvent.ctrlKey && keyboardEvent.shiftKey && keyboardEvent.key === "ArrowRight") {
+			} else if (keyboardEvent.ctrlKey && keyboardEvent.shiftKey && keyboardEvent.code === "Period") {
 				// #68 Increase tab indentation one level:
 				// Ctrl+Alt+Left/Right is already used on OS X — we can't use it
 				let lvl = parseInt(ss.getTabValue(g.mCurrentTab, "ttLevel"));
