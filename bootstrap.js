@@ -141,16 +141,11 @@ function startup(data, reason)
 
 	// migration code :
 	try {
-		// 0 - default, 1 - flst
-		if (Services.prefs.getBoolPref("extensions.tabtree.flst")) {
-			Services.prefs.setIntPref("extensions.tabtree.after-close", 1);
-		} else {
-			Services.prefs.setIntPref("extensions.tabtree.after-close", 0);
-		}
-		Services.prefs.deleteBranch("extensions.tabtree.flst");
+		Services.prefs.setBoolPref("extensions.tabtree.auto-hide-when-fullscreen", !Services.prefs.getBoolPref("extensions.tabtree.fullscreen-show"));
+		Services.prefs.deleteBranch("extensions.tabtree.fullscreen-show");
 	} catch (e) {
 	}
-	// - end migration code // don't forget to delete when v1.4.1b or older aren't in use anymore
+	// - end migration code // don't forget to delete when v1.4.4 or older aren't in use anymore
 
 	let uriTabsToolbar = Services.io.newURI("chrome://tabtree/skin/tt-TabsToolbar.css", null, null);
 	if (!Services.prefs.getBoolPref('extensions.tabtree.show-default-tabs')) {
