@@ -60,13 +60,13 @@
 <!ENTITY search-jump-min-chars.title "Минимальной количество символов для переключения вкладки:">
 <!ENTITY search-jump-min-chars.desc "(4 по умолчанию)">
 <!ENTITY auto-hide-when-fullscreen.title "Автоматически скрывать панель вкладок в полноэкранном режиме:">
-<!ENTITY auto-hide-when-fullscreen.desc "(омечено по умолчанию)">
+<!ENTITY auto-hide-when-fullscreen.desc "F8: включает/выключает опцию при нахождении в полноэкранном режиме (омечено по умолчанию)">
 <!ENTITY auto-hide-when-maximized.title "Автоматически скрывать панель вкладок в развёрнутых на весь экран окнах:">
-<!ENTITY auto-hide-when-maximized.desc "(не отмечено по умолчанию)">
+<!ENTITY auto-hide-when-maximized.desc "F8: включает/выключает опцию когда текущее окно развёрнуто (не отмечено по умолчанию)">
 <!ENTITY auto-hide-when-normal.title "Автоматически скрывать панель вкладок в обычных окнах Firefox:">
-<!ENTITY auto-hide-when-normal.desc "(не отмечено по умолчанию)">
-<!ENTITY hide-tabtree-with-one-tab.title "Скрывать дерево вкладок с одной вкладкой">
-<!ENTITY hide-tabtree-with-one-tab.desc "(Ctrl+T открывает новую вкладку, F8 временно показывает панель вкладок)">
+<!ENTITY auto-hide-when-normal.desc "F8: включает/выключает опцию когда текущее окно не развёрнуто (не отмечено по умолчанию)">
+<!ENTITY auto-hide-when-only-one-tab.title "Автоматически скрывать дерево вкладок с одной вкладкой">
+<!ENTITY auto-hide-when-only-one-tab.desc "F8: включает/выключает опцию когда в активном окне одна вкладка (Ctrl+T открывает новую вкладку, отмечено по умолчанию)">
 <!ENTITY insertRelatedAfterCurrent.title "Размещать вкладку, открытую из другой вкладки:">
 <!ENTITY insertRelatedAfterCurrent.desc "(&quot;Снизу&quot; по умолчанию)">
 <!ENTITY insertRelatedAfterCurrent.top "Сверху">

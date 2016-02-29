@@ -107,7 +107,7 @@
     <setting type="bool" pref="extensions.tabtree.auto-hide-when-fullscreen" title="&auto-hide-when-fullscreen.title;" desc="&auto-hide-when-fullscreen.desc;" />
     <setting type="bool" pref="extensions.tabtree.auto-hide-when-maximized" title="&auto-hide-when-maximized.title;" desc="&auto-hide-when-maximized.desc;" />
     <setting type="bool" pref="extensions.tabtree.auto-hide-when-normal" title="&auto-hide-when-normal.title;" desc="&auto-hide-when-normal.desc;" />
-    <setting type="bool" pref="extensions.tabtree.hide-tabtree-with-one-tab" title="&hide-tabtree-with-one-tab.title;" desc="&hide-tabtree-with-one-tab.desc;" />
+    <setting type="bool" pref="extensions.tabtree.auto-hide-when-only-one-tab" title="&auto-hide-when-only-one-tab.title;" desc="&auto-hide-when-only-one-tab.desc;" />
     <setting type="radio" pref="extensions.tabtree.insertRelatedAfterCurrent" title="&insertRelatedAfterCurrent.title;" desc="&insertRelatedAfterCurrent.desc;">
         <radiogroup>
             <radio value="true" label="&insertRelatedAfterCurrent.top;"/>

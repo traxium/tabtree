@@ -128,7 +128,6 @@ function startup(data, reason)
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.wheel', 0);
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.search-jump', false); // jump to the first search match
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.search-jump-min-chars', 4); // min chars to jump
-	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.hide-tabtree-with-one-tab', true); // #31
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.insertRelatedAfterCurrent', false); // #19 // false - Bottom, true - Top
 	// 0 - default, 1 - try to mimic Firefox theme, 2 - dark
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.theme', 1); // #35 #50
@@ -138,11 +137,14 @@ function startup(data, reason)
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.auto-hide-when-fullscreen', true); // #18 hold the tab tree in full screen mode
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.auto-hide-when-maximized', false); // #40 #80
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.auto-hide-when-normal', false); // #40 #80
+	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.auto-hide-when-only-one-tab', true); // #31
 
 	// migration code :
 	try {
 		Services.prefs.setBoolPref("extensions.tabtree.auto-hide-when-fullscreen", !Services.prefs.getBoolPref("extensions.tabtree.fullscreen-show"));
 		Services.prefs.deleteBranch("extensions.tabtree.fullscreen-show");
+		Services.prefs.setBoolPref("extensions.tabtree.auto-hide-when-only-one-tab", Services.prefs.getBoolPref("extensions.tabtree.hide-tabtree-with-one-tab"));
+		Services.prefs.deleteBranch("extensions.tabtree.hide-tabtree-with-one-tab");
 	} catch (e) {
 	}
 	// - end migration code // don't forget to delete when v1.4.4 or older aren't in use anymore
@@ -1171,10 +1173,24 @@ var windowListener = {
 				// - we can't use `tree.treeBoxObject.invalidateRow(g.mCurrentTab._tPos - g._numPinnedTabs);`
 				// because in some cases we also have to redraw nesting lines at least on the previous and the next tab
 			} else if (keyboardEvent.key === "F8") {
-				// #40 #80 toggle the tab tree sidebar
-				// We also have to handle `extensions.tabtree.hide-tabtree-with-one-tab` so a user could use F8 to show the sidebar with one tab
-				if (g.tabs.length <= 1 && sidebar.collapsed) {
-					sidebar.collapsed = splitter.collapsed = fullscrToggler.collapsed = false;
+				// #40 #80 F8 toggles 4 auto-hide options:
+				// 1. in fullscreen
+				// 2. in maximized windows
+				// 3. in normal windows
+				// 4. when only one tab
+				if (g.tabs.length <= 1) {
+					if (Services.prefs.getBoolPref("extensions.tabtree.auto-hide-when-only-one-tab")) {
+						Services.prefs.setBoolPref("extensions.tabtree.auto-hide-when-only-one-tab", false);
+						if (aDOMWindow.windowState === aDOMWindow.STATE_MAXIMIZED && Services.prefs.getBoolPref("extensions.tabtree.auto-hide-when-maximized")) {
+							Services.prefs.setBoolPref("extensions.tabtree.auto-hide-when-maximized", false);
+						} else if (aDOMWindow.windowState === aDOMWindow.STATE_NORMAL && Services.prefs.getBoolPref("extensions.tabtree.auto-hide-when-normal")) {
+							Services.prefs.setBoolPref("extensions.tabtree.auto-hide-when-normal", false);
+						} else if (aDOMWindow.windowState === aDOMWindow.STATE_FULLSCREEN && Services.prefs.getBoolPref("extensions.tabtree.auto-hide-when-fullscreen")) {
+							Services.prefs.setBoolPref("extensions.tabtree.auto-hide-when-fullscreen", false);
+						}
+					} else {
+						Services.prefs.setBoolPref("extensions.tabtree.auto-hide-when-only-one-tab", true);
+					}
 				} else {
 					switch (aDOMWindow.windowState) {
 					case aDOMWindow.STATE_MAXIMIZED: // === 1
@@ -2915,6 +2931,13 @@ var windowListener = {
 								aDOMWindow.document.documentElement.removeAttribute("tt-auto-hide-when-normal");
 							}
 						break;
+						case "extensions.tabtree.auto-hide-when-only-one-tab":
+							if (Services.prefs.getBoolPref("extensions.tabtree.auto-hide-when-only-one-tab")) {
+								aDOMWindow.document.documentElement.setAttribute("tt-auto-hide-when-only-one-tab", "true");
+							} else {
+								aDOMWindow.document.documentElement.removeAttribute("tt-auto-hide-when-only-one-tab");
+							}
+						break;
 						case 'browser.tabs.drawInTitlebar':
 							if (Services.appinfo.OS == 'WINNT') {
 								if (Services.prefs.getBoolPref('browser.tabs.drawInTitlebar') && aDOMWindow.windowState == aDOMWindow.STATE_MAXIMIZED
@@ -2956,13 +2979,6 @@ var windowListener = {
 							} else {
 								tree.removeEventListener('click', onClickSlow, false);
 								tree.addEventListener('click', onClickFast, false);
-							}
-							break;
-						case 'extensions.tabtree.hide-tabtree-with-one-tab':
-							if (Services.prefs.getBoolPref('extensions.tabtree.hide-tabtree-with-one-tab')) {
-								sidebar.collapsed = splitter.collapsed = fullscrToggler.collapsed = g.tabs.length <= 1;
-							} else {
-								sidebar.collapsed = splitter.collapsed = fullscrToggler.collapsed = false;
 							}
 							break;
 						case 'extensions.tabtree.highlight-unloaded-tabs':
@@ -3053,6 +3069,7 @@ var windowListener = {
 		aDOMWindow.tt.toRemove.prefsObserver.observe(null, "nsPref:changed", "extensions.tabtree.auto-hide-when-fullscreen");
 		aDOMWindow.tt.toRemove.prefsObserver.observe(null, "nsPref:changed", "extensions.tabtree.auto-hide-when-maximized");
 		aDOMWindow.tt.toRemove.prefsObserver.observe(null, "nsPref:changed", "extensions.tabtree.auto-hide-when-normal");
+		aDOMWindow.tt.toRemove.prefsObserver.observe(null, "nsPref:changed", "extensions.tabtree.auto-hide-when-only-one-tab");
 		aDOMWindow.tt.toRemove.prefsObserver.observe(null, 'nsPref:changed', 'extensions.tabtree.prefix-context-menu-items');
 		aDOMWindow.tt.toRemove.prefsObserver.observe(null, "nsPref:changed", "extensions.tabtree.tab-height");
 
@@ -3122,11 +3139,15 @@ var windowListener = {
 			}
 		})).observe(sidebar, {attributes: true}); // removed in unloadFromWindow()
 
-		sidebar.collapsed = splitter.collapsed = fullscrToggler.collapsed = g.tabs.length <= 1 && Services.prefs.getBoolPref("extensions.tabtree.hide-tabtree-with-one-tab");
 		(aDOMWindow.tt.toRemove.numberOfTabsObserver = new aDOMWindow.MutationObserver(function(aMutations) {
-			// if there's only one tab then hide the tab bar
-			sidebar.collapsed = splitter.collapsed = fullscrToggler.collapsed = g.tabs.length <= 1 && Services.prefs.getBoolPref("extensions.tabtree.hide-tabtree-with-one-tab");
+			// if there's only one tab then set attr that helps to hide the tab tree
+			if (g.tabs.length <= 1) {
+				aDOMWindow.document.documentElement.setAttribute("tt-only-one-tab", "true");
+			} else {
+				aDOMWindow.document.documentElement.removeAttribute("tt-only-one-tab");
+			}
 		})).observe(g.tabContainer, {childList: true}); // removed in unloadFromWindow()
+		aDOMWindow.tt.toRemove.numberOfTabsObserver.mutationCallback(); // call it once like we always do for initialization purposes
 
 		// OS X tabs not in titlebar fix
 		// And tab search box styling:
