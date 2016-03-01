@@ -1,3 +1,18 @@
+1.4.5
+- #40 #80 Added 2 options to auto-hide Tab Tree: 1) in maximized windows 2) in normal windows (an about:config option for fullscreen windows was changed from extensions.tabtree.fullscreen-show to *.auto-hide-when-fullscreen)
+- #40 #80 Added a keyboard shortcut: F8 — toggles one (or two) of four options for auto-hiding Tab Tree in different window states: Fullscreen/Maximized/Normal/One tab (e.g. if an active window is maximized it toggles the option for maximized windows and so on)
+- #71 TST tree structure is imported on the first run
+- #71 Added a button to the add-on options to "flatten" the tab tree
+- #39 Added tab context menu items to duplicate a tab:
+    as a sibling
+    as a child (respects "Insert a new related tab at the: 1.Top 2.Bottom (extensions.tabtree.insertRelatedAfterCurrent)" option)
+    to the bottom
+- #39 Ctrl+drag to duplicate a tab (only the first tab, it also works across windows)
+- #90 Added an option to show tab numbers in tab titles (useful for Vim-style add-ons)
+- #88 Changed Ctrl+Shift+Left/Right to Ctrl+Shift+,/.
+- Changed the default Tab Tree position from "Left" to "Right" (extensions.tabtree.position)
+- Fixed #84 "TabTree removes custom entries from tab context menu" (tested with "Open with" add-on)
+
 1.4.4
 - Drag and drop tabs between windows is added (however like in vanilla Firefox it's impossible to move a tab from e10s to non-e10s windows and vice versa)
 - Drag and drop links: restored Shift key behaviour (holding shift inverts "browser.tabs.loadInBackground" about:config preference)
