@@ -24,6 +24,7 @@ var stringBundle = Services.strings.createBundle('chrome://tabtree/locale/global
 var prefsObserver;
 var defaultThemeAddonListener;
 var tabHeightGlobal = {value: -1, uri: null};
+var tabNumbers = false;
 
 const TT_POS_LEFT = 0;
 const TT_POS_RIGHT = 1;
@@ -138,6 +139,7 @@ function startup(data, reason)
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.auto-hide-when-maximized', false); // #40 #80
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.auto-hide-when-normal', false); // #40 #80
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.auto-hide-when-only-one-tab', true); // #31
+	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.tab-numbers', false); // #90 (Show tab numbers in tab titles) 
 
 	// migration code :
 	try {
@@ -1905,7 +1907,9 @@ var windowListener = {
 					return ''; // If a column consists only of an image, then the empty string is returned.
 				}
 				let tPos = row+tt.nPinned;
-				return ' ' + g.tabs[tPos].label;
+				return (tabNumbers ? `(${row + g._numPinnedTabs}) ` : " ") + g.tabs[tPos].label;
+				// tabNumbers === Services.prefs.getBoolPref("extensions.tabtree.tab-numbers")
+				// the pref is cached for better performance
 			},
 			getImageSrc: function(row, column) {
 				if (column.index !== TT_COL_TITLE) {
@@ -3054,6 +3058,10 @@ var windowListener = {
 							tree.style.borderStyle = redrawHack;
 							tree.treeBoxObject.invalidate();
 							break;
+						case "extensions.tabtree.tab-numbers":
+							tabNumbers = Services.prefs.getBoolPref("extensions.tabtree.tab-numbers");
+							tree.treeBoxObject.invalidate();
+						break;
 						case 'extensions.tabtree.treelines':
 							tree.setAttribute('treelines', Services.prefs.getBoolPref('extensions.tabtree.treelines').toString());
 							dragFeedbackTree.setAttribute('treelines', Services.prefs.getBoolPref('extensions.tabtree.treelines').toString());
@@ -3072,6 +3080,7 @@ var windowListener = {
 		aDOMWindow.tt.toRemove.prefsObserver.observe(null, "nsPref:changed", "extensions.tabtree.auto-hide-when-only-one-tab");
 		aDOMWindow.tt.toRemove.prefsObserver.observe(null, 'nsPref:changed', 'extensions.tabtree.prefix-context-menu-items');
 		aDOMWindow.tt.toRemove.prefsObserver.observe(null, "nsPref:changed", "extensions.tabtree.tab-height");
+		aDOMWindow.tt.toRemove.prefsObserver.observe(null, "nsPref:changed", "extensions.tabtree.tab-numbers");
 
 		tt.redrawToolbarbuttons(); // needed when addon is enabled from about:addons (not when firefox is being loaded)
 		tree.treeBoxObject.invalidate(); // just in case

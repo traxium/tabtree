@@ -14,6 +14,8 @@
 <!ENTITY highlight-unloaded-tabs.highlight "highlight">
 <!ENTITY highlight-unread-tabs.title "Highlight unread tabs:">
 <!ENTITY highlight-unread-tabs.desc "(unchecked by default)">
+<!ENTITY tab-numbers.title "Show tab numbers in tab titles:">
+<!ENTITY tab-numbers.desc "Useful for Vim-style add-ons (unchecked by default)">
 <!ENTITY dblclick.title "Double click to close a tab">
 <!ENTITY dblclick.desc "Only recommended if you don't have a mouse with a wheel (unchecked by default)">
 <!ENTITY middle-click-tabbar.title "Middle-click on the tabbar:">

@@ -14,6 +14,8 @@
 <!ENTITY highlight-unloaded-tabs.highlight "Podświetl">
 <!ENTITY highlight-unread-tabs.title "Podświetl nieprzeczytane karty:">
 <!ENTITY highlight-unread-tabs.desc "(domyślnie odznaczone)">
+<!ENTITY tab-numbers.title "Show tab numbers in tab titles:">
+<!ENTITY tab-numbers.desc "Useful for Vim-style add-ons (unchecked by default)">
 <!ENTITY dblclick.title "Dwuklik, żeby zamknąć kartę">
 <!ENTITY dblclick.desc "Polecane jedynie gdy nie masz myszy z kółkiem (domyślnie odznaczone)">
 <!ENTITY middle-click-tabbar.title "Middle-click on the tabbar:">

@@ -14,6 +14,8 @@
 <!ENTITY highlight-unloaded-tabs.highlight "подсветить другим цветом">
 <!ENTITY highlight-unread-tabs.title "Подсвечивать непрочитанные вкладки:">
 <!ENTITY highlight-unread-tabs.desc "(не отмечено по умолчанию)">
+<!ENTITY tab-numbers.title "Показывать номер вкладки:">
+<!ENTITY tab-numbers.desc "Предназначено для использования с расширениями эмулирующими Vim (не отмечено по умочанию)">
 <!ENTITY dblclick.title "Закрытие вкладки по двойному щелчку мыши">
 <!ENTITY dblclick.desc "Рекомендуется включать эту настройку, только если у вас нет мышки (не отмечено по умочанию)">
 <!ENTITY middle-click-tabbar.title "Щелчёк средней кнопкой мыши по панели вкладок:">
