@@ -1907,7 +1907,7 @@ var windowListener = {
 					return ''; // If a column consists only of an image, then the empty string is returned.
 				}
 				let tPos = row+tt.nPinned;
-				return (tabNumbers ? `(${row + g._numPinnedTabs}) ` : " ") + g.tabs[tPos].label;
+				return (tabNumbers ? `(${row + g._numPinnedTabs + 1}) ` : " ") + g.tabs[tPos].label;
 				// tabNumbers === Services.prefs.getBoolPref("extensions.tabtree.tab-numbers")
 				// the pref is cached for better performance
 			},
