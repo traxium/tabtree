@@ -2649,6 +2649,23 @@ var windowListener = {
 		newTab.addEventListener('command', function(event) {
 			aDOMWindow.BrowserOpenNewTabOrWindow(event);
 		}, false);
+		
+		newTab.addEventListener("mouseup", function (event) {
+			if(event.button === 1){
+				let tab = g.mCurrentTab;
+				let tPos = tab._tPos;
+				let lvl = ss.getTabValue(tab, "ttLevel");
+				let newTab = g.addTab("about:newtab"); // our new tab will be opened at position g.tabs.length - 1
+				for (let i = tPos + 1; i < g.tabs.length - 1; ++i) {
+					if (parseInt(ss.getTabValue(g.tabs[i], "ttLevel")) <= parseInt(lvl)) {
+						g.moveTabTo(newTab, i);
+						break;
+					}
+				}
+				ss.setTabValue(newTab, "ttLevel", lvl);
+				g.selectedTab = newTab;
+			}
+		}, false);
         
 		g.tabContainer.addEventListener("TabMove", (aDOMWindow.tt.toRemove.eventListeners.onTabMove = function(event) {
 			let tab = event.target;
