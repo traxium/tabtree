@@ -70,16 +70,15 @@
             this.setAttribute('image', (tab.image ? tab.linkedBrowser.mIconURL + "#-moz-resolution=16,16" : this._browser.mFaviconService.defaultFavicon.spec));
           }
 
-          let me = this; // javascript is funny sometimes
           [
             'titlechanged',
             'muted',
             'soundplaying',
-          ].forEach(function(x) {
+          ].forEach((x) => {
             if (tab.hasAttribute(x))
-              me.setAttribute(x, 'true');
+              this.setAttribute(x, 'true');
             else
-              me.removeAttribute(x);
+              this.removeAttribute(x);
           });
 
           // Taken from createTooltip() in chrome://browser/content/tabbrowser.xml
