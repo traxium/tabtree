@@ -1,0 +1,41 @@
+/*
+ * This file is part of Tab Tree,
+ * Copyright (C) 2015-2016 Sergey Zelentsov <crayfishexterminator@gmail.com>
+ */
+
+#tt-toggler {
+	position: relative;
+	visibility: collapse;
+	min-width: 0.6em;
+	min-height: 0.6em;
+}
+
+#tt-hover-area {
+	position: relative;
+	visibility: collapse;
+	width: 2em;
+	/*background-color: rgba(255, 0, 0, .2);*/ /* uncomment while debugging */
+}
+
+#main-window[sizemode="fullscreen"][tt-auto-hide-when-fullscreen] #tt-toggler,
+#main-window[sizemode="maximized"][tt-auto-hide-when-maximized] #tt-toggler,
+#main-window[sizemode="normal"][tt-auto-hide-when-normal] #tt-toggler,
+#main-window[tt-only-one-tab][tt-auto-hide-when-only-one-tab] #tt-toggler {
+	visibility: visible;
+}
+
+#main-window[inFullscreen][inDOMFullscreen] #tt-toggler {
+	visibility: collapse;
+}
+
+#main-window[sizemode="fullscreen"][tt-auto-hide-when-fullscreen] #tt-sidebar,
+#main-window[sizemode="fullscreen"][tt-auto-hide-when-fullscreen] #tt-splitter,
+#main-window[sizemode="maximized"][tt-auto-hide-when-maximized] #tt-sidebar,
+#main-window[sizemode="maximized"][tt-auto-hide-when-maximized] #tt-splitter,
+#main-window[sizemode="normal"][tt-auto-hide-when-normal] #tt-sidebar,
+#main-window[sizemode="normal"][tt-auto-hide-when-normal] #tt-splitter,
+#main-window[tt-only-one-tab][tt-auto-hide-when-only-one-tab] #tt-sidebar,
+#main-window[tt-only-one-tab][tt-auto-hide-when-only-one-tab] #tt-splitter {
+	visibility: collapse;
+}
+

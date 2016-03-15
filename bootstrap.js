@@ -44,6 +44,8 @@ function startup(data, reason)
 	sss.loadAndRegisterSheet(uri, sss.AUTHOR_SHEET);
 	uri = Services.io.newURI("chrome://tabtree/skin/tt-other.css", null, null);
 	sss.loadAndRegisterSheet(uri, sss.AUTHOR_SHEET);
+	uri = Services.io.newURI("chrome://tabtree/skin/tt-auto-hide.css", null, null);
+	sss.loadAndRegisterSheet(uri, sss.AUTHOR_SHEET);
 	uri = Services.io.newURI("chrome://tabtree/skin/tt-navbar-private.css", null, null);
 	sss.loadAndRegisterSheet(uri, sss.AUTHOR_SHEET);
 	uri = Services.io.newURI("chrome://tabtree/skin/tt-options.css", null, null);
@@ -255,6 +257,7 @@ function shutdown(data, reason)
 		"chrome://tabtree/skin/tt-theme-default.css",
 		"chrome://tabtree/skin/tt-theme-osx.css",
 		"chrome://tabtree/skin/tt-other.css",
+		"chrome://tabtree/skin/tt-auto-hide.css",
 		"chrome://tabtree/skin/tt-navbar-private.css",
 		"chrome://tabtree/skin/tt-options.css",
 		"chrome://tabtree/skin/tt-TabsToolbar.css",
@@ -379,8 +382,10 @@ var windowListener = {
 			ss.deleteWindowValue(aDOMWindow, 'tt-height', sidebar.height); // Restore the height of 'tt-sidebar' to 400px
 			splitter.parentNode.removeChild(splitter);
 			sidebar.parentNode.removeChild(sidebar);
-			let fullscrToggler = aDOMWindow.document.querySelector('#tt-fullscr-toggler');
-			fullscrToggler.parentNode.removeChild(fullscrToggler);
+			let toggler = aDOMWindow.document.querySelector("#tt-toggler");
+			toggler.parentNode.removeChild(toggler);
+			let hoverArea = aDOMWindow.document.querySelector("#tt-hover-area");
+			hoverArea.parentNode.removeChild(hoverArea);
 			let titlebarButtonsClone = aDOMWindow.document.querySelector('#titlebar-buttonbox-container.tt-clone');
 			if (titlebarButtonsClone && titlebarButtonsClone.parentNode !== null) { // if it exists
 				titlebarButtonsClone.parentNode.removeChild(titlebarButtonsClone);
@@ -739,20 +744,22 @@ var windowListener = {
 		let propsToSet;
 		
 		//  for "Left" position:
-		//  <vbox id="tt-fullscr-toggler"></vbox>
+		//  <spacer id="tt-toggler" />
 		//  <vbox id="tt-sidebar" width="200">
 		//    <toolbox></toolbox>
 		//    <tree id="tt" flex="1" seltype="single" context="tabContextMenu" treelines="true" hidecolumnpicker="true"></tree>
 		//  </vbox>
 		//  <splitter id="tt-splitter" />
+		//  <vbox id="tt-hover-area></vbox>"
 
 		//  for "Right" position:
+		//  <vbox id="tt-hover-area></vbox>"
 		//  <splitter id="tt-splitter" />
-		//  <vbox id="tt-fullscr-toggler"></vbox>
 		//  <vbox id="tt-sidebar" width="200">
 		//    <toolbox></toolbox>
 		//    <tree id="tt" flex="1" seltype="single" context="tabContextMenu" treelines="true" hidecolumnpicker="true"></tree>
 		//  </vbox>
+		//  <spacer id="tt-toggler" />
 
 		//  for "sidebar top" position:
 		//  <vbox id="sidebar-box">
@@ -770,12 +777,10 @@ var windowListener = {
 		//     <vbox id="tt-sidebar"></vbox>
 		//  </vbox>
 		
-		////////////////////////////////////////// VBOX tt-fullscr-toggler /////////////////////////////////////////////
-		// <vbox id="tt-fullscr-toggler"></vbox> // I am just copying what firefox does for its 'fullscr-toggler'
-		let fullscrToggler = aDOMWindow.document.createElement('vbox');
-		fullscrToggler.setAttribute('id', 'tt-fullscr-toggler');
-		// added later
-		//////////////////////////////////////// END VBOX tt-fullscr-toggler ///////////////////////////////////////////
+		//////////////////// #tt-toggler /////////////////////////////////////////////////////////////////////////////////
+		let toggler = aDOMWindow.document.createElement("spacer");
+		toggler.id = "tt-toggler";
+		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		//////////////////// VBOX ///////////////////////////////////////////////////////////////////////
 		let sidebar = aDOMWindow.document.createElement('vbox');
@@ -799,34 +804,50 @@ var windowListener = {
 		Object.keys(propsToSet).forEach( (p)=>{splitter.setAttribute(p, propsToSet[p]);} );
 		// added later
 		//////////////////// END SPLITTER ///////////////////////////////////////////////////////////////////////
+		
+		//////////////////// #tt-hover-area /////////////////////////////////////////////////////////////////////////////////
+		let hoverArea = aDOMWindow.document.createElement("vbox");
+		hoverArea.id = "tt-hover-area";
+		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		let setTTPos = function (aPos) {
 			splitter.removeAttribute("resizeafter");
 			switch (aPos) {
 				case TT_POS_SB_TOP:
-					sidebar_box.insertBefore(splitter, sidebar_header);
-					sidebar_box.insertBefore(sidebar, splitter);
-					sidebar_box.insertBefore(fullscrToggler, sidebar);
+					sidebar_box.insertBefore(toggler, sidebar_header.nextElementSibling);
+					sidebar_box.insertBefore(sidebar, toggler.nextElementSibling);
+					sidebar_box.insertBefore(splitter, sidebar.nextElementSibling);
+					sidebar_box.insertBefore(hoverArea, splitter.nextElementSibling);
+					splitter.setAttribute("resizebefore", "closest");
 					splitter.setAttribute("resizeafter", "farthest");
 					splitter.setAttribute("orient", "vertical");
 					break;
 				case TT_POS_SB_BOT:
+					sidebar_box.appendChild(hoverArea);
 					sidebar_box.appendChild(splitter);
 					sidebar_box.appendChild(sidebar);
-					sidebar_box.appendChild(fullscrToggler);
+					sidebar_box.appendChild(toggler);
+					splitter.setAttribute("resizebefore", "flex");
+					splitter.setAttribute("resizeafter", "closest");
 					splitter.setAttribute("orient", "vertical");
 					break;
 				case TT_POS_RIGHT:
-					browser.appendChild(fullscrToggler);
+					browser.appendChild(hoverArea);
 					browser.appendChild(splitter);
 					browser.appendChild(sidebar);
+					browser.appendChild(toggler);
+					splitter.setAttribute("resizebefore", "flex");
+					splitter.setAttribute("resizeafter", "closest");
 					splitter.setAttribute("orient", "horizontal");
 					break;
 				case TT_POS_LEFT:
 				default:
-					browser.insertBefore(fullscrToggler, appcontent);
+					browser.insertBefore(toggler, appcontent);
 					browser.insertBefore(sidebar, appcontent);
 					browser.insertBefore(splitter, appcontent);
+					browser.insertBefore(hoverArea, appcontent);
+					splitter.setAttribute("resizebefore", "closest");
+					splitter.setAttribute("resizeafter", "flex");
 					splitter.setAttribute("orient", "horizontal");
 					break;
 			}
@@ -2950,13 +2971,16 @@ var windowListener = {
 					switch (data) {
 						case "extensions.tabtree.auto-hide-when-fullscreen":
 							if (Services.prefs.getBoolPref("extensions.tabtree.auto-hide-when-fullscreen")) {
-								splitter.removeAttribute('fullscreen-show');
-								sidebar.removeAttribute('fullscreen-show');
-								fullscrToggler.removeAttribute('style');
+								aDOMWindow.document.documentElement.setAttribute("tt-auto-hide-when-fullscreen", "true");
 							} else {
-								splitter.setAttribute('fullscreen-show', 'true');
-								sidebar.setAttribute('fullscreen-show', 'true');
-								fullscrToggler.style.visibility = 'collapse';
+								aDOMWindow.document.documentElement.removeAttribute("tt-auto-hide-when-fullscreen");
+								sidebar.style.visibility = "";
+								sidebar.style.position = "";
+								splitter.style.visibility = "";
+								splitter.style.position = "";
+								hoverArea.style.visibility = "";
+								hoverArea.style.marginLeft = "";
+								hoverArea.style.marginRight = "";
 							}
 						break;
 						case "extensions.tabtree.auto-hide-when-maximized":
@@ -2964,6 +2988,13 @@ var windowListener = {
 								aDOMWindow.document.documentElement.setAttribute("tt-auto-hide-when-maximized", "true");
 							} else {
 								aDOMWindow.document.documentElement.removeAttribute("tt-auto-hide-when-maximized");
+								sidebar.style.visibility = "";
+								sidebar.style.position = "";
+								splitter.style.visibility = "";
+								splitter.style.position = "";
+								hoverArea.style.visibility = "";
+								hoverArea.style.marginLeft = "";
+								hoverArea.style.marginRight = "";
 							}
 						break;
 						case "extensions.tabtree.auto-hide-when-normal":
@@ -2971,6 +3002,13 @@ var windowListener = {
 								aDOMWindow.document.documentElement.setAttribute("tt-auto-hide-when-normal", "true");
 							} else {
 								aDOMWindow.document.documentElement.removeAttribute("tt-auto-hide-when-normal");
+								sidebar.style.visibility = "";
+								sidebar.style.position = "";
+								splitter.style.visibility = "";
+								splitter.style.position = "";
+								hoverArea.style.visibility = "";
+								hoverArea.style.marginLeft = "";
+								hoverArea.style.marginRight = "";
 							}
 						break;
 						case "extensions.tabtree.auto-hide-when-only-one-tab":
@@ -2978,6 +3016,13 @@ var windowListener = {
 								aDOMWindow.document.documentElement.setAttribute("tt-auto-hide-when-only-one-tab", "true");
 							} else {
 								aDOMWindow.document.documentElement.removeAttribute("tt-auto-hide-when-only-one-tab");
+								sidebar.style.visibility = "";
+								sidebar.style.position = "";
+								splitter.style.visibility = "";
+								splitter.style.position = "";
+								hoverArea.style.visibility = "";
+								hoverArea.style.marginLeft = "";
+								hoverArea.style.marginRight = "";
 							}
 						break;
 						case 'browser.tabs.drawInTitlebar':
@@ -3176,6 +3221,27 @@ var windowListener = {
 				if (mutation.attributeName == 'width') {
 					ss.setWindowValue(aDOMWindow, 'tt-width', sidebar.width); // Remember the width of 'tt-sidebar'
 					ss.setGlobalValue('tt-new-sidebar-width', sidebar.width);
+					
+					// Resize Tab Tree's sidebar in auto-hide mode while hovering over:
+					let w = aDOMWindow.document.documentElement;
+					if (
+						w.getAttribute("sizemode") === "fullscreen" && w.hasAttribute("tt-auto-hide-when-fullscreen") ||
+						w.getAttribute("sizemode") === "maximized" && w.hasAttribute("tt-auto-hide-when-maximized") ||
+						w.getAttribute("sizemode") === "normal" && w.hasAttribute("tt-auto-hide-when-normal") ||
+						w.hasAttribute("tt-only-one-tab") && w.hasAttribute("tt-auto-hide-when-only-one-tab")
+					) {
+						console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+						let splitterWidth = parseFloat(aDOMWindow.getComputedStyle(splitter).marginLeft) + parseFloat(aDOMWindow.getComputedStyle(splitter).marginRight) + splitter.getBoundingClientRect().width;
+						let margin = `-${sidebar.getBoundingClientRect().width + splitterWidth + hoverArea.getBoundingClientRect().width}px`;
+						if (Services.prefs.getIntPref("extensions.tabtree.position") === TT_POS_LEFT) {
+							hoverArea.style.marginLeft = "";
+							hoverArea.style.marginRight = margin;
+						} else if (Services.prefs.getIntPref("extensions.tabtree.position") === TT_POS_RIGHT) {
+							hoverArea.style.marginLeft = margin;
+							hoverArea.style.marginRight = "";
+						}
+					}
+					
 					return;
 				}
 				if (mutation.attributeName == 'height') {
@@ -3236,7 +3302,44 @@ var windowListener = {
 				}
 			}
 		});
-
+		
+		toggler.addEventListener("mouseenter", function () {
+			sidebar.style.visibility = "visible";
+			splitter.style.visibility = "visible";
+			hoverArea.style.visibility = "visible";
+			
+			sidebar.style.position = "relative";
+			splitter.style.position = "relative";
+			
+			let splitterWidth = parseInt(aDOMWindow.getComputedStyle(splitter).marginLeft) + parseInt(aDOMWindow.getComputedStyle(splitter).marginRight) + splitter.getBoundingClientRect().width;
+			let margin = `-${sidebar.getBoundingClientRect().width + splitterWidth + hoverArea.getBoundingClientRect().width}px`;
+			if (Services.prefs.getIntPref("extensions.tabtree.position") === TT_POS_LEFT) {
+				hoverArea.style.marginLeft = "";
+				hoverArea.style.marginRight = margin;
+			} else if (Services.prefs.getIntPref("extensions.tabtree.position") === TT_POS_RIGHT) {
+				hoverArea.style.marginLeft = margin;
+				hoverArea.style.marginRight = "";
+			}
+		});
+		
+		let onMouseOut = function (event) {
+			for (let el = event.relatedTarget; el; el = el.parentElement) {
+				if (el === toggler || el === sidebar || el === splitter || el === hoverArea) {
+					return;
+				}
+			}
+			sidebar.style.visibility = "";
+			sidebar.style.position = "";
+			splitter.style.visibility = "";
+			splitter.style.position = "";
+			hoverArea.style.visibility = "";
+			hoverArea.style.marginLeft = "";
+			hoverArea.style.marginRight = "";
+		};
+		toggler.addEventListener("mouseout", onMouseOut);
+		sidebar.addEventListener("mouseout", onMouseOut);
+		splitter.addEventListener("mouseout", onMouseOut);
+		hoverArea.addEventListener("mouseout", onMouseOut);
 
 		//aDOMWindow.tt.ss = ss; // uncomment while debugging
 		//aDOMWindow.tt.quickSearchBox = quickSearchBox; // uncomment while debugging
