@@ -1766,14 +1766,16 @@ var windowListener = {
 					quickSearchBox.collapsed = true;
 				}
 				
+				let fromVimFx = false; // #73 (Be more compatible with keyboard-oriented addons such as VimFx)
 				// altering params.relatedToCurrent argument in order to ignore about:config insertRelatedAfterCurrent option:
 				if (argumentsList.length == 2 && typeof argumentsList[1] == "object" && !(argumentsList[1] instanceof Ci.nsIURI)) {
+					fromVimFx = argumentsList[1].relatedToCurrent;
 					argumentsList[1].relatedToCurrent = false;
 					argumentsList[1].skipAnimation = true; // I believe after disabling animation tabs are added a little bit faster
 					// But I can't see the difference with the naked eye
 				}
 				
-				if (argumentsList.length>=2 && argumentsList[1].referrerURI) { // undo close tab hasn't got argumentsList[1]
+				if (argumentsList.length>=2 && (argumentsList[1].referrerURI || fromVimFx)) { // undo close tab hasn't got argumentsList[1]
 					g.tabContainer.addEventListener('TabOpen', function onPreAddTabWithRef(event) {
 						g.tabContainer.removeEventListener('TabOpen', onPreAddTabWithRef, true);
 						let tab = event.target;
