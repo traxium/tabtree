@@ -109,7 +109,7 @@ function startup(data, reason)
 
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.treelines', true); // setting default pref
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.highlight-unloaded-tabs', 0); // setting default pref
-	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.dblclick', false); // setting default pref
+	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.dblclick', 0); // setting default pref // 0 - No action, 1 - Close tab, 2 - Pin tab
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.middle-click-tabbar', false); // #36 (Middle click on empty space to open a new tab)
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.delay', 0); // setting default pref
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.position', 1); // setting default pref // 0 - Left, 1 - Right
@@ -2594,7 +2594,7 @@ var windowListener = {
 							} else {
 								g.selectTabAtIndex(tPos);
 							}
-							return;
+                            return;
 					}
 				}
 			}
@@ -2635,15 +2635,36 @@ var windowListener = {
 						}
 					} else if (event.detail == 2) { // the second click - remove a tab
 						aDOMWindow.clearTimeout(f.timer);
-						g.removeTab(g.tabs[tPos]);
+                        handleDblClick(tab);
 					}
 				}
 			}
 		};
-		if (Services.prefs.getBoolPref('extensions.tabtree.dblclick')) {
-			tree.addEventListener('click', onClickSlow, false);
-		} else {
+        
+        let handleDblClick = function f(tab) {
+            let pref = Services.prefs.getIntPref('extensions.tabtree.dblclick');
+            if (pref == 1) {
+                g.removeTab(tab);
+            } else if (pref == 2) {
+                if (tab.pinned || ss.getTabValue(tab, 'ttLevel') == '') {
+                    g.unpinTab(tab);
+                } else  {
+                    g.pinTab(tab);
+                }
+            }
+        };
+        
+		if (Services.prefs.getIntPref('extensions.tabtree.dblclick') == 0) {
 			tree.addEventListener('click', onClickFast, false);
+		} else {
+			tree.addEventListener('click', onClickSlow, false);
+            
+            toolbar.addEventListener('dblclick', function f(event) {
+                event.preventDefault();
+                event.stopPropagation();
+
+                handleDblClick(g.tabs[tt.nPinned - 1]);
+            }, false);
 		}
 		
 		newTab.addEventListener('command', function(event) {
@@ -2994,7 +3015,7 @@ var windowListener = {
 							treecol.closebtn.collapsed = !Services.prefs.getBoolPref('extensions.tabtree.close-tab-buttons');
 							break;
 						case 'extensions.tabtree.dblclick':
-							if (Services.prefs.getBoolPref('extensions.tabtree.dblclick')) {
+							if (Services.prefs.getIntPref('extensions.tabtree.dblclick')) {
 								tree.removeEventListener('click', onClickFast, false);
 								tree.addEventListener('click', onClickSlow, false);
 							} else {

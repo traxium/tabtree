@@ -16,8 +16,11 @@
 <!ENTITY highlight-unread-tabs.desc "(unchecked by default)">
 <!ENTITY tab-numbers.title "Show tab numbers in tab titles:">
 <!ENTITY tab-numbers.desc "Useful for Vim-style add-ons (unchecked by default)">
-<!ENTITY dblclick.title "Double click to close a tab">
+<!ENTITY dblclick.title "Double click to close or pin a tab">
 <!ENTITY dblclick.desc "Only recommended if you don't have a mouse with a wheel (unchecked by default)">
+<!ENTITY dblclick.none "None">
+<!ENTITY dblclick.close "Close tab">
+<!ENTITY dblclick.pin "Pin tab">
 <!ENTITY middle-click-tabbar.title "Middle-click on the tabbar:">
 <!ENTITY middle-click-tabbar.desc "(&#171;Firefox default&#187; by default)">
 <!ENTITY middle-click-tabbar.0 "Firefox default (open a new tab)">

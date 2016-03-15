@@ -33,7 +33,13 @@
     </setting>
     <setting type="bool" pref="extensions.tabtree.highlight-unread-tabs" title="&highlight-unread-tabs.title;" desc="&highlight-unread-tabs.desc;" />
     <setting type="bool" pref="extensions.tabtree.tab-numbers" title="&tab-numbers.title;" desc="&tab-numbers.desc;" />
-    <setting type="bool" pref="extensions.tabtree.dblclick" title="&dblclick.title;" desc="&dblclick.desc;" onpreferencechanged="this.setAttribute('value', this.value.toString());" />
+    <setting type="radio" pref="extensions.tabtree.dblclick" title="&dblclick.title;" desc="&dblclick.desc;" >
+        <radiogroup>
+            <radio value="0" label="&dblclick.none;"/>
+            <radio value="1" label="&dblclick.close;"/>
+            <radio value="2" label="&dblclick.pin;"/>
+        </radiogroup>
+    </setting>
     <setting type="integer" pref="extensions.tabtree.delay" title="&delay.title;" desc="&delay.desc;" />
     <setting type="menulist" pref="extensions.tabtree.middle-click-tabbar" title="&middle-click-tabbar.title;" desc="&middle-click-tabbar.desc;">
         <menulist>
