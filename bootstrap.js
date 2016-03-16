@@ -2594,7 +2594,7 @@ var windowListener = {
 							} else {
 								g.selectTabAtIndex(tPos);
 							}
-                            return;
+							return;
 					}
 				}
 			}
@@ -2635,36 +2635,36 @@ var windowListener = {
 						}
 					} else if (event.detail == 2) { // the second click - remove a tab
 						aDOMWindow.clearTimeout(f.timer);
-                        handleDblClick(tab);
+						handleDblClick(tab);
 					}
 				}
 			}
 		};
-        
-        let handleDblClick = function f(tab) {
-            let pref = Services.prefs.getIntPref('extensions.tabtree.dblclick');
-            if (pref == 1) {
-                g.removeTab(tab);
-            } else if (pref == 2) {
-                if (tab.pinned || ss.getTabValue(tab, 'ttLevel') == '') {
-                    g.unpinTab(tab);
-                } else  {
-                    g.pinTab(tab);
-                }
-            }
-        };
-        
-		if (Services.prefs.getIntPref('extensions.tabtree.dblclick') == 0) {
+		
+		let handleDblClick = function f(tab) {
+			let pref = Services.prefs.getIntPref('extensions.tabtree.dblclick');
+			if (pref === 1) {
+				g.removeTab(tab);
+			} else if (pref === 2) {
+				if (tab.pinned || ss.getTabValue(tab, 'ttLevel') === '') {
+					g.unpinTab(tab);
+				} else {
+					g.pinTab(tab);
+				}
+			}
+		};
+		
+		if (Services.prefs.getIntPref('extensions.tabtree.dblclick') === 0) {
 			tree.addEventListener('click', onClickFast, false);
 		} else {
 			tree.addEventListener('click', onClickSlow, false);
-            
-            toolbar.addEventListener('dblclick', function f(event) {
-                event.preventDefault();
-                event.stopPropagation();
-
-                handleDblClick(g.tabs[tt.nPinned - 1]);
-            }, false);
+			
+			toolbar.addEventListener('dblclick', function f(event) {
+				event.preventDefault();
+				event.stopPropagation();
+				
+				handleDblClick(g.tabs[tt.nPinned - 1]);
+			}, false);
 		}
 		
 		newTab.addEventListener('command', function(event) {
