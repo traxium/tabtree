@@ -1,3 +1,9 @@
+1.4.6
+- #40 The auto-hide function without resize
+- #103 Middle click on the new tab button adds a new sibling (@Ulf3000)
+- #110 Added an option to pin/unpin a tab by double-click (@acahill)
+- #73 VimFx extension compatibility ('f', 'F' and 'gf')
+
 1.4.5
 - #40 #80 Added 2 options to auto-hide Tab Tree: 1) in maximized windows 2) in normal windows (an about:config option for fullscreen windows was changed from extensions.tabtree.fullscreen-show to *.auto-hide-when-fullscreen)
 - #40 #80 Added a keyboard shortcut: F8 — toggles one (or two) of four options for auto-hiding Tab Tree in different window states: Fullscreen/Maximized/Normal/One tab (e.g. if an active window is maximized it toggles the option for maximized windows and so on)
