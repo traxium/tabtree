@@ -2733,7 +2733,7 @@ var windowListener = {
 						let mainTree = aDOMWindow.document.querySelector('#tt');
 						// if there is no <tree id="tt"> then it must mean that add-on has been shut down while a tab was 'loading' or 'connecting'
 						// we must clear our 'interval' in that case
-						if (mainTree && tab.hasAttribute('busy')) {
+						if (mainTree && tab.hasAttribute('busy') && !tab.closing) {
 							if (!tab.pinned) {
 								tab.ttThrobC = tab.ttThrobC === 18 ? 1 : tab.ttThrobC + 1;
 								mainTree.treeBoxObject.invalidateRow(tab._tPos - tt.nPinned);
