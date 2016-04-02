@@ -3,6 +3,7 @@
 - #103 Middle click on the new tab button adds a new sibling (@Ulf3000)
 - #110 Added an option to pin/unpin a tab by double-click (@acahill)
 - #73 VimFx extension compatibility ('f', 'F' and 'gf')
+- Fixed #114 "High CPU usage after closing busy tab (@nneonneo)
 
 1.4.5
 - #40 #80 Added 2 options to auto-hide Tab Tree: 1) in maximized windows 2) in normal windows (an about:config option for fullscreen windows was changed from extensions.tabtree.fullscreen-show to *.auto-hide-when-fullscreen)

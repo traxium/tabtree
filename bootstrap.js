@@ -108,6 +108,17 @@ function startup(data, reason)
 			return target.apply(thisArg, argumentsList); // returns a tab
 		}
 	}); // restored in shutdown()
+	
+	try { // 1.4.5 -> 1.4.6
+		if (Services.prefs.getBoolPref("extensions.tabtree.dblclick")) {
+			Services.prefs.deleteBranch("extensions.tabtree.dblclick");
+			Services.prefs.setIntPref("extensions.tabtree.dblclick", 1)
+		} else {
+			Services.prefs.deleteBranch("extensions.tabtree.dblclick");
+			Services.prefs.setIntPref("extensions.tabtree.dblclick", 0)
+		}
+	} catch (e) {
+	} // should be deleted when 1.4.5 isn't in use anymore
 
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.treelines', true); // setting default pref
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.highlight-unloaded-tabs', 0); // setting default pref
