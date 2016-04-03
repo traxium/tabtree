@@ -3243,7 +3243,6 @@ var windowListener = {
 						w.getAttribute("sizemode") === "normal" && w.hasAttribute("tt-auto-hide-when-normal") ||
 						w.hasAttribute("tt-only-one-tab") && w.hasAttribute("tt-auto-hide-when-only-one-tab")
 					) {
-						console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 						let splitterWidth = parseFloat(aDOMWindow.getComputedStyle(splitter).marginLeft) + parseFloat(aDOMWindow.getComputedStyle(splitter).marginRight) + splitter.getBoundingClientRect().width;
 						let margin = `-${sidebar.getBoundingClientRect().width + splitterWidth + hoverArea.getBoundingClientRect().width}px`;
 						if (Services.prefs.getIntPref("extensions.tabtree.position") === TT_POS_LEFT) {
