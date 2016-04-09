@@ -64,14 +64,16 @@
 <!ENTITY search-jump.desc "(unchecked by default)">
 <!ENTITY search-jump-min-chars.title "Min number of characters to jump:">
 <!ENTITY search-jump-min-chars.desc "(4 by default)">
+<!ENTITY auto-hide-key.title "Key to toggle auto-hide">
+<!ENTITY auto-hide-key.desc "(default is F8)">
 <!ENTITY auto-hide-when-fullscreen.title "Auto-hide the tab tree in full screen:">
-<!ENTITY auto-hide-when-fullscreen.desc "F8 toggles this option if an active window is in full screen (checked by default)">
+<!ENTITY auto-hide-when-fullscreen.desc "Key defined above toggles this option if an active window is in full screen (checked by default)">
 <!ENTITY auto-hide-when-maximized.title "Auto-hide the tab tree when a window is maximized:">
-<!ENTITY auto-hide-when-maximized.desc "F8 toggles this option if an active window is maximized (unchecked by default)">
+<!ENTITY auto-hide-when-maximized.desc "Key defined above toggles this option if an active window is maximized (unchecked by default)">
 <!ENTITY auto-hide-when-normal.title "Auto-hide the tab tree when a window is normal:">
-<!ENTITY auto-hide-when-normal.desc "F8 toggles this option if an active window is normal (unchecked by default)">
+<!ENTITY auto-hide-when-normal.desc "Key defined above toggles this option if an active window is normal (unchecked by default)">
 <!ENTITY auto-hide-when-only-one-tab.title "Auto-hide the tab tree when there's only one tab">
-<!ENTITY auto-hide-when-only-one-tab.desc "F8 toggles this option if an active window has only one tab (press Ctrl+T to open a new tab, checked by default)">
+<!ENTITY auto-hide-when-only-one-tab.desc "Key defined above toggles this option if an active window has only one tab (press Ctrl+T to open a new tab, checked by default)">
 <!ENTITY insertRelatedAfterCurrent.title "Insert a new related tab at the:">
 <!ENTITY insertRelatedAfterCurrent.desc "(&quot;Bottom&quot; by default)">
 <!ENTITY insertRelatedAfterCurrent.top "Top">

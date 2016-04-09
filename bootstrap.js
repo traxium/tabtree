@@ -148,6 +148,7 @@ function startup(data, reason)
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.prefix-context-menu-items', false); // #60 (Garbage in menu items)
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.tab-height', -1); // #67 [Feature] Provide a way to change the items height
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.tab-flip', true);
+	Services.prefs.getDefaultBranch(null).setCharPref('extensions.tabtree.auto-hide-key', 'F8');
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.auto-hide-when-fullscreen', true); // #18 hold the tab tree in full screen mode
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.auto-hide-when-maximized', false); // #40 #80
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.auto-hide-when-normal', false); // #40 #80
@@ -1206,7 +1207,7 @@ var windowListener = {
 				tree.treeBoxObject.invalidate();
 				// - we can't use `tree.treeBoxObject.invalidateRow(g.mCurrentTab._tPos - g._numPinnedTabs);`
 				// because in some cases we also have to redraw nesting lines at least on the previous and the next tab
-			} else if (keyboardEvent.key === "F8") {
+			} else if (keyboardEvent.key === Services.prefs.getCharPref("extensions.tabtree.auto-hide-key")) {
 				// #40 #80 F8 toggles 4 auto-hide options:
 				// 1. in fullscreen
 				// 2. in maximized windows
