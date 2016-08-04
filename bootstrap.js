@@ -417,6 +417,8 @@ var windowListener = {
 			menuItemCloseTree.parentNode.removeChild(menuItemCloseTree);
 			let menuItemCloseChildren = aDOMWindow.document.querySelector('#tt-context-close-children');
 			menuItemCloseChildren.parentNode.removeChild(menuItemCloseChildren);
+			let menuItemReloadTree = aDOMWindow.document.querySelector('#tt-context-reload-tree');
+			menuItemReloadTree.parentNode.removeChild(menuItemReloadTree);
 			let menuItemOpenNewTabSibling = aDOMWindow.document.querySelector('#tt-content-open-sibling');
 			menuItemOpenNewTabSibling.parentNode.removeChild(menuItemOpenNewTabSibling);
 			let menuItemOpenNewTabChild = aDOMWindow.document.querySelector('#tt-content-open-child');
@@ -2885,6 +2887,21 @@ var windowListener = {
 			}
 		}, false);
 
+		let menuItemReloadTree = aDOMWindow.document.createElement('menuitem'); // removed in unloadFromWindow()
+		menuItemReloadTree.id = 'tt-context-reload-tree';
+		//menuItemReloadTree.setAttribute('label', stringBundle.GetStringFromName('reload_this_tree'));
+		menuItemReloadTree.addEventListener('command', function (event) {
+			let tab = aDOMWindow.TabContextMenu.contextTab;
+			let tPos = tab._tPos;
+			let lvl = ss.getTabValue(tab, 'ttLevel');
+			let childIdx = 1;
+			while (ss.getTabValue(g.tabs[tPos+childIdx], 'ttLevel') > lvl) {
+				g.reloadTab(g.tabs[tPos+childIdx]);
+				++childIdx;
+			}
+			g.reloadTab(g.tabs[tPos]);
+		}, false);
+
 		let menuItemOpenNewTabSibling = aDOMWindow.document.createElement("menuitem"); // removed in unloadFromWindow()
 		menuItemOpenNewTabSibling.id = "tt-content-open-sibling";
 		//menuItemOpenNewTabSibling.setAttribute("label", stringBundle.GetStringFromName("open_sibling"));
@@ -2962,12 +2979,13 @@ var windowListener = {
 		tabContextMenu.insertBefore(menuItemDuplicateTabAsSibling, tabContextMenuCloseTab.nextSibling);
 		tabContextMenu.insertBefore(menuItemOpenNewTabChild, tabContextMenuCloseTab.nextSibling);
 		tabContextMenu.insertBefore(menuItemOpenNewTabSibling, tabContextMenuCloseTab.nextSibling);
+		tabContextMenu.insertBefore(menuItemReloadTree, tabContextMenuCloseTab.nextSibling);
 		tabContextMenu.insertBefore(menuItemCloseChildren, tabContextMenuCloseTab.nextSibling);
 		tabContextMenu.insertBefore(menuItemCloseTree, tabContextMenuCloseTab.nextSibling);
 		tabContextMenu.addEventListener('popupshowing', (aDOMWindow.tt.toRemove.eventListeners.onPopupshowing = function (event) {
 			let tab = aDOMWindow.TabContextMenu.contextTab;
 
-			menuItemCloseTree.hidden = menuItemCloseChildren.hidden = !tt.hasAnyChildren(tab._tPos);
+			menuItemReloadTree.hidden = menuItemCloseTree.hidden = menuItemCloseChildren.hidden = !tt.hasAnyChildren(tab._tPos);
 			menuItemOpenNewTabChild.hidden = tab.pinned;
 			menuItemOpenNewTabSibling.hidden = tab._tPos < tt.nPinned - 1;
 			
@@ -3101,6 +3119,7 @@ var windowListener = {
 							let prefix = Services.prefs.getBoolPref("extensions.tabtree.prefix-context-menu-items") ? "Tab Tree: " : "";
 							menuItemCloseTree.setAttribute("label", prefix + stringBundle.GetStringFromName("close_this_tree"));
 							menuItemCloseChildren.setAttribute("label", prefix + stringBundle.GetStringFromName("close_children"));
+							menuItemReloadTree.setAttribute("label", prefix + stringBundle.GetStringFromName("reload_this_tree"));
 							menuItemOpenNewTabSibling.setAttribute("label", prefix + stringBundle.GetStringFromName("open_sibling"));
 							menuItemOpenNewTabChild.setAttribute("label", prefix + stringBundle.GetStringFromName("open_child"));
 							menuItemDuplicateTabAsSibling.setAttribute("label", prefix + stringBundle.GetStringFromName("duplicate_sibling"));
