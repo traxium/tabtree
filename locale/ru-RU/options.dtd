@@ -64,6 +64,8 @@
 <!ENTITY search-jump.desc "(не отмечено по умолчанию)">
 <!ENTITY search-jump-min-chars.title "Минимальной количество символов для переключения вкладки:">
 <!ENTITY search-jump-min-chars.desc "(4 по умолчанию)">
+<!ENTITY auto-hide-key.title "Key to toggle auto-hide">
+<!ENTITY auto-hide-key.desc "(default is F8)">
 <!ENTITY auto-hide-when-fullscreen.title "Автоматически скрывать панель вкладок в полноэкранном режиме:">
 <!ENTITY auto-hide-when-fullscreen.desc "F8: включает/выключает опцию при нахождении в полноэкранном режиме (омечено по умолчанию)">
 <!ENTITY auto-hide-when-maximized.title "Автоматически скрывать панель вкладок в развёрнутых на весь экран окнах:">

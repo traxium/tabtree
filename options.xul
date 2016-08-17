@@ -111,6 +111,7 @@
             </menupopup>
         </menulist>
     </setting>
+    <setting type="string" pref="extensions.tabtree.auto-hide-key" title="&auto-hide-key.title;" desc="&auto-hide-key.desc;" />
     <setting type="bool" pref="extensions.tabtree.auto-hide-when-fullscreen" title="&auto-hide-when-fullscreen.title;" desc="&auto-hide-when-fullscreen.desc;" />
     <setting type="bool" pref="extensions.tabtree.auto-hide-when-maximized" title="&auto-hide-when-maximized.title;" desc="&auto-hide-when-maximized.desc;" />
     <setting type="bool" pref="extensions.tabtree.auto-hide-when-normal" title="&auto-hide-when-normal.title;" desc="&auto-hide-when-normal.desc;" />
