@@ -21,6 +21,14 @@ var ssOrig;
 const ss = Cc["@mozilla.org/browser/sessionstore;1"].getService(Ci.nsISessionStore);
 const sss = Cc["@mozilla.org/content/style-sheet-service;1"].getService(Ci.nsIStyleSheetService);
 var stringBundle = Services.strings.createBundle('chrome://tabtree/locale/global.properties?' + Math.random()); // Randomize URI to work around bug 719376
+const { require } = Cu.import("resource://gre/modules/commonjs/toolkit/require.js", {});
+var keyboardUtils = null;
+try {
+	keyboardUtils = require("sdk/keyboard/utils");
+}catch(e) {
+	// low level SDK API not available
+}
+
 var prefsObserver;
 var defaultThemeAddonListener;
 var tabHeightGlobal = {value: -1, uri: null};
@@ -36,6 +44,20 @@ const TT_COL_OVERLAY = 1;
 const TT_COL_CLOSE = 2;
 //noinspection JSUnusedLocalSymbols
 const TT_COL_SCROLLBAR = 3; // Keep this one at the end, it has CSS to keep other columns from being hidden by the scrollbar
+
+// Test keys either using low level SDK API if available, or without (which does not handle many layouts properly)
+function keyboardHelper(keyboardEvent) {
+	return {
+		keyboardEvent: keyboardEvent,
+		translatedKey: keyboardUtils ? keyboardUtils.getKeyForCode(keyboardEvent.keyCode) : null,
+		testCode: function(code, translation) {
+			return keyboardUtils ? this.translatedKey === translation : keyboardEvent.code === code;
+		},
+		testKey: function(key, translation) {
+			return keyboardUtils ? this.translatedKey === translation : keyboardEvent.key === key;
+		}
+	};
+}
 
 //noinspection JSUnusedGlobalSymbols,JSUnusedLocalSymbols
 function startup(data, reason)
@@ -435,7 +457,7 @@ var windowListener = {
 		aDOMWindow.gBrowser.tabContainer.removeEventListener("SSWindowStateReady", aDOMWindow.tt.toRemove.eventListeners.onSSWindowStateReady, false);
 		aDOMWindow.gBrowser.removeTabsProgressListener(aDOMWindow.tt.toRemove.tabsProgressListener);
 		aDOMWindow.removeEventListener("sizemodechange", aDOMWindow.tt.toRemove.eventListeners.onSizemodechange, false);
-		aDOMWindow.removeEventListener("keypress", aDOMWindow.tt.toRemove.eventListeners.onWindowKeyPress, false);
+		aDOMWindow.removeEventListener("keydown", aDOMWindow.tt.toRemove.eventListeners.onWindowKeyPress, false);
 		// it's probably already removed but "Calling removeEventListener() with arguments that do not identify any currently registered EventListener ... has no effect.":
 		aDOMWindow.document.querySelector('#appcontent').removeEventListener('mouseup', aDOMWindow.tt.toRemove.eventListeners.onAppcontentMouseUp, false);
 		aDOMWindow.document.querySelector('#tabContextMenu').removeEventListener("popupshowing", aDOMWindow.tt.toRemove.eventListeners.onPopupshowing, false);
@@ -1090,12 +1112,14 @@ var windowListener = {
 		/////////////////////// END PSEUDO-ANIMATED PNG ////////////////////////////////////////////////////////////////
 
 		//////////////////// KEY ///////////////////////////////////////////////////////////////////////////////////////
-		// <key> element sucks (I couldn't make it to work with different keyboard layouts)
-		aDOMWindow.addEventListener('keypress', (aDOMWindow.tt.toRemove.eventListeners.onWindowKeyPress = function(keyboardEvent) {
-			if (keyboardEvent.ctrlKey && keyboardEvent.altKey && keyboardEvent.shiftKey && keyboardEvent.code == 'KeyF') {
+		// 'keydown' provides the keyCode ('keypress' does not)
+		aDOMWindow.addEventListener('keydown', (aDOMWindow.tt.toRemove.eventListeners.onWindowKeyPress = function(keyboardEvent) {
+			// convert to a key that works on all keyboard layouts
+			let helper = keyboardHelper(keyboardEvent);
+			if (keyboardEvent.ctrlKey && keyboardEvent.altKey && keyboardEvent.shiftKey && helper.testCode('KeyF', 'f')) {
 				quickSearchBox.collapsed = false;
 				quickSearchBox.focus();
-			} else if (keyboardEvent.ctrlKey && keyboardEvent.altKey && keyboardEvent.shiftKey && keyboardEvent.key === "PageDown") {
+			} else if (keyboardEvent.ctrlKey && keyboardEvent.altKey && keyboardEvent.shiftKey && helper.testKey('PageDown', 'pagedown')) {
 				// #68 Ctrl+Alt+Shift+PageDown - slow moving speed:
 				let tab = g.mCurrentTab;
 				let nextTab = g.tabs[tt.lastDescendantPos(tab)+1];
@@ -1116,7 +1140,7 @@ var windowListener = {
 					g.moveTabToStart();
 				}
 				tree.treeBoxObject.invalidate();
-			} else if (keyboardEvent.ctrlKey && keyboardEvent.altKey && keyboardEvent.shiftKey && keyboardEvent.key === "PageUp") {
+			} else if (keyboardEvent.ctrlKey && keyboardEvent.altKey && keyboardEvent.shiftKey && helper.testKey('PageUp', 'pageup')) {
 				// #68 Ctrl+Alt+Shift+PageUp - slow moving speed:
 				let tab = g.mCurrentTab;
 				let previousTab = tab.previousSibling;
@@ -1143,7 +1167,7 @@ var windowListener = {
 					g.moveTabToEnd();
 				}
 				tree.treeBoxObject.invalidate();
-			} else if (keyboardEvent.altKey && keyboardEvent.shiftKey && keyboardEvent.key === "PageDown") {
+			} else if (keyboardEvent.altKey && keyboardEvent.shiftKey && helper.testKey('PageDown', 'pagedown')) {
 				// #68 Shift+Alt+PageDown - fast moving speed:
 				let tab = g.mCurrentTab;
 				let nextTab = g.tabs[tt.lastDescendantPos(tab)+1];
@@ -1165,7 +1189,7 @@ var windowListener = {
 					g.moveTabToStart();
 				}
 				tree.treeBoxObject.invalidate();
-			} else if (keyboardEvent.altKey && keyboardEvent.shiftKey && keyboardEvent.key === "PageUp") {
+			} else if (keyboardEvent.altKey && keyboardEvent.shiftKey && helper.testKey('PageUp', 'pageup')) {
 				// #68 Shift+Alt+PageUp - fast moving speed:
 				let tab = g.mCurrentTab;
 				let previousTab = tab.previousSibling;
@@ -1188,7 +1212,7 @@ var windowListener = {
 					g.moveTabToEnd();
 				}
 				tree.treeBoxObject.invalidate();
-			} else if (keyboardEvent.ctrlKey && keyboardEvent.shiftKey && keyboardEvent.code === "Comma") {
+			} else if (keyboardEvent.ctrlKey && keyboardEvent.shiftKey && helper.testCode('Comma', ',')) {
 				// #68 Decrease tab indentation one level:
 				// Ctrl+Alt+Left/Right is already used on OS X — we can't use it
 				let lvl = parseInt(ss.getTabValue(g.mCurrentTab, "ttLevel"));
@@ -1200,7 +1224,7 @@ var windowListener = {
 				tree.treeBoxObject.invalidate();
 				// - we can't use `tree.treeBoxObject.invalidateRow(g.mCurrentTab._tPos - g._numPinnedTabs);`
 				// because in some cases we also have to redraw nesting lines at least on the previous and the next tab
-			} else if (keyboardEvent.ctrlKey && keyboardEvent.shiftKey && keyboardEvent.code === "Period") {
+			} else if (keyboardEvent.ctrlKey && keyboardEvent.shiftKey && helper.testCode('Period', '.')) {
 				// #68 Increase tab indentation one level:
 				// Ctrl+Alt+Left/Right is already used on OS X — we can't use it
 				let lvl = parseInt(ss.getTabValue(g.mCurrentTab, "ttLevel"));
@@ -1209,7 +1233,7 @@ var windowListener = {
 				tree.treeBoxObject.invalidate();
 				// - we can't use `tree.treeBoxObject.invalidateRow(g.mCurrentTab._tPos - g._numPinnedTabs);`
 				// because in some cases we also have to redraw nesting lines at least on the previous and the next tab
-			} else if (keyboardEvent.key === Services.prefs.getCharPref("extensions.tabtree.auto-hide-key")) {
+			} else if (helper.testKey(Services.prefs.getCharPref("extensions.tabtree.auto-hide-key"), Services.prefs.getCharPref("extensions.tabtree.auto-hide-key").toLowerCase())) {
 				// #40 #80 F8 toggles 4 auto-hide options:
 				// 1. in fullscreen
 				// 2. in maximized windows
