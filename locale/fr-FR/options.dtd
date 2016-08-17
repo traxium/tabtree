@@ -64,14 +64,16 @@
 <!ENTITY search-jump.desc "(décoché par défaut)">
 <!ENTITY search-jump-min-chars.title "Nombre min. de caractères pour sauter:">
 <!ENTITY search-jump-min-chars.desc "(4 par défaut)">
+<!ENTITY auto-hide-key.title "Touche pour basculer le masquage automatique">
+<!ENTITY auto-hide-key.desc "(F8 par défaut)">
 <!ENTITY auto-hide-when-fullscreen.title "Masquer automatiquement l'arbre d'onglets en plein écran:">
-<!ENTITY auto-hide-when-fullscreen.desc "F8 bascule cette option si une fenêtre active est en plein écran (coché par défaut)">
+<!ENTITY auto-hide-when-fullscreen.desc "La touche définie au dessus bascule cette option si une fenêtre active est en plein écran (coché par défaut)">
 <!ENTITY auto-hide-when-maximized.title "Cacher automatiquement l'arbre d'onglets quand une fenêtre est maximisée:">
-<!ENTITY auto-hide-when-maximized.desc "F8 bascule cette option si une fenêtre active est maximisée (décoché par défaut)">
+<!ENTITY auto-hide-when-maximized.desc "La touche définie au dessus bascule cette option si une fenêtre active est maximisée (décoché par défaut)">
 <!ENTITY auto-hide-when-normal.title "Cacher automatiquement l'arbre d'onglets quand une fenêtre est normale:">
-<!ENTITY auto-hide-when-normal.desc "F8 bascule cette option si une fenêtre active est normale (décoché par défaut)">
+<!ENTITY auto-hide-when-normal.desc "La touche définie au dessus bascule cette option si une fenêtre active est normale (décoché par défaut)">
 <!ENTITY auto-hide-when-only-one-tab.title "Cacher automatiquement l'arbre d'onglets quand il y a un seul onglet">
-<!ENTITY auto-hide-when-only-one-tab.desc "F8 bascule cette option si une fenêtre active n'a qu'un seul onglet (utilisez Ctrl+T pour ouvrir un nouvel onglet, coché par défaut)">
+<!ENTITY auto-hide-when-only-one-tab.desc "La touche définie au dessus bascule cette option si une fenêtre active n'a qu'un seul onglet (utilisez Ctrl+T pour ouvrir un nouvel onglet, coché par défaut)">
 <!ENTITY insertRelatedAfterCurrent.title "Insérer un nouvel ongle apparenté:">
 <!ENTITY insertRelatedAfterCurrent.desc "(&quot;en bas&quot; par défaut)">
 <!ENTITY insertRelatedAfterCurrent.top "en haut">

@@ -21,6 +21,14 @@ var ssOrig;
 const ss = Cc["@mozilla.org/browser/sessionstore;1"].getService(Ci.nsISessionStore);
 const sss = Cc["@mozilla.org/content/style-sheet-service;1"].getService(Ci.nsIStyleSheetService);
 var stringBundle = Services.strings.createBundle('chrome://tabtree/locale/global.properties?' + Math.random()); // Randomize URI to work around bug 719376
+const { require } = Cu.import("resource://gre/modules/commonjs/toolkit/require.js", {});
+var keyboardUtils = null;
+try {
+	keyboardUtils = require("sdk/keyboard/utils");
+}catch(e) {
+	// low level SDK API not available
+}
+
 var prefsObserver;
 var defaultThemeAddonListener;
 var tabHeightGlobal = {value: -1, uri: null};
@@ -36,6 +44,20 @@ const TT_COL_OVERLAY = 1;
 const TT_COL_CLOSE = 2;
 //noinspection JSUnusedLocalSymbols
 const TT_COL_SCROLLBAR = 3; // Keep this one at the end, it has CSS to keep other columns from being hidden by the scrollbar
+
+// Test keys either using low level SDK API if available, or without (which does not handle many layouts properly)
+function keyboardHelper(keyboardEvent) {
+	return {
+		keyboardEvent: keyboardEvent,
+		translatedKey: keyboardUtils ? keyboardUtils.getKeyForCode(keyboardEvent.keyCode) : null,
+		testCode: function(code, translation) {
+			return keyboardUtils ? this.translatedKey === translation : keyboardEvent.code === code;
+		},
+		testKey: function(key, translation) {
+			return keyboardUtils ? this.translatedKey === translation : keyboardEvent.key === key;
+		}
+	};
+}
 
 //noinspection JSUnusedGlobalSymbols,JSUnusedLocalSymbols
 function startup(data, reason)
@@ -148,6 +170,7 @@ function startup(data, reason)
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.prefix-context-menu-items', false); // #60 (Garbage in menu items)
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.tab-height', -1); // #67 [Feature] Provide a way to change the items height
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.tab-flip', true);
+	Services.prefs.getDefaultBranch(null).setCharPref('extensions.tabtree.auto-hide-key', 'F8');
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.auto-hide-when-fullscreen', true); // #18 hold the tab tree in full screen mode
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.auto-hide-when-maximized', false); // #40 #80
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.auto-hide-when-normal', false); // #40 #80
@@ -417,6 +440,8 @@ var windowListener = {
 			menuItemCloseTree.parentNode.removeChild(menuItemCloseTree);
 			let menuItemCloseChildren = aDOMWindow.document.querySelector('#tt-context-close-children');
 			menuItemCloseChildren.parentNode.removeChild(menuItemCloseChildren);
+			let menuItemReloadTree = aDOMWindow.document.querySelector('#tt-context-reload-tree');
+			menuItemReloadTree.parentNode.removeChild(menuItemReloadTree);
 			let menuItemOpenNewTabSibling = aDOMWindow.document.querySelector('#tt-content-open-sibling');
 			menuItemOpenNewTabSibling.parentNode.removeChild(menuItemOpenNewTabSibling);
 			let menuItemOpenNewTabChild = aDOMWindow.document.querySelector('#tt-content-open-child');
@@ -432,7 +457,7 @@ var windowListener = {
 		aDOMWindow.gBrowser.tabContainer.removeEventListener("SSWindowStateReady", aDOMWindow.tt.toRemove.eventListeners.onSSWindowStateReady, false);
 		aDOMWindow.gBrowser.removeTabsProgressListener(aDOMWindow.tt.toRemove.tabsProgressListener);
 		aDOMWindow.removeEventListener("sizemodechange", aDOMWindow.tt.toRemove.eventListeners.onSizemodechange, false);
-		aDOMWindow.removeEventListener("keypress", aDOMWindow.tt.toRemove.eventListeners.onWindowKeyPress, false);
+		aDOMWindow.removeEventListener("keydown", aDOMWindow.tt.toRemove.eventListeners.onWindowKeyPress, false);
 		// it's probably already removed but "Calling removeEventListener() with arguments that do not identify any currently registered EventListener ... has no effect.":
 		aDOMWindow.document.querySelector('#appcontent').removeEventListener('mouseup', aDOMWindow.tt.toRemove.eventListeners.onAppcontentMouseUp, false);
 		aDOMWindow.document.querySelector('#tabContextMenu').removeEventListener("popupshowing", aDOMWindow.tt.toRemove.eventListeners.onPopupshowing, false);
@@ -1087,12 +1112,14 @@ var windowListener = {
 		/////////////////////// END PSEUDO-ANIMATED PNG ////////////////////////////////////////////////////////////////
 
 		//////////////////// KEY ///////////////////////////////////////////////////////////////////////////////////////
-		// <key> element sucks (I couldn't make it to work with different keyboard layouts)
-		aDOMWindow.addEventListener('keypress', (aDOMWindow.tt.toRemove.eventListeners.onWindowKeyPress = function(keyboardEvent) {
-			if (keyboardEvent.ctrlKey && keyboardEvent.altKey && keyboardEvent.shiftKey && keyboardEvent.code == 'KeyF') {
+		// 'keydown' provides the keyCode ('keypress' does not)
+		aDOMWindow.addEventListener('keydown', (aDOMWindow.tt.toRemove.eventListeners.onWindowKeyPress = function(keyboardEvent) {
+			// convert to a key that works on all keyboard layouts
+			let helper = keyboardHelper(keyboardEvent);
+			if (keyboardEvent.ctrlKey && keyboardEvent.altKey && keyboardEvent.shiftKey && helper.testCode('KeyF', 'f')) {
 				quickSearchBox.collapsed = false;
 				quickSearchBox.focus();
-			} else if (keyboardEvent.ctrlKey && keyboardEvent.altKey && keyboardEvent.shiftKey && keyboardEvent.key === "PageDown") {
+			} else if (keyboardEvent.ctrlKey && keyboardEvent.altKey && keyboardEvent.shiftKey && helper.testKey('PageDown', 'pagedown')) {
 				// #68 Ctrl+Alt+Shift+PageDown - slow moving speed:
 				let tab = g.mCurrentTab;
 				let nextTab = g.tabs[tt.lastDescendantPos(tab)+1];
@@ -1113,7 +1140,7 @@ var windowListener = {
 					g.moveTabToStart();
 				}
 				tree.treeBoxObject.invalidate();
-			} else if (keyboardEvent.ctrlKey && keyboardEvent.altKey && keyboardEvent.shiftKey && keyboardEvent.key === "PageUp") {
+			} else if (keyboardEvent.ctrlKey && keyboardEvent.altKey && keyboardEvent.shiftKey && helper.testKey('PageUp', 'pageup')) {
 				// #68 Ctrl+Alt+Shift+PageUp - slow moving speed:
 				let tab = g.mCurrentTab;
 				let previousTab = tab.previousSibling;
@@ -1140,7 +1167,7 @@ var windowListener = {
 					g.moveTabToEnd();
 				}
 				tree.treeBoxObject.invalidate();
-			} else if (keyboardEvent.altKey && keyboardEvent.shiftKey && keyboardEvent.key === "PageDown") {
+			} else if (keyboardEvent.altKey && keyboardEvent.shiftKey && helper.testKey('PageDown', 'pagedown')) {
 				// #68 Shift+Alt+PageDown - fast moving speed:
 				let tab = g.mCurrentTab;
 				let nextTab = g.tabs[tt.lastDescendantPos(tab)+1];
@@ -1162,7 +1189,7 @@ var windowListener = {
 					g.moveTabToStart();
 				}
 				tree.treeBoxObject.invalidate();
-			} else if (keyboardEvent.altKey && keyboardEvent.shiftKey && keyboardEvent.key === "PageUp") {
+			} else if (keyboardEvent.altKey && keyboardEvent.shiftKey && helper.testKey('PageUp', 'pageup')) {
 				// #68 Shift+Alt+PageUp - fast moving speed:
 				let tab = g.mCurrentTab;
 				let previousTab = tab.previousSibling;
@@ -1185,7 +1212,7 @@ var windowListener = {
 					g.moveTabToEnd();
 				}
 				tree.treeBoxObject.invalidate();
-			} else if (keyboardEvent.ctrlKey && keyboardEvent.shiftKey && keyboardEvent.code === "Comma") {
+			} else if (keyboardEvent.ctrlKey && keyboardEvent.shiftKey && helper.testCode('Comma', ',')) {
 				// #68 Decrease tab indentation one level:
 				// Ctrl+Alt+Left/Right is already used on OS X — we can't use it
 				let lvl = parseInt(ss.getTabValue(g.mCurrentTab, "ttLevel"));
@@ -1197,7 +1224,7 @@ var windowListener = {
 				tree.treeBoxObject.invalidate();
 				// - we can't use `tree.treeBoxObject.invalidateRow(g.mCurrentTab._tPos - g._numPinnedTabs);`
 				// because in some cases we also have to redraw nesting lines at least on the previous and the next tab
-			} else if (keyboardEvent.ctrlKey && keyboardEvent.shiftKey && keyboardEvent.code === "Period") {
+			} else if (keyboardEvent.ctrlKey && keyboardEvent.shiftKey && helper.testCode('Period', '.')) {
 				// #68 Increase tab indentation one level:
 				// Ctrl+Alt+Left/Right is already used on OS X — we can't use it
 				let lvl = parseInt(ss.getTabValue(g.mCurrentTab, "ttLevel"));
@@ -1206,7 +1233,7 @@ var windowListener = {
 				tree.treeBoxObject.invalidate();
 				// - we can't use `tree.treeBoxObject.invalidateRow(g.mCurrentTab._tPos - g._numPinnedTabs);`
 				// because in some cases we also have to redraw nesting lines at least on the previous and the next tab
-			} else if (keyboardEvent.key === "F8") {
+			} else if (helper.testKey(Services.prefs.getCharPref("extensions.tabtree.auto-hide-key"), Services.prefs.getCharPref("extensions.tabtree.auto-hide-key").toLowerCase())) {
 				// #40 #80 F8 toggles 4 auto-hide options:
 				// 1. in fullscreen
 				// 2. in maximized windows
@@ -2885,6 +2912,21 @@ var windowListener = {
 			}
 		}, false);
 
+		let menuItemReloadTree = aDOMWindow.document.createElement('menuitem'); // removed in unloadFromWindow()
+		menuItemReloadTree.id = 'tt-context-reload-tree';
+		//menuItemReloadTree.setAttribute('label', stringBundle.GetStringFromName('reload_this_tree'));
+		menuItemReloadTree.addEventListener('command', function (event) {
+			let tab = aDOMWindow.TabContextMenu.contextTab;
+			let tPos = tab._tPos;
+			let lvl = ss.getTabValue(tab, 'ttLevel');
+			let childIdx = 1;
+			while (ss.getTabValue(g.tabs[tPos+childIdx], 'ttLevel') > lvl) {
+				g.reloadTab(g.tabs[tPos+childIdx]);
+				++childIdx;
+			}
+			g.reloadTab(g.tabs[tPos]);
+		}, false);
+
 		let menuItemOpenNewTabSibling = aDOMWindow.document.createElement("menuitem"); // removed in unloadFromWindow()
 		menuItemOpenNewTabSibling.id = "tt-content-open-sibling";
 		//menuItemOpenNewTabSibling.setAttribute("label", stringBundle.GetStringFromName("open_sibling"));
@@ -2962,12 +3004,13 @@ var windowListener = {
 		tabContextMenu.insertBefore(menuItemDuplicateTabAsSibling, tabContextMenuCloseTab.nextSibling);
 		tabContextMenu.insertBefore(menuItemOpenNewTabChild, tabContextMenuCloseTab.nextSibling);
 		tabContextMenu.insertBefore(menuItemOpenNewTabSibling, tabContextMenuCloseTab.nextSibling);
+		tabContextMenu.insertBefore(menuItemReloadTree, tabContextMenuCloseTab.nextSibling);
 		tabContextMenu.insertBefore(menuItemCloseChildren, tabContextMenuCloseTab.nextSibling);
 		tabContextMenu.insertBefore(menuItemCloseTree, tabContextMenuCloseTab.nextSibling);
 		tabContextMenu.addEventListener('popupshowing', (aDOMWindow.tt.toRemove.eventListeners.onPopupshowing = function (event) {
 			let tab = aDOMWindow.TabContextMenu.contextTab;
 
-			menuItemCloseTree.hidden = menuItemCloseChildren.hidden = !tt.hasAnyChildren(tab._tPos);
+			menuItemReloadTree.hidden = menuItemCloseTree.hidden = menuItemCloseChildren.hidden = !tt.hasAnyChildren(tab._tPos);
 			menuItemOpenNewTabChild.hidden = tab.pinned;
 			menuItemOpenNewTabSibling.hidden = tab._tPos < tt.nPinned - 1;
 			
@@ -3101,6 +3144,7 @@ var windowListener = {
 							let prefix = Services.prefs.getBoolPref("extensions.tabtree.prefix-context-menu-items") ? "Tab Tree: " : "";
 							menuItemCloseTree.setAttribute("label", prefix + stringBundle.GetStringFromName("close_this_tree"));
 							menuItemCloseChildren.setAttribute("label", prefix + stringBundle.GetStringFromName("close_children"));
+							menuItemReloadTree.setAttribute("label", prefix + stringBundle.GetStringFromName("reload_this_tree"));
 							menuItemOpenNewTabSibling.setAttribute("label", prefix + stringBundle.GetStringFromName("open_sibling"));
 							menuItemOpenNewTabChild.setAttribute("label", prefix + stringBundle.GetStringFromName("open_child"));
 							menuItemDuplicateTabAsSibling.setAttribute("label", prefix + stringBundle.GetStringFromName("duplicate_sibling"));
