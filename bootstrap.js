@@ -2013,7 +2013,8 @@ var windowListener = {
 				if (tab.image) {
 					return g.getIcon(tab) + "#-moz-resolution=16,16";
 				} else {
-					return g.mFaviconService.defaultFavicon.spec;
+					return "chrome://mozapps/skin/places/defaultFavicon.png";
+					// since about FF47 g.mFaviconService is undefined
 					// g.mFaviconService.defaultFavicon.spec is "chrome://mozapps/skin/places/defaultFavicon.png"
 					// Or we could return something like 'chrome://tabtree/skin/completelyTransparent.png'
 					// in that case it would look exactly like what Firefox does for its default tabs
