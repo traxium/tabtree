@@ -62,7 +62,7 @@
           this.checked = tab.selected;
 
           if (tab.hasAttribute('progress') && tab.hasAttribute('busy')) {
-            this.setAttribute('image', 'chrome://browser/skin/tabbrowser/loading.png');
+            this.setAttribute('image', 'chrome://global/skin/icons/loading.png');
           } else if (this.tab.hasAttribute('busy')) {
             this.setAttribute('image', 'chrome://browser/skin/tabbrowser/connecting.png');
           } else {

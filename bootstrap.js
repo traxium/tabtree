@@ -2038,7 +2038,7 @@ var windowListener = {
 				// using animated png's causes abnormal CPU load (due to too frequent rows invalidating)
 				// and until this Firefox bug is fixed the following code will be commented out:
 				//if (g.tabs[tPos].hasAttribute('progress') && g.tabs[tPos].hasAttribute('busy')) {
-				//	return "chrome://browser/skin/tabbrowser/loading.png";
+				//	return "chrome://global/skin/icons/loading.png";
 				//} else if (g.tabs[tPos].hasAttribute('busy')) {
 				//	return "chrome://browser/skin/tabbrowser/connecting.png";
 				//}
