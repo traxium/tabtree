@@ -1,3 +1,12 @@
+1.4.7
+- #134 Added memu item for Reload tree
+- #119 Customizable auto-hide key
+- #132 Better keyboard layout handling
+- Added 'busy' and 'progress' properties for CSS selectors
+- Updated French localization
+- Fixed mFaviconService error
+- Fixed #136 UI breaks with Firefox 47
+
 1.4.6
 - #40 The auto-hide function without resize
 - #103 Middle click on the new tab button adds a new sibling (@Ulf3000)
