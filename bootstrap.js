@@ -452,6 +452,7 @@ var windowListener = {
 		Object.keys(aDOMWindow.tt.toRestore.g).forEach( (x)=>{aDOMWindow.gBrowser[x] = aDOMWindow.tt.toRestore.g[x];} );
 		// only 1 at the moment - 'updateContextMenu':
 		Object.keys(aDOMWindow.tt.toRestore.TabContextMenu).forEach( (x)=>{aDOMWindow.TabContextMenu[x] = aDOMWindow.tt.toRestore.TabContextMenu[x];} );
+		aDOMWindow.updateTitlebarDisplay = aDOMWindow.tt.toRestore.updateTitlebarDisplay;
 		aDOMWindow.gBrowser.tabContainer.removeEventListener("TabMove", aDOMWindow.tt.toRemove.eventListeners.onTabMove, false);
 		aDOMWindow.gBrowser.tabContainer.removeEventListener("TabSelect", aDOMWindow.tt.toRemove.eventListeners.onTabSelect, false);
 		aDOMWindow.gBrowser.tabContainer.removeEventListener("TabAttrModified", aDOMWindow.tt.toRemove.eventListeners.onTabAttrModified, false);
@@ -560,7 +561,19 @@ var windowListener = {
 		let slimSpacer = aDOMWindow.document.createElement('spacer');
 		slimSpacer.id = 'tt-slimChrome-spacer';
 		slimSpacer.setAttribute('flex', '1');
-
+		
+		// #136 [Bug] UI breaks with Firefox 47
+		// More info at https://dxr.mozilla.org/mozilla-central/source/browser/base/content/browser-tabsintitlebar.js
+		aDOMWindow.tt.toRestore.updateTitlebarDisplay = aDOMWindow.updateTitlebarDisplay;
+		aDOMWindow.updateTitlebarDisplay = new Proxy(aDOMWindow.updateTitlebarDisplay, {
+			apply: function(target, thisArg, argumentsList) {
+				target.apply(thisArg, argumentsList);
+				if (aDOMWindow.windowState === aDOMWindow.STATE_NORMAL) {
+					aDOMWindow.document.documentElement.removeAttribute("chromemargin");
+				}
+			}
+		});
+		
 		if (Services.appinfo.OS == 'WINNT') {
 			switch (aDOMWindow.windowState) {
 				case aDOMWindow.STATE_MAXIMIZED:
