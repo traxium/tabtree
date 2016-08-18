@@ -1,9 +1,9 @@
 1.4.7
-- #134 Added memu item for Reload tree
-- #119 Customizable auto-hide key
-- #132 Better keyboard layout handling
+- #134 Added memu item for Reload tree (@Fabiensk)
+- #119 Customizable auto-hide key (@MichelTenVoorde)
+- #132 Better keyboard layout handling (@Fabiensk)
 - Added 'busy' and 'progress' properties for CSS selectors
-- Updated French localization
+- Updated French localization (@Fabiensk)
 - Fixed mFaviconService error
 - Fixed #136 UI breaks with Firefox 47
 
