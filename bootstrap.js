@@ -2098,6 +2098,12 @@ var windowListener = {
 				if (prefUnread && tab.hasAttribute('unread')) {
 					ret += ' unread';
 				}
+				if (tab.hasAttribute('busy')) {
+					ret += ' busy'
+				}
+				if (tab.hasAttribute('progress')) {
+					ret += ' progress'
+				}
 				return ret;
 			},
 			//getColumnProperties: function(colid,col,props){} // props parameter is obsolete since Gecko 22
