@@ -1,36 +1,36 @@
-<!ENTITY theme.title "Theme:">
-<!ENTITY theme.desc "When using the Developer Edition theme it's recommended to select &#171;mimic&#187; (mimic by default)">
-<!ENTITY theme.default "Default">
-<!ENTITY theme.mimic "Try to mimic the Firefox theme">
-<!ENTITY theme.dark "Dark">
+<!ENTITY theme.title "Thème:">
+<!ENTITY theme.desc "Si vous utilisez le thème de l'Édition Développeur, il est recommandé de séléctionner &#171;imiter&#187; (« imiter » par défaut)">
+<!ENTITY theme.default "Standard">
+<!ENTITY theme.mimic "Essayer de d'imiter le thème de Firefox">
+<!ENTITY theme.dark "Sombre">
 <!ENTITY treelines.title "Dessiner les lignes d’imbrication sur le côté de l’arbre:">
 <!ENTITY treelines.desc "Les lignes connectant les rangées filles aux rangées mères (coché par défaut)">
-<!ENTITY tab-height.title "Tab height:">
-<!ENTITY tab-height.desc "Set to &#171;-1&#187; or &#171;0&#187; to use the default theme value (&#171;-1&#187; by default)">
+<!ENTITY tab-height.title "Hauteur de l'onglet:">
+<!ENTITY tab-height.desc "Choisissez &#171;-1&#187; ou &#171;0&#187; pour utiliser la valeur par défaut du thème (&#171;-1&#187; par défaut)">
 <!ENTITY highlight-unloaded-tabs.title "Coloration des onglets non-chargés:">
 <!ENTITY highlight-unloaded-tabs.desc "Si vous utilisez l’option de Firefox &#171;Ne pas charger les onglets tant qu'ils ne sont pas sélectionnés&#187; (&#171;non&#187; par défaut)">
-<!ENTITY highlight-unloaded-tabs.no "non">
-<!ENTITY highlight-unloaded-tabs.grayout "grisage">
-<!ENTITY highlight-unloaded-tabs.highlight "surlignage">
+<!ENTITY highlight-unloaded-tabs.no "aucune">
+<!ENTITY highlight-unloaded-tabs.grayout "grisé">
+<!ENTITY highlight-unloaded-tabs.highlight "surligné">
 <!ENTITY highlight-unread-tabs.title "Colorer les onglets non-lus:">
 <!ENTITY highlight-unread-tabs.desc "(non-coché par défaut)">
-<!ENTITY tab-numbers.title "Show tab numbers in tab titles:">
-<!ENTITY tab-numbers.desc "Useful for Vim-style add-ons (unchecked by default)">
+<!ENTITY tab-numbers.title "Afficher les numéros d'onglets dans les titles des onglets:">
+<!ENTITY tab-numbers.desc "Pratique pour les extensions de type Vim (non-coché par défaut)">
 <!ENTITY dblclick.title "Double clic:">
 <!ENTITY dblclick.desc "Recommandé uniquement si vous n’avez pas une souris équipée d’une molette (non-coché par défaut)">
-<!ENTITY dblclick.none "No action">
-<!ENTITY dblclick.close "Close tab">
-<!ENTITY dblclick.pin "Pin/unpin tab">
-<!ENTITY middle-click-tabbar.title "Middle-click on the tabbar:">
-<!ENTITY middle-click-tabbar.desc "(&#171;Firefox default&#187; by default)">
-<!ENTITY middle-click-tabbar.0 "Firefox default (open a new tab)">
+<!ENTITY dblclick.none "Aucune action">
+<!ENTITY dblclick.close "Fermer l'onglet">
+<!ENTITY dblclick.pin "Épingler/relacher l'onglet'">
+<!ENTITY middle-click-tabbar.title "Clic milieu sur la barre d'onglets:">
+<!ENTITY middle-click-tabbar.desc "(&#171;Action standard de Firefox&#187; par défaut)">
+<!ENTITY middle-click-tabbar.0 "Action standard de Firefox (ouvrir un nouvel onglet)">
 <!-- middle-click-tabbar.1 === undoCloseTab.label -->
 <!ENTITY delay.title "Délai du double clic (millisecondes)">
-<!ENTITY delay.desc "En réalité, c’est le délai avant qu’un onglet sélectionné soit affiché. Mettez-le autour de 160 si vous ne voulez pas voir votre onglet changer pendant la fermeture de l’onglet (0 par défaut)">
+<!ENTITY delay.desc "Il s'agit du délai avant qu’un onglet sélectionné soit affiché. Mettez-le autour de 160 si vous ne voulez pas voir votre onglet changer pendant la fermeture de l’onglet (0 par défaut)">
 <!ENTITY position.left "Gauche">
 <!ENTITY position.right "Droite">
-<!ENTITY position.sidebar_top "Above the default (e.g. Bookmarks) sidebar (hidden by default)">
-<!ENTITY position.sidebar_bottom "Below the default (e.g. History) sidebar (hidden by default)">
+<!ENTITY position.sidebar_top "Au dessus de la barre latérale par défaut (par ex. Marque-pages ; caché par défaut)">
+<!ENTITY position.sidebar_bottom "Au dessous de la barre latérale par défaut (par ex. Historique; caché par défaut)">
 <!ENTITY position.title "Position:">
 <!ENTITY position.desc "(&#171;Gauche&#187; par défaut)">
 <!ENTITY search-position.title "Position de la barre de recherche d’onglet:">
@@ -42,16 +42,16 @@
 <!ENTITY search-autohide.desc "Utilisez Ctrl+Shift+Alt+F pour la réafficher (non-coché par défaut)">
 <!ENTITY drawInTitlebar.title "Cacher la barre de titre native du système quand Firefox est maximisé:">
 <!ENTITY drawInTitlebar.desc "Option &#171;browser.tabs.drawInTitlebar&#187; dans about:config (coché par défaut)">
-<!ENTITY after-close.title "When closing current tab, focus:">
-<!ENTITY after-close.desc "(&#171;Last selected tab&#187; by default)">
-<!ENTITY after-close.0 "Default (opener/right tab)">
-<!ENTITY after-close.1 "Last selected tab">
-<!ENTITY after-close.2 "Closest tab (first child -> sibling below -> sibling above -> parent)">
-<!ENTITY after-close.3 "Tab right above">
+<!ENTITY after-close.title "Quand l'onglet courant est fermé, activer:">
+<!ENTITY after-close.desc "(&#171;le dernier onglet sélectionné&#187; par défaut)">
+<!ENTITY after-close.0 "l'onglet par défaut (onglet l'ayant ouvert/à droite)">
+<!ENTITY after-close.1 "le dernier onglet sélectionné">
+<!ENTITY after-close.2 "l'onglet le plus proche (premier fils -> au même niveau en dessous -> au même niveau au dessus -> parent)">
+<!ENTITY after-close.3 "Onglet juste au dessus">
 <!ENTITY new-tab-button.title "Montrer le bouton &#171;Ouvrir un nouvel onglet (Ctrl+T)&#187;:">
 <!ENTITY new-tab-button.desc "Vous pouvez aussi double-cliquer dans une zone vide en dessous des onglets pour ouvrir un nouvel onglet (coché par défaut)">
 <!ENTITY close-tab-buttons.title "Montrer le bouton &#171;Fermer l'onglet&#187;:">
-<!ENTITY close-tab-buttons.desc "Vous pouvez aussi fermer un onglet avec le button du milieu ou de la molette de la souris (ou un double clic en option) (coché par défaut)">
+<!ENTITY close-tab-buttons.desc "Vous pouvez aussi fermer un onglet avec le bouton du milieu ou de la molette de la souris (ou un double clic en option) (coché par défaut)">
 <!ENTITY max-indent.title "Niveau max d’indentation des onglets:">
 <!ENTITY max-indent.desc "Lors de l’ouverture d’un onglet. &#171;-1&#187; signifie qu’il n’y a pas de niveau max (&#171;-1&#187; par défaut)">
 <!ENTITY wheel.title "Défilement sur l’arbre des onglets:">
@@ -60,29 +60,29 @@
 <!ENTITY wheel.1 "Sans Maj - changer l’onglet actif, avec Maj- défiler normalement">
 <!ENTITY wheel.2 "toujours défiler normalement">
 <!ENTITY wheel.3 "toujours changer l’onglet actif">
-<!ENTITY search-jump.title "Tab search jumps to the first match:">
-<!ENTITY search-jump.desc "(unchecked by default)">
-<!ENTITY search-jump-min-chars.title "Min number of characters to jump:">
-<!ENTITY search-jump-min-chars.desc "(4 by default)">
-<!ENTITY auto-hide-key.title "Key to toggle auto-hide">
-<!ENTITY auto-hide-key.desc "(default is F8)">
-<!ENTITY auto-hide-when-fullscreen.title "Auto-hide the tab tree in full screen:">
-<!ENTITY auto-hide-when-fullscreen.desc "Key defined above toggles this option if an active window is in full screen (checked by default)">
-<!ENTITY auto-hide-when-maximized.title "Auto-hide the tab tree when a window is maximized:">
-<!ENTITY auto-hide-when-maximized.desc "Key defined above toggles this option if an active window is maximized (unchecked by default)">
-<!ENTITY auto-hide-when-normal.title "Auto-hide the tab tree when a window is normal:">
-<!ENTITY auto-hide-when-normal.desc "Key defined above toggles this option if an active window is normal (unchecked by default)">
-<!ENTITY auto-hide-when-only-one-tab.title "Auto-hide the tab tree when there's only one tab">
-<!ENTITY auto-hide-when-only-one-tab.desc "Key defined above toggles this option if an active window has only one tab (press Ctrl+T to open a new tab, checked by default)">
-<!ENTITY insertRelatedAfterCurrent.title "Insert a new related tab at the:">
-<!ENTITY insertRelatedAfterCurrent.desc "(&quot;Bottom&quot; by default)">
-<!ENTITY insertRelatedAfterCurrent.top "Top">
-<!ENTITY insertRelatedAfterCurrent.bottom "Bottom">
-<!ENTITY prefix-context-menu-items.title "Prefix context menu items with &#171;Tab Tree:&#187;:">
-<!ENTITY prefix-context-menu-items.desc "If you want &#171;Tab Tree: Close Children&#187; instead of just &#171;Close Children&#187; (unchecked by default)">
-<!ENTITY tab-flip.title "Tab flip:">
-<!ENTITY tab-flip.desc "Selects the previously active tab when clicking the currently active tab (checked by default)">
-<!ENTITY flatten.title "Flatten the tree:">
-<!ENTITY flatten.desc "Reset all the tabs to level 0">
-<!ENTITY flatten.label "Your tree structure will be lost">
-<!ENTITY flatten.confirm "You can\'t undo this operation. Continue anyway?">
+<!ENTITY search-jump.title "La recherche d'onglet saute au premier onglet correspondant:">
+<!ENTITY search-jump.desc "(décoché par défaut)">
+<!ENTITY search-jump-min-chars.title "Nombre min. de caractères pour sauter:">
+<!ENTITY search-jump-min-chars.desc "(4 par défaut)">
+<!ENTITY auto-hide-key.title "Touche pour basculer le masquage automatique">
+<!ENTITY auto-hide-key.desc "(F8 par défaut)">
+<!ENTITY auto-hide-when-fullscreen.title "Masquer automatiquement l'arbre d'onglets en plein écran:">
+<!ENTITY auto-hide-when-fullscreen.desc "La touche définie au dessus bascule cette option si une fenêtre active est en plein écran (coché par défaut)">
+<!ENTITY auto-hide-when-maximized.title "Cacher automatiquement l'arbre d'onglets quand une fenêtre est maximisée:">
+<!ENTITY auto-hide-when-maximized.desc "La touche définie au dessus bascule cette option si une fenêtre active est maximisée (décoché par défaut)">
+<!ENTITY auto-hide-when-normal.title "Cacher automatiquement l'arbre d'onglets quand une fenêtre est normale:">
+<!ENTITY auto-hide-when-normal.desc "La touche définie au dessus bascule cette option si une fenêtre active est normale (décoché par défaut)">
+<!ENTITY auto-hide-when-only-one-tab.title "Cacher automatiquement l'arbre d'onglets quand il y a un seul onglet">
+<!ENTITY auto-hide-when-only-one-tab.desc "La touche définie au dessus bascule cette option si une fenêtre active n'a qu'un seul onglet (utilisez Ctrl+T pour ouvrir un nouvel onglet, coché par défaut)">
+<!ENTITY insertRelatedAfterCurrent.title "Insérer un nouvel ongle apparenté:">
+<!ENTITY insertRelatedAfterCurrent.desc "(&quot;en bas&quot; par défaut)">
+<!ENTITY insertRelatedAfterCurrent.top "en haut">
+<!ENTITY insertRelatedAfterCurrent.bottom "en bas">
+<!ENTITY prefix-context-menu-items.title "Préfixe des éléments du menu contextuel avec &#171;Tab Tree:&#187;:">
+<!ENTITY prefix-context-menu-items.desc "Si vous voulez que &#171;Tab Tree: Fermer les fils&#187; au lieu de seulement &#171;Fermer les fil&#187; (décoché par défaut)">
+<!ENTITY tab-flip.title "Basculement d'onglet:">
+<!ENTITY tab-flip.desc "Cliquer sur l'onglet actuellement actif selectionnera l'onglet précédemment actif (coché par défaut)">
+<!ENTITY flatten.title "Aplatir l'arbre:">
+<!ENTITY flatten.desc "Réinitialise tous les onglets au niveau 0">
+<!ENTITY flatten.label "Votre structure d'arbre sera perdue">
+<!ENTITY flatten.confirm "Vous ne pourrez pas annuler cette opération. Continuer malgré tout?">
