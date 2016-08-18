@@ -355,7 +355,8 @@ var windowListener = {
 	onCloseWindow: function (aXULWindow) {
 		// In Gecko 7.0 nsIDOMWindow2 has been merged into nsIDOMWindow interface.
 		// In Gecko 8.0 nsIDOMStorageWindow and nsIDOMWindowInternal have been merged into nsIDOMWindow interface.
-		let aDOMWindow = aXULWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowInternal || Ci.nsIDOMWindow);
+		// Since ≈FF50 "Use of nsIDOMWindowInternal is deprecated. Use nsIDOMWindow instead."
+		let aDOMWindow = aXULWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindow);
 		if (!aDOMWindow) {
 			return;
 		}
@@ -383,7 +384,7 @@ var windowListener = {
 		let XULWindows = Services.wm.getXULWindowEnumerator(null);
 		while (XULWindows.hasMoreElements()) {
 			let aXULWindow = XULWindows.getNext();
-			let aDOMWindow = aXULWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowInternal || Ci.nsIDOMWindow);
+			let aDOMWindow = aXULWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindow);
 			windowListener.loadIntoWindow(aDOMWindow);
 		}
 		// Listen to new windows
@@ -395,7 +396,7 @@ var windowListener = {
 		let XULWindows = Services.wm.getXULWindowEnumerator(null);
 		while (XULWindows.hasMoreElements()) {
 			let aXULWindow = XULWindows.getNext();
-			let aDOMWindow = aXULWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowInternal || Ci.nsIDOMWindow);
+			let aDOMWindow = aXULWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindow);
 			windowListener.unloadFromWindow(aDOMWindow, aXULWindow);
 		}
 		//Stop listening so future added windows don't get this attached
