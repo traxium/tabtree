@@ -1,3 +1,6 @@
+1.4.8
+- #151 Linux fix
+
 1.4.7
 - #134 Added memu item for Reload tree (@Fabiensk)
 - #119 Customizable auto-hide key (@MichelTenVoorde)
