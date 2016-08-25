@@ -2524,8 +2524,32 @@ var windowListener = {
 			tree.treeBoxObject.invalidate();
 		}, false);
 
-		tree.onkeydown = quickSearchBox.onkeydown = function(keyboardEvent) {
+		tree.onkeydown = function(keyboardEvent) {
 			if (keyboardEvent.key=='Escape') {
+				if (Services.prefs.getBoolPref('extensions.tabtree.search-autohide')) {
+					quickSearchBox.collapsed = true;
+				} else {
+					quickSearchBox.value = '';
+					tree.treeBoxObject.invalidate();
+				}
+			}
+		};
+
+		// Enter in quick search box = jump to first tab matching quick search
+		quickSearchBox.onkeydown = function(keyboardEvent) {
+			if (keyboardEvent.key=='Enter') {
+				let txt = quickSearchBox.value.toLowerCase();
+				for (let tPos = g._numPinnedTabs; tPos < g.tabs.length; ++tPos) {
+					let url = g.browsers[tPos]._userTypedValue || g.browsers[tPos].contentDocument.URL || '';
+					// 'url.toLowerCase()' may be replaced by 'url':
+					if (g.tabs[tPos].label.toLowerCase().indexOf(txt) != -1 || url.toLowerCase().indexOf(txt) != -1) {
+						g.selectTabAtIndex(tPos);
+						quickSearchBox.focus();
+						break;
+					}
+				}
+			}
+			if (keyboardEvent.key=='Enter' || keyboardEvent.key=='Escape') {
 				if (Services.prefs.getBoolPref('extensions.tabtree.search-autohide')) {
 					quickSearchBox.collapsed = true;
 				} else {
