@@ -453,7 +453,7 @@ var windowListener = {
 		Object.keys(aDOMWindow.tt.toRestore.g).forEach( (x)=>{aDOMWindow.gBrowser[x] = aDOMWindow.tt.toRestore.g[x];} );
 		// only 1 at the moment - 'updateContextMenu':
 		Object.keys(aDOMWindow.tt.toRestore.TabContextMenu).forEach( (x)=>{aDOMWindow.TabContextMenu[x] = aDOMWindow.tt.toRestore.TabContextMenu[x];} );
-		if (Services.appinfo.OS === 'WINNT' || Services.appinfo.OS === 'Darwin') {
+		if (aDOMWindow.updateTitlebarDisplay) {
 			aDOMWindow.updateTitlebarDisplay = aDOMWindow.tt.toRestore.updateTitlebarDisplay;
 		}
 		aDOMWindow.gBrowser.tabContainer.removeEventListener("TabMove", aDOMWindow.tt.toRemove.eventListeners.onTabMove, false);
@@ -565,7 +565,7 @@ var windowListener = {
 		slimSpacer.id = 'tt-slimChrome-spacer';
 		slimSpacer.setAttribute('flex', '1');
 		
-		if (Services.appinfo.OS === 'WINNT' || Services.appinfo.OS === 'Darwin') {
+		if (aDOMWindow.updateTitlebarDisplay) {
 			// #136 [Bug] UI breaks with Firefox 47
 			// More info at https://dxr.mozilla.org/mozilla-central/source/browser/base/content/browser-tabsintitlebar.js
 			aDOMWindow.tt.toRestore.updateTitlebarDisplay = aDOMWindow.updateTitlebarDisplay;
