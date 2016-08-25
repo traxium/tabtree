@@ -2537,14 +2537,7 @@ var windowListener = {
 
 		// Enter in quick search box = jump to first tab matching quick search
 		quickSearchBox.onkeydown = function(keyboardEvent) {
-			if (keyboardEvent.key=='Escape') {
-				if (Services.prefs.getBoolPref('extensions.tabtree.search-autohide')) {
-					quickSearchBox.collapsed = true;
-				} else {
-					quickSearchBox.value = '';
-					tree.treeBoxObject.invalidate();
-				}
-			} else if (keyboardEvent.key=='Enter') {
+			if (keyboardEvent.key=='Enter') {
 				let txt = quickSearchBox.value.toLowerCase();
 				for (let tPos = g._numPinnedTabs; tPos < g.tabs.length; ++tPos) {
 					let url = g.browsers[tPos]._userTypedValue || g.browsers[tPos].contentDocument.URL || '';
@@ -2555,7 +2548,14 @@ var windowListener = {
 						break;
 					}
 				}
-	 
+			}
+			if (keyboardEvent.key=='Enter' || keyboardEvent.key=='Escape') {
+				if (Services.prefs.getBoolPref('extensions.tabtree.search-autohide')) {
+					quickSearchBox.collapsed = true;
+				} else {
+					quickSearchBox.value = '';
+					tree.treeBoxObject.invalidate();
+				}
 			}
 		};
 
