@@ -573,7 +573,14 @@ var windowListener = {
 				apply: function(target, thisArg, argumentsList) {
 					target.apply(thisArg, argumentsList);
 					if (aDOMWindow.windowState === aDOMWindow.STATE_NORMAL) {
-						aDOMWindow.document.documentElement.removeAttribute("chromemargin");
+						// #154 [Bug] Broken compatibility with Hide Caption Titlebar Plus since version 1.4.7
+						AddonManager.getAddonByID("hidecaptionplus-dp@dummy.addons.mozilla.org", function (addon) {
+							if (addon && addon.isActive) {
+								// "Hide Caption Titlebar Plus" is installed and enabled
+							} else {
+								aDOMWindow.document.documentElement.removeAttribute("chromemargin");
+							}
+						});
 					}
 				}
 			});
