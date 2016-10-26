@@ -1883,7 +1883,7 @@ var windowListener = {
 				) {
 					g.tabContainer.addEventListener('TabOpen', function onPreAddTabWithoutRef(event) {
 						g.tabContainer.removeEventListener('TabOpen', onPreAddTabWithoutRef, true);
-						if ( ss.getTabValue(event.target, 'ttLevel') === '' ) { // despite MDN it returns '' instead of undefined
+						if ( ss.getTabValue(event.target, 'ttLevel') === '' ) {
 							ss.setTabValue(event.target, 'ttLevel', '0');
 						}
 						tree.treeBoxObject.rowCountChanged(event.target._tPos-tt.nPinned, 1);
