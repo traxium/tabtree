@@ -586,6 +586,8 @@ var windowListener = {
 			});
 		}
 		
+		// console.log(`Window: '${aDOMWindow.document.title} (${g.tabs.length})' (windowState=${aDOMWindow.windowState}). Injecting Tab Tree ...`);
+		
 		if (Services.appinfo.OS == 'WINNT') {
 			switch (aDOMWindow.windowState) {
 				case aDOMWindow.STATE_MAXIMIZED:
@@ -624,6 +626,7 @@ var windowListener = {
 			}
 
 			aDOMWindow.addEventListener('sizemodechange', (aDOMWindow.tt.toRemove.eventListeners.onSizemodechange = function(event) {
+				// console.log(`Window: '${aDOMWindow.document.title} (${g.tabs.length})' (windowState=${aDOMWindow.windowState}). Event: 'sizemodechange'`);
 				switch (aDOMWindow.windowState) {
 					case aDOMWindow.STATE_MAXIMIZED:
 						if (windowControlsClone.parentNode !== null) { // if windowControlsClone exists
@@ -647,8 +650,10 @@ var windowListener = {
 								// END Beyond Australis compatibility
 								
 								titlebarButtons.style.marginRight = '-9999px'; // Beyond Australis compatibility
-								aDOMWindow.document.documentElement.setAttribute("tabsintitlebar", "true"); // hide native titlebar
-								aDOMWindow.updateTitlebarDisplay();
+								aDOMWindow.setTimeout(() => {
+									aDOMWindow.document.documentElement.setAttribute("tabsintitlebar", "true"); // hide native titlebar
+									aDOMWindow.updateTitlebarDisplay();
+								}, 0);
 							}
 						}
 						break;
