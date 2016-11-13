@@ -1149,7 +1149,21 @@ var windowListener = {
 			let helper = keyboardHelper(keyboardEvent);
 			if (keyboardEvent.ctrlKey && keyboardEvent.altKey && keyboardEvent.shiftKey && helper.testCode('KeyF', 'f')) {
 				quickSearchBox.collapsed = false;
-				quickSearchBox.focus();
+				// #172
+				let loop = function () {
+					quickSearchBox.focus();
+					if (
+						aDOMWindow.document.activeElement
+						&& aDOMWindow.document.activeElement.parentElement
+						&& aDOMWindow.document.activeElement.parentElement.parentElement === quickSearchBox
+					) {
+						// focused
+					} else {
+						console.log("@#@#@#@#");
+						aDOMWindow.setTimeout(loop, 20);
+					}
+				};
+				loop();
 			} else if (keyboardEvent.ctrlKey && keyboardEvent.altKey && keyboardEvent.shiftKey && helper.testKey('PageDown', 'pagedown')) {
 				// #68 Ctrl+Alt+Shift+PageDown - slow moving speed:
 				let tab = g.mCurrentTab;
