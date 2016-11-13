@@ -2693,7 +2693,7 @@ var windowListener = {
 				tree.treeBoxObject.getCellAt(event.clientX, event.clientY, row, col, {});
 				if  (row.value === -1) { // click the empty area
 					if (event.detail === 2) { // double click
-						aDOMWindow.BrowserOpenTab(event);
+						aDOMWindow.openUILinkIn(aDOMWindow.BROWSER_NEW_TAB_URL, event.shiftKey ? "window" : "tab");
 					}
 				} else { // click a row
 					let tPos = row.value + tt.nPinned;
@@ -2727,7 +2727,7 @@ var windowListener = {
 				tree.treeBoxObject.getCellAt(event.clientX, event.clientY, row, col, {});
 				if  (row.value === -1) { // click the empty area
 					if (event.detail === 2) { // double click
-						aDOMWindow.BrowserOpenTab(event);
+						aDOMWindow.openUILinkIn(aDOMWindow.BROWSER_NEW_TAB_URL, event.shiftKey ? "window" : "tab");
 					}
 				} else { // click a row
 					let tPos = row.value + tt.nPinned;
@@ -2789,7 +2789,7 @@ var windowListener = {
 		}
 		
 		newTab.addEventListener('command', function(event) {
-			aDOMWindow.BrowserOpenTab(event);
+			aDOMWindow.openUILinkIn(aDOMWindow.BROWSER_NEW_TAB_URL, event.shiftKey ? "window" : "tab");
 		}, false);
 		
 		newTab.addEventListener("mouseup", function (event) {
@@ -2893,7 +2893,7 @@ var windowListener = {
 							aDOMWindow.undoCloseTab();
 							break;
 						default: // open a new tab (or a window)
-							aDOMWindow.BrowserOpenTab(event);
+							aDOMWindow.openUILinkIn(aDOMWindow.BROWSER_NEW_TAB_URL, event.shiftKey ? "window" : "tab");
 					}
 				} else { // on a tab
 					let tPos = idx + tt.nPinned;
