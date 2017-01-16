@@ -544,6 +544,33 @@ var windowListener = {
 		// remember 'tabsintitlebar' attr before beginning to interact with it // default is 'true':
 		aDOMWindow.tt.toRestore.tabsintitlebar = aDOMWindow.document.documentElement.getAttribute('tabsintitlebar')=='true';
 
+      //////////////// Utility Functions (used in multiple areas) ///////////
+      let openNewSibling = function (sibling) {
+          let tPos = sibling._tPos;
+			    let lvl = ss.getTabValue(sibling, "ttLevel");
+			    let newTab = g.addTab("about:newtab"); // our new tab will be opened at position g.tabs.length - 1
+			    for (let i = tPos + 1; i < g.tabs.length - 1; ++i) {
+				      if (parseInt(ss.getTabValue(g.tabs[i], "ttLevel")) <= parseInt(lvl)) {
+					        g.moveTabTo(newTab, i);
+					        break;
+				      }
+			    }
+			    ss.setTabValue(newTab, "ttLevel", lvl);
+			    g.selectedTab = newTab;
+      };
+
+      let openNewChild = function(parent) {
+          let lvl = ss.getTabValue(parent, "ttLevel");
+			    let newTab = g.addTab("about:newtab"); // our new tab will be opened at position g.tabs.length - 1
+			    if (Services.prefs.getBoolPref("extensions.tabtree.insertRelatedAfterCurrent")) {
+				      g.moveTabTo(newTab, parent._tPos + 1);
+			    } else {
+				      g.moveTabTo(newTab, tt.lastDescendantPos(parent) + 1);
+			    }
+			    ss.setTabValue(newTab, "ttLevel", (parseInt(lvl) + 1).toString());
+			    g.selectedTab = newTab;
+      };
+
 		//////////////////// TITLE BAR STANDARD BUTTONS (Minimize, Restore/Maximize, Close) ////////////////////////////
 		// We can't use 'window.load' event here, because it always shows windowState==='STATE_NORMAL' even when the actual state is 'STATE_MAXIMIZED'
 
@@ -1310,7 +1337,13 @@ var windowListener = {
 						break;
 					}
 				}
-			}
+			} else if ((keyboardEvent.shiftKey && keyboardEvent.altKey && helper.testKey('I', 'i'))) {
+          let tab = g.mCurrentTab;
+          openNewSibling(tab);
+      } else if ((keyboardEvent.shiftKey && keyboardEvent.altKey && helper.testKey("O", "o"))) {
+          let tab = g.mCurrentTab;
+          openNewChild(tab);
+      }
 		}), false);
 
 		aDOMWindow.tt.toRemove.eventListeners.onAppcontentMouseUp = function() {
@@ -3005,34 +3038,16 @@ var windowListener = {
 		menuItemOpenNewTabSibling.id = "tt-content-open-sibling";
 		//menuItemOpenNewTabSibling.setAttribute("label", stringBundle.GetStringFromName("open_sibling"));
 		menuItemOpenNewTabSibling.addEventListener("command", function (event) {
-			let tab = aDOMWindow.TabContextMenu.contextTab;
-			let tPos = tab._tPos;
-			let lvl = ss.getTabValue(tab, "ttLevel");
-			let newTab = g.addTab("about:newtab"); // our new tab will be opened at position g.tabs.length - 1
-			for (let i = tPos + 1; i < g.tabs.length - 1; ++i) {
-				if (parseInt(ss.getTabValue(g.tabs[i], "ttLevel")) <= parseInt(lvl)) {
-					g.moveTabTo(newTab, i);
-					break;
-				}
-			}
-			ss.setTabValue(newTab, "ttLevel", lvl);
-			g.selectedTab = newTab;
+			  let tab = aDOMWindow.TabContextMenu.contextTab;
+        openNewSibling(tab);
 		}, false);
 
 		let menuItemOpenNewTabChild = aDOMWindow.document.createElement("menuitem"); // removed in unloadFromWindow()
 		menuItemOpenNewTabChild.id = "tt-content-open-child";
 		//menuItemOpenNewTabChild.setAttribute("label", stringBundle.GetStringFromName("open_child"));
 		menuItemOpenNewTabChild.addEventListener("command", function (event) {
-			let tab = aDOMWindow.TabContextMenu.contextTab;
-			let lvl = ss.getTabValue(tab, "ttLevel");
-			let newTab = g.addTab("about:newtab"); // our new tab will be opened at position g.tabs.length - 1
-			if (Services.prefs.getBoolPref("extensions.tabtree.insertRelatedAfterCurrent")) {
-				g.moveTabTo(newTab, tab._tPos + 1);
-			} else {
-				g.moveTabTo(newTab, tt.lastDescendantPos(tab) + 1);
-			}
-			ss.setTabValue(newTab, "ttLevel", (parseInt(lvl) + 1).toString());
-			g.selectedTab = newTab;
+			  let tab = aDOMWindow.TabContextMenu.contextTab;
+        openNewChild(tab);
 		}, false);
 		
 		let menuItemDuplicateTabAsSibling = aDOMWindow.document.createElement("menuitem"); // removed in unloadFromWindow()
