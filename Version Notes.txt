@@ -1,3 +1,12 @@
+1.4.9
+- Fixed #153 (@blackhole89)
+- Fixed #154 Broken compatibility with Hide Caption Titlebar Plus
+- Fixed #170 New tab button doesn't work (@WyohKnott)
+- Fixed #172 Search bar focus
+- Added #190 Adds new keyboard shortcuts to add sibling and child tabs. (@DonyorM)
+	- Alt+Shift+I creates a new sibling tab of the current tab.
+	- Alt+Shift+O creates a new child tab of the current tab.
+
 1.4.8
 - #151 Linux fix
 
