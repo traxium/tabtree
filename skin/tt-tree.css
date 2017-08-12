@@ -136,7 +136,7 @@
 
 .tt-treechildren::-moz-tree-image(tt-close) {
 	list-style-image: url(chrome://tabtree/skin/close.png);
-	-moz-image-region: rect(0, 16px, 16px, 0);
+	-moz-image-region: rect(0, 16px, 16px, 0px);
 }
 
 .tt-treechildren::-moz-tree-image(tt-close, selected) {

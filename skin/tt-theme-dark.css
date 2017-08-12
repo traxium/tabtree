@@ -178,17 +178,17 @@
 /* White icons */
 
 .tt-treechildren::-moz-tree-image(tt-close) {
-	list-style-image: url(chrome://tabtree/skin/close-inverted.png);
-	-moz-image-region: rect(0, 16px, 16px, 0);
+	list-style-image: url(chrome://tabtree/skin/close.png);
+	-moz-image-region: rect(0, 64px, 16px, 48px);
 }
 
 .tt-treechildren::-moz-tree-image(tt-close, selected) {
-	list-style-image: url(chrome://tabtree/skin/close-inverted.png);
+	list-style-image: url(chrome://tabtree/skin/close.png);
 	-moz-image-region: rect(0, 48px, 16px, 32px);
 }
 
 .tt-treechildren::-moz-tree-image(tt-close, hover) {
-	list-style-image: url(chrome://tabtree/skin/close-inverted.png);
+	list-style-image: url(chrome://tabtree/skin/close.png);
 	-moz-image-region: rect(0, 32px, 16px, 16px);
 }
 
