@@ -1,3 +1,11 @@
+1.5.0
+- Fixed #220 Back button in Firefox 55
+- Fixed #221 Installable from AMO for Firefox 55 (@AndydeCleyre)
+- Changed default settings (Theme and Autohide tab search bar)
+- Changed #218 Use shades of gray for default close icons (@craighurley)
+- Changed #166 Scroll wheel does not wrap tab selection (@protist)
+- Updated/fixed French localization (@ariasuni)
+
 1.4.9
 - Fixed #153 (@blackhole89)
 - Fixed #154 Broken compatibility with Hide Caption Titlebar Plus
