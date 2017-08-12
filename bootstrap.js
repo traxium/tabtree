@@ -150,7 +150,7 @@ function startup(data, reason)
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.position', 1); // setting default pref // 0 - Left, 1 - Right
 	// 0 - Top, 1 - Bottom (before "New tab" button), 2 - Bottom (after "New tab" button):
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.search-position', 0);
-	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.search-autohide', false); // setting default pref
+	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.search-autohide', true); // setting default pref
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.show-default-tabs', false); // hidden pref for test purposes
 	// 0 - default, 1 - flst, 2 - the closest tab in the tree (first child -> sibling below -> sibling above -> parent), 3 - the previous tab
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.after-close', 1); //focus closest tab in tree after closing a current tab
@@ -166,7 +166,7 @@ function startup(data, reason)
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.search-jump-min-chars', 4); // min chars to jump
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.insertRelatedAfterCurrent', false); // #19 // false - Bottom, true - Top
 	// 0 - default, 1 - try to mimic Firefox theme, 2 - dark
-	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.theme', 1); // #35 #50
+	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.theme', 2); // #35 #50
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.prefix-context-menu-items', false); // #60 (Garbage in menu items)
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.tab-height', -1); // #67 [Feature] Provide a way to change the items height
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.tab-flip', true);
