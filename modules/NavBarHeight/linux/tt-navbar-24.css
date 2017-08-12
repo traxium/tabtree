@@ -86,3 +86,9 @@ window:not([chromehidden~="toolbar"]) #urlbar-wrapper {
 	padding-bottom: 1px;
 	background-clip: content-box;
 }
+
+/* fix for #220 (Firefox 55 - back button missing) */
+
+#back-button {
+	list-style-image: url(chrome://tabtree/skin/Toolbar.png);
+}
