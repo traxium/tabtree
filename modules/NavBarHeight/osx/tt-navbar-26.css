@@ -3,167 +3,259 @@
  * Copyright (C) 2015-2016 Sergey Zelentsov <crayfishexterminator@gmail.com>
  */
 
-/* from devedition.css ************************************************************************************************/
+:root {
+	--tab-toolbar-navbar-overlap: 0px;
+	--navbar-tab-toolbar-highlight-overlap: 0px;
+	--space-above-tabbar: 0px;
+	--toolbarbutton-text-shadow: none;
+	--backbutton-urlbar-overlap: 0px;
+	/* 18px icon + 2 * 5px padding + 1 * 1px border */
+	--forwardbutton-width: 29px;
+}
 
-/* 216 */
+:root:-moz-lwtheme-brighttext {
+	
+	
+	/* Chrome */
+	--chrome-background-color: #272b35;
+	--chrome-color: #F5F7FA;
+	--chrome-secondary-background-color: #393F4C;
+	--chrome-navigator-toolbox-separator-color: rgba(0,0,0,.2);
+	--chrome-nav-bar-separator-color: rgba(0,0,0,.2);
+	--chrome-nav-buttons-background: #252C33;
+	--chrome-nav-buttons-hover-background: #1B2127;
+	--chrome-nav-bar-controls-border-color: #1D2328;
+	--chrome-selection-color: #fff;
+	--chrome-selection-background-color: #5675B9;
+	
+	/* Tabs */
+	--tab-background-color: #272b35;
+	--tab-hover-background-color: #07090a;
+	--tab-selection-color: #f5f7fa;
+	--tab-selection-background-color: #5675B9;
+	--tab-selection-box-shadow: none;
+	
+	--pinned-tab-glow: radial-gradient(22px at center calc(100% - 2px), rgba(76,158,217,0.9) 13%, rgba(0,0,0,0.4) 16%, transparent 70%);
+	
+	
+	
+	/* Url and search bars */
+	--url-and-searchbar-background-color: #171B1F;
+	--urlbar-separator-color: #5F6670;
+	--urlbar-dropmarker-url: url("chrome://browser/skin/compacttheme/urlbar-history-dropmarker.svg");
+	--urlbar-dropmarker-region: rect(0px, 11px, 14px, 0px);
+	--urlbar-dropmarker-hover-region: rect(0, 22px, 14px, 11px);
+	--urlbar-dropmarker-active-region: rect(0px, 33px, 14px, 22px);
+	--urlbar-dropmarker-2x-url: url("chrome://browser/skin/compacttheme/urlbar-history-dropmarker.svg");
+	--urlbar-dropmarker-2x-region: rect(0px, 11px, 14px, 0px);
+	--urlbar-dropmarker-hover-2x-region: rect(0, 22px, 14px, 11px);
+	--urlbar-dropmarker-active-2x-region: rect(0px, 33px, 14px, 22px);
+}
+
+/* Override the lwtheme-specific styling for toolbar buttons */
+:root:-moz-lwtheme-brighttext,
+toolbar:-moz-lwtheme-brighttext  {
+	--toolbarbutton-hover-background: rgba(25,33, 38,.6) linear-gradient(rgba(25,33,38,.6), rgba(25,33,38,.6)) padding-box;
+	--toolbarbutton-hover-boxshadow: none;
+	--toolbarbutton-hover-bordercolor: rgba(25,33,38,.6);
+	--toolbarbutton-active-background: rgba(25,33,38,1) linear-gradient(rgba(25,33,38,1), rgba(25,33,38,1)) border-box;
+	--toolbarbutton-active-boxshadow: none;
+	--toolbarbutton-active-bordercolor: rgba(25,33,38,.8);
+	--toolbarbutton-checkedhover-backgroundcolor: #3C5283;
+}
+:root:-moz-lwtheme-darktext {
+	--url-and-searchbar-background-color: #fff;
+	
+	--chrome-background-color: #E3E4E6;
+	--chrome-color: #18191a;
+	--chrome-secondary-background-color: #f5f6f7;
+	--chrome-navigator-toolbox-separator-color: #cccccc;
+	--chrome-nav-bar-separator-color: #B6B6B8;
+	--chrome-nav-buttons-background: #ffffff; /* --theme-body-background */
+	--chrome-nav-buttons-hover-background: #DADBDB;
+	--chrome-nav-bar-controls-border-color: #ccc;
+	--chrome-selection-color: #f5f7fa;
+	--chrome-selection-background-color: #4c9ed9;
+	
+	--tab-background-color: #E3E4E6;
+	--tab-hover-background-color: #D7D8DA;
+	--tab-selection-color: #f5f7fa;
+	--tab-selection-background-color: #4c9ed9;
+	--tab-selection-box-shadow: none;
+	--pinned-tab-glow: radial-gradient(22px at center calc(100% - 2px), rgba(76,158,217,0.9) 13%, transparent 16%);
+}
+
+/* Override the lwtheme-specific styling for toolbar buttons */
+:root:-moz-lwtheme-darktext,
+toolbar:-moz-lwtheme-darktext {
+	--toolbarbutton-hover-background: #eaeaea;
+	--toolbarbutton-hover-boxshadow: none;
+	--toolbarbutton-hover-bordercolor: rgba(0,0,0,0.1);
+	--toolbarbutton-active-background: #d7d7d8 border-box;
+	--toolbarbutton-active-boxshadow: none;
+	--toolbarbutton-active-bordercolor: rgba(0,0,0,0.15);
+	--toolbarbutton-checkedhover-backgroundcolor: #d7d7d8;
+}
+
+/* Give some space to drag the window around while customizing
+   (normal space to left and right of tabs doesn't work in this case) */
+#main-window[tabsintitlebar][customizing] {
+	--space-above-tabbar: 9px;
+}
+/* Override @tabCurveHalfWidth@ and @tabCurveWidth@.  XXX: Switch to a CSS variable once the perf is sorted out - bug 1088771 */
+.tab-background-middle {
+	border-left-width: 0;
+	border-right-width: 0;
+	margin: 0;
+}
+
+.tab-background,
+.tabs-newtab-button {
+	margin-inline-end: 0;
+	margin-inline-start: 0;
+}
+
+.tabbrowser-arrowscrollbox > .arrowscrollbox-scrollbox {
+	padding-inline-end: 0;
+	padding-inline-start: 0;
+}
+
+.tab-background-start[selected=true]::after,
+.tab-background-start[selected=true]::before,
+.tab-background-start,
+.tab-background-end,
+.tab-background-end[selected=true]::after,
+.tab-background-end[selected=true]::before {
+	width: 0;
+}
+
+.tab-background-start[selected=true]::after,
+.tab-background-end[selected=true]::after {
+	margin-inline-start: 0;
+}
+/* End override @tabCurveHalfWidth@ and @tabCurveWidth@ */
+
+/* Back and forward button */
+
+#back-button > .toolbarbutton-icon,
+#forward-button > .toolbarbutton-icon {
+	/*background: var(--chrome-nav-buttons-background) !important;*/
+	border-radius: 0 !important;
+	padding: var(--toolbarbutton-inner-padding) 5px !important;
+	margin: 0 !important;
+	border: 1px solid var(--chrome-nav-bar-controls-border-color) !important;
+	/*box-shadow: none !important;*/
+	height: auto !important;
+}
+
+/* the normal theme adds box-shadow: <stuff> !important when the back-button is [open]. Fix: */
+#back-button[open="true"] > .toolbarbutton-icon {
+	box-shadow: none !important;
+}
+
+#forward-button > .toolbarbutton-icon {
+	border-inline-start: none !important;
+}
+
+/* Override a box shadow for disabled back button */
+#main-window:not([customizing]) #back-button[disabled] > .toolbarbutton-icon {
+	box-shadow: none !important;
+}
+
+/* Override !important properties for hovered back button */
+#main-window #back-button:hover:not([disabled="true"]) > .toolbarbutton-icon,
+#main-window #forward-button:hover:not([disabled="true"]) > .toolbarbutton-icon {
+	background: var(--chrome-nav-buttons-hover-background) !important;
+	box-shadow: none !important;
+}
+
+#back-button > .toolbarbutton-icon {
+	border-radius: 2px 0 0 2px !important;
+}
+
+/* URL bar and search bar*/
+#urlbar,
+#navigator-toolbox .searchbar-textbox {
+	/*background-color: var(--url-and-searchbar-background-color) !important;*/
+	/*background-image: none !important;*/
+	/*color: inherit !important;*/
+	border: 1px solid var(--chrome-nav-bar-controls-border-color) !important;
+	box-shadow: none !important;
+}
+
+#urlbar {
+	border-inline-start: none !important;
+	opacity: 1 !important;
+}
 
 window:not([chromehidden~="toolbar"]) #urlbar-wrapper {
 	overflow: -moz-hidden-unscrollable;
 	clip-path: none;
-	-moz-margin-start: 0;
+	margin-inline-start: 0;
 }
 
-/* 249 */
+window:not([chromehidden~="toolbar"]) #urlbar-wrapper:-moz-locale-dir(rtl),
+window:not([chromehidden~="toolbar"]) #urlbar-wrapper > #urlbar:-moz-locale-dir(rtl) {
+	/* Resolves text blurring issue when hovering, see bug 1340206 */
+	transform: none;
+	/* For some reason, this property must be specified here, even though the same
+		value is set in the previous rule set. o_O */
+	margin-inline-start: 0;
+}
+
+/* Nav bar specific stuff */
+#nav-bar {
+	margin-top: 0 !important;
+	border-top: none !important;
+	border-bottom: none !important;
+	border-radius: 0 !important;
+	box-shadow: 0 -1px var(--chrome-nav-bar-separator-color) !important;
+}
 
 /* No extra vertical padding for nav bar */
-#nav-bar-customization-target,
 #nav-bar {
 	padding-top: 0;
 	padding-bottom: 0;
 }
 
-/* 256 */
-
 /* Use smaller back button icon */
 #back-button {
-	-moz-image-region: rect(0, 54px, 18px, 36px);
+	list-style-image: url("chrome://browser/skin/back.svg");
 }
 
-/* 78 osx/devedition.css */
-
-/* Use smaller back button icon */
-@media (min-resolution: 2dppx) {
-	#back-button {
-		-moz-image-region: rect(0, 108px, 36px, 72px);
-	}
+.tab-background {
+	visibility: hidden;
 }
 
-/* 337 */
-
-/* Square back and forward buttons.  Need !important on these because there
-   are a lot of more specific selectors sprinkled around elsewhere for changing
-   background / shadows for different states */
-#back-button,
-#forward-button {
-	height: 24px !important;
-	/*box-shadow: none !important;*/
-	/*   border: 1px solid var(--chrome-nav-bar-controls-border-color) !important; */
-	/*background: var(--chrome-nav-buttons-background) !important;*/
+/* Use only 1px separator between nav toolbox and page content */
+#navigator-toolbox::after {
+	border-top-style: none;
+	margin-top: -1px;
 }
 
-/* 348 */
-
-#forward-button {
-	-moz-border-start: none !important;
+/* Prevent the hover styling from on the identity icon from overlapping the
+   urlbar border. */
+#identity-box {
+	margin-top: -1px !important;
+	margin-bottom: -1px !important;
+	padding-top: 3px !important;
+	padding-bottom: 3px !important;
 }
 
-/* 352 */
-
-#forward-button > .toolbarbutton-icon {
-	margin-left: 0;
-	margin-right: 0;
-}
-
-/* 362 */
-
-#back-button {
-	border-radius: 3px 0 0 3px !important;
-	padding: 0 !important;
-	margin: 0 !important;
-}
-
-/* 368 */
-
-#back-button:hover:active:not([disabled="true"]) {
-	-moz-image-region: rect(18px, 54px, 36px, 36px);
-}
-
-/* 84 osx/devedition.css */
-
-@media (min-resolution: 2dppx) {
-	#back-button:hover:active:not([disabled="true"]) {
-		-moz-image-region: rect(36px, 108px, 72px, 72px);
-	}
-}
-
-/* ****************************************************************************************************************** */
-
-/* from browser.css ***************************************************************************************************/
-
-/* 2255 */
-
-#back-button:not(:-moz-lwtheme) {
-	border: 1px solid;
-	border-color: hsl(0,0%,31%) hsla(0,0%,29%,.6) hsl(0,0%,27%);
-	box-shadow: inset 0 1px 0 hsla(0,0%,100%,.35),	0 1px 0 hsla(0,0%,100%,.2);
-}
-
-/* 2263 */
-
-#back-button:hover:active:not(:-moz-lwtheme) {
-	box-shadow: inset rgba(0,0,0,.3) 0 -6px 10px,	inset #000 0 1px 3px,
-	inset rgba(0,0,0,.2) 0 1px 3px,	0 1px 0 hsla(0,0%,100%,.2);
-}
-
-/* 2271 */
-
-#back-button:-moz-window-inactive:not(:-moz-lwtheme) {
-	border-color: hsl(0,0%,64%) hsl(0,0%,65%) hsl(0,0%,66%);
-	box-shadow: inset 0 1px 0 hsla(0,0%,100%,.35);
-}
-
-/* 2277 */
-
-@media (-moz-mac-lion-theme) {
-	#back-button:not(:-moz-lwtheme),
-	#forward-button:not(:-moz-lwtheme) {
-		/*background-image: linear-gradient(hsla(0,0%,100%,.73), hsla(0,0%,100%,.05) 85%);*/
-		border-color: hsla(0,0%,0%,.35) hsla(0,0%,0%,.25) hsla(0,0%,0%,.2);
-		box-shadow: inset 0 1px 0 hsla(0,0%,100%,.2),
-		inset 0 0 1px hsla(0,0%,100%,.1),
-		0 1px 0 hsla(0,0%,100%,.2);
-	}
-	
-	#back-button:hover:active:not(:-moz-lwtheme),
-	#forward-button:hover:active:not(:-moz-lwtheme) {
-		/*background-image: linear-gradient(hsla(0,0%,60%,.37), hsla(0,0%,100%,.35) 95%);*/
-		border-color: hsla(0,0%,0%,.43) hsla(0,0%,0%,.25) hsla(0,0%,0%,.37);
-		box-shadow: inset 0 1px 0 hsla(0,0%,0%,.02),
-		inset 0 1px 2px hsla(0,0%,0%,.2),
-		0 1px 0 hsla(0,0%,100%,.2);
-	}
-	
-	#back-button:-moz-window-inactive:not(:-moz-lwtheme),
-	#forward-button:-moz-window-inactive:not(:-moz-lwtheme) {
-		/*background-image: none;*/
-		border-color: hsla(0,0%,0%,.2);
-	}
-}
-
-/* ****************************************************************************************************************** */
-
-#back-button {
-	background-image: none !important;
-}
-
-#nav-bar .toolbarbutton-1:not(#back-button):not(#forward-button) {
+#PanelUI-button {
 	margin-top: 0;
 	margin-bottom: 0;
 }
 
-/* Back button left space */
-
-#back-button {
-	margin-left: 0 !important;
-}
-
-#nav-bar-customization-target {
-	padding-left: 1px;
+.ac-type-icon {
+	/* Left-align the type icon in awesomebar popup results with the icon in the
+		urlbar. */
+	margin-inline-start: 14px;
 }
 
 /* Actual resizing */
 
-#nav-bar {
-	padding-top: 1px;
-	padding-bottom: 2px;
+:root:not([uidensity="compact"]) #back-button {
+	padding-top: 3px;
+	padding-bottom: 3px;
 }
