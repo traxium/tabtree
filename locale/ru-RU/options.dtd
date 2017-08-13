@@ -86,3 +86,9 @@
 <!ENTITY flatten.desc "Установить нулевой отступ для всех вкладок">
 <!ENTITY flatten.label "Структура дерева вкладок будет утрачена">
 <!ENTITY flatten.confirm "Эту операцию нельзя отменить. Всё равно продолжить?">
+<!ENTITY middle-click-tab.title "Middle-click по вкладке:">
+<!ENTITY middle-click-tab.desc "(первый вариант по умолчанию)">
+<!ENTITY middle-click-tab.0 "закрыть вкладку">
+<!ENTITY middle-click-tab.1 "ничего не делать">
+<!ENTITY middle-click-tab.2 "закрыть вкладку и все её дочерние вкладки">
+<!ENTITY middle-click-tab.3 "закрыть только все дочерние вкладки">

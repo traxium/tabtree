@@ -40,6 +40,16 @@
             <radio value="2" label="&dblclick.pin;"/>
         </radiogroup>
     </setting>
+    <setting type="menulist" pref="extensions.tabtree.middle-click-tab" title="&middle-click-tab.title;" desc="&middle-click-tab.desc;">
+        <menulist>
+            <menupopup>
+                <menuitem value="0" label="&middle-click-tab.0;"/>
+                <menuitem value="1" label="&middle-click-tab.1;"/>
+                <menuitem value="2" label="&middle-click-tab.2;"/>
+                <menuitem value="3" label="&middle-click-tab.3;"/>
+            </menupopup>
+        </menulist>
+    </setting>
     <setting type="integer" pref="extensions.tabtree.delay" title="&delay.title;" desc="&delay.desc;" />
     <setting type="menulist" pref="extensions.tabtree.middle-click-tabbar" title="&middle-click-tabbar.title;" desc="&middle-click-tabbar.desc;">
         <menulist>

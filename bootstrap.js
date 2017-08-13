@@ -176,6 +176,8 @@ function startup(data, reason)
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.auto-hide-when-normal', false); // #40 #80
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.auto-hide-when-only-one-tab', true); // #31
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.tab-numbers', false); // #90 (Show tab numbers in tab titles) 
+	// 0 - close tab, 1 - do nothing, 2 - close tab and all children, 3 - close all children
+	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.middle-click-tab', false); // #217 Close Tree of Tabs on Middle-Click
 
 	// migration code :
 	try {
@@ -571,6 +573,23 @@ var windowListener = {
 			ss.setTabValue(newTab, "ttLevel", (parseInt(lvl) + 1).toString());
 			g.selectedTab = newTab;
 			aDOMWindow.focusAndSelectUrlBar();
+		};
+		
+		const closeTabAndAllChildren = function (tab) {
+			const tPos = tab._tPos;
+			const lvl = ss.getTabValue(tab, 'ttLevel');
+			while (ss.getTabValue(g.tabs[tPos+1], 'ttLevel') > lvl) {
+				g.removeTab(g.tabs[tPos+1]);
+			}
+			g.removeTab(g.tabs[tPos]);
+		};
+		
+		const closeAllChildren = function (tab) {
+			const tPos = tab._tPos;
+			const lvl = ss.getTabValue(tab, 'ttLevel');
+			while (ss.getTabValue(g.tabs[tPos+1], 'ttLevel') > lvl) {
+				g.removeTab(g.tabs[tPos+1]);
+			}
 		};
 		
 		//////////////////// TITLE BAR STANDARD BUTTONS (Minimize, Restore/Maximize, Close) ////////////////////////////
@@ -2951,8 +2970,19 @@ var windowListener = {
 							aDOMWindow.openUILinkIn(aDOMWindow.BROWSER_NEW_TAB_URL, event.shiftKey ? "window" : "tab");
 					}
 				} else { // on a tab
-					let tPos = idx + tt.nPinned;
-					g.removeTab(g.tabs[tPos]);
+					const tab = g.tabs[idx + tt.nPinned];
+					switch (Services.prefs.getIntPref("extensions.tabtree.middle-click-tab")) {
+					case 1: // do nothing
+						break;
+					case 2: // close tab + subtree
+						closeTabAndAllChildren(tab);
+						break;
+					case 3: // close subtree
+						closeAllChildren(tab);
+						break;
+					default: // close tab
+						g.removeTab(tab);
+					}
 				}
 			}
 		}, false);
@@ -3007,12 +3037,7 @@ var windowListener = {
 		//menuItemCloseTree.setAttribute('label', stringBundle.GetStringFromName('close_this_tree'));
 		menuItemCloseTree.addEventListener('command', function (event) {
 			let tab = aDOMWindow.TabContextMenu.contextTab;
-			let tPos = tab._tPos;
-			let lvl = ss.getTabValue(tab, 'ttLevel');
-			while (ss.getTabValue(g.tabs[tPos+1], 'ttLevel') > lvl) {
-				g.removeTab(g.tabs[tPos+1]);
-			}
-			g.removeTab(g.tabs[tPos]);
+			closeTabAndAllChildren(tab);
 		}, false);
 
 		let menuItemCloseChildren = aDOMWindow.document.createElement('menuitem'); // removed in unloadFromWindow()
@@ -3020,11 +3045,7 @@ var windowListener = {
 		//menuItemCloseChildren.setAttribute('label', stringBundle.GetStringFromName('close_children'));
 		menuItemCloseChildren.addEventListener('command', function (event) {
 			let tab = aDOMWindow.TabContextMenu.contextTab;
-			let tPos = tab._tPos;
-			let lvl = ss.getTabValue(tab, 'ttLevel');
-			while (ss.getTabValue(g.tabs[tPos+1], 'ttLevel') > lvl) {
-				g.removeTab(g.tabs[tPos+1]);
-			}
+			closeAllChildren(tab);
 		}, false);
 
 		let menuItemReloadTree = aDOMWindow.document.createElement('menuitem'); // removed in unloadFromWindow()

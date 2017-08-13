@@ -86,3 +86,9 @@
 <!ENTITY flatten.desc "Reset all the tabs to level 0">
 <!ENTITY flatten.label "Your tree structure will be lost">
 <!ENTITY flatten.confirm "You can\'t undo this operation. Continue anyway?">
+<!ENTITY middle-click-tab.title "Middle-click on tab:">
+<!ENTITY middle-click-tab.desc "(the first choice by default)">
+<!ENTITY middle-click-tab.0 "close tab">
+<!ENTITY middle-click-tab.1 "do nothing">
+<!ENTITY middle-click-tab.2 "close tab and all children">
+<!ENTITY middle-click-tab.3 "close all children">
