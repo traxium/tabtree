@@ -1,3 +1,9 @@
+1.5.1
+- Fixed #194 Invisible audio playback on-tab indicator
+- Fixed #220 (macOS + dark theme) Back button in Firefox 55
+- Fixed #190 Put the focus on the address bar when opening a new child/sibling tab
+- Added #217 Middle-click on a tab options
+
 1.5.0
 - Fixed #220 Back button in Firefox 55
 - Fixed #221 Installable from AMO for Firefox 55 (@AndydeCleyre)
