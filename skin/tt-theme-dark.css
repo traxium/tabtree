@@ -194,22 +194,22 @@
 
 #tt-treechildren::-moz-tree-image(tt-soundplaying),
 #tt-treechildren-feedback::-moz-tree-image(tt-soundplaying) {
-	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio-white);
+	list-style-image: url(chrome://tabtree/skin/tab-audio.svg#tab-audio-white);
 }
 
 #tt-treechildren::-moz-tree-image(tt-soundplaying, hover),
 #tt-treechildren-feedback::-moz-tree-image(tt-soundplaying, hover) {
-	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio-white-hover);
+	list-style-image: url(chrome://tabtree/skin/tab-audio.svg#tab-audio-white-hover);
 }
 
 #tt-treechildren::-moz-tree-image(tt-muted),
 #tt-treechildren-feedback::-moz-tree-image(tt-muted) {
-	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio-muted-white);
+	list-style-image: url(chrome://tabtree/skin/tab-audio.svg#tab-audio-muted-white);
 }
 
 #tt-treechildren::-moz-tree-image(tt-muted, hover),
 #tt-treechildren-feedback::-moz-tree-image(tt-muted, hover) {
-	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio-muted-white-hover);
+	list-style-image: url(chrome://tabtree/skin/tab-audio.svg#tab-audio-muted-white-hover);
 }
 
 /* I don't know why but .tt-treechildren doesn't work with audio indicator icons. IDs are required here. */

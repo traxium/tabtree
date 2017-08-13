@@ -171,19 +171,19 @@
 }
 
 .tt-treechildren::-moz-tree-image(tt-soundplaying) {
-	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio);
+	list-style-image: url(chrome://tabtree/skin/tab-audio.svg#tab-audio);
 }
 
 .tt-treechildren::-moz-tree-image(tt-soundplaying, hover) {
-	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio-hover);
+	list-style-image: url(chrome://tabtree/skin/tab-audio.svg#tab-audio-hover);
 }
 
 .tt-treechildren::-moz-tree-image(tt-muted) {
-	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio-muted);
+	list-style-image: url(chrome://tabtree/skin/tab-audio.svg#tab-audio-muted);
 }
 
 .tt-treechildren::-moz-tree-image(tt-muted, hover) {
-	list-style-image: url(chrome://browser/skin/tabbrowser/tab-audio.svg#tab-audio-muted-hover);
+	list-style-image: url(chrome://tabtree/skin/tab-audio.svg#tab-audio-muted-hover);
 }
 
 /* Nesting lines for mimic, dark and OS X themes */
