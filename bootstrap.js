@@ -557,6 +557,7 @@ var windowListener = {
 			}
 			ss.setTabValue(newTab, "ttLevel", lvl);
 			g.selectedTab = newTab;
+			aDOMWindow.focusAndSelectUrlBar();
 		};
 		
 		let openNewChild = function (parent) {
@@ -569,6 +570,7 @@ var windowListener = {
 			}
 			ss.setTabValue(newTab, "ttLevel", (parseInt(lvl) + 1).toString());
 			g.selectedTab = newTab;
+			aDOMWindow.focusAndSelectUrlBar();
 		};
 		
 		//////////////////// TITLE BAR STANDARD BUTTONS (Minimize, Restore/Maximize, Close) ////////////////////////////
@@ -2858,6 +2860,7 @@ var windowListener = {
 				}
 				ss.setTabValue(newTab, "ttLevel", lvl);
 				g.selectedTab = newTab;
+				aDOMWindow.focusAndSelectUrlBar();
 			}
 		}, false);
         
