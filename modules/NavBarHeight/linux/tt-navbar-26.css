@@ -25,9 +25,6 @@ window:not([chromehidden~="toolbar"]) #urlbar-wrapper {
 /* 271 */
 
 /* Use smaller back button icon */
-#back-button {
-	-moz-image-region: rect(0, 54px, 18px, 36px);
-}
 
 /* 369 */
 
@@ -79,5 +76,10 @@ window:not([chromehidden~="toolbar"]) #urlbar-wrapper {
 /* fix for #220 (Firefox 55 - back button missing) */
 
 #back-button {
-	list-style-image: url(chrome://tabtree/skin/Toolbar.png);
+	list-style-image: url(chrome://browser/skin/back.svg);
+}
+
+#back-button > .toolbarbutton-icon {
+	padding-top: 3px !important;
+	padding-bottom: 3px !important;
 }
