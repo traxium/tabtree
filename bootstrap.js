@@ -178,6 +178,7 @@ function startup(data, reason)
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.tab-numbers', false); // #90 (Show tab numbers in tab titles) 
 	// 0 - close tab, 1 - do nothing, 2 - close tab and all children, 3 - close all children
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.middle-click-tab', false); // #217 Close Tree of Tabs on Middle-Click
+	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.scroll-wrap', false); // Scroll wheel wraps tab selection
 
 	// migration code :
 	try {
@@ -2734,13 +2735,13 @@ var windowListener = {
 			}
 			
 			if (event.deltaY < 0 || event.deltaX < 0) { // wheel up // #64 [OS X] deltaX fixes OS X
-				if (g.tabContainer.selectedIndex !== 0) {
+				if (g.tabContainer.selectedIndex !== 0 || Services.prefs.getBoolPref("extensions.tabtree.scroll-wrap")) {
 					g.tabContainer.advanceSelectedTab(-1, true);
 					event.preventDefault();
 				}
 				
 			} else if (event.deltaY > 0 || event.deltaX > 0) { // wheel down // #64 [OS X] deltaX fixes OS X
-				if (g.tabContainer.selectedIndex + 1 !== g.tabs.length) {
+				if (g.tabContainer.selectedIndex + 1 !== g.tabs.length || Services.prefs.getBoolPref("extensions.tabtree.scroll-wrap")) {
 					g.tabContainer.advanceSelectedTab(1, true);
 					event.preventDefault();
 				}
