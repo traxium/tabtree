@@ -60,6 +60,8 @@
 <!ENTITY wheel.1 "without Shift - changing selected tab, with Shift - ordinary scrolling">
 <!ENTITY wheel.2 "always ordinary scrolling">
 <!ENTITY wheel.3 "always change selected tab">
+<!ENTITY scroll-wrap.title "Scroll wrap:">
+<!ENTITY scroll-wrap.desc "Scroll from the bottom tab to the top tab, and vice versa">
 <!ENTITY search-jump.title "Tab search jumps to the first match:">
 <!ENTITY search-jump.desc "(unchecked by default)">
 <!ENTITY search-jump-min-chars.title "Min number of characters to jump:">

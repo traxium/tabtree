@@ -60,6 +60,8 @@
 <!ENTITY wheel.1 "bez Shifta - zmienia aktywną kartę, z Shiftem - normalne przewijanie">
 <!ENTITY wheel.2 "zawsze normalne przewijanie">
 <!ENTITY wheel.3 "zawsze zmienia aktywną kartę">
+<!ENTITY scroll-wrap.title "Scroll wrap:">
+<!ENTITY scroll-wrap.desc "Scroll from the bottom tab to the top tab, and vice versa">
 <!ENTITY search-jump.title "Wyszukiwarka kart przechodzi do pierwszego dopasowania:">
 <!ENTITY search-jump.desc "(domyślnie odznaczone)">
 <!ENTITY search-jump-min-chars.title "Minimalna liczba znaków do wykonania przejścia:">

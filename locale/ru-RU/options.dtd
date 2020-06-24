@@ -60,6 +60,8 @@
 <!ENTITY wheel.1 "без Shift - переключение вкладок, удреживая Shift - обычная прокрутка">
 <!ENTITY wheel.2 "всегда обычная прокрутка">
 <!ENTITY wheel.3 "всегда переключать вкладки">
+<!ENTITY scroll-wrap.title "Scroll wrap:">
+<!ENTITY scroll-wrap.desc "Scroll from the bottom tab to the top tab, and vice versa">
 <!ENTITY search-jump.title "Поиск вкладок автоматически переключает на первую найденную вкладку:">
 <!ENTITY search-jump.desc "(не отмечено по умолчанию)">
 <!ENTITY search-jump-min-chars.title "Минимальной количество символов для переключения вкладки:">

@@ -60,6 +60,8 @@
 <!ENTITY wheel.1 "Sans Maj - changer l’onglet actif, avec Maj- défiler normalement">
 <!ENTITY wheel.2 "Toujours défiler normalement">
 <!ENTITY wheel.3 "Toujours changer l’onglet actif">
+<!ENTITY scroll-wrap.title "Scroll wrap:">
+<!ENTITY scroll-wrap.desc "Scroll from the bottom tab to the top tab, and vice versa">
 <!ENTITY search-jump.title "La recherche d'onglet saute au premier onglet correspondant:">
 <!ENTITY search-jump.desc "(Décoché par défaut)">
 <!ENTITY search-jump-min-chars.title "Nombre min. de caractères pour sauter:">
