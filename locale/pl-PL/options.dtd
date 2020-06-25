@@ -21,6 +21,7 @@
 <!ENTITY dblclick.none "No action">
 <!ENTITY dblclick.close "Close tab">
 <!ENTITY dblclick.pin "Pin/unpin tab">
+<!ENTITY dblclick.reload "Reload tab">
 <!ENTITY middle-click-tabbar.title "Middle-click on the tabbar:">
 <!ENTITY middle-click-tabbar.desc "(&#171;Firefox default&#187; by default)">
 <!ENTITY middle-click-tabbar.0 "Firefox default (open a new tab)">

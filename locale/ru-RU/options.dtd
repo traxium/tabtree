@@ -17,10 +17,11 @@
 <!ENTITY tab-numbers.title "Показывать номер вкладки:">
 <!ENTITY tab-numbers.desc "Предназначено для использования с расширениями эмулирующими Vim (не отмечено по умочанию)">
 <!ENTITY dblclick.title "Двойной клик по вкладке:">
-<!ENTITY dblclick.desc "Рекомендуется включать эту настройку, только если у вас нет мышки (не отмечено по умочанию)">
+<!ENTITY dblclick.desc "Рекомендуется включать эту настройку, только если у вас нет мышки (&quot;—&quot; по умочанию)">
 <!ENTITY dblclick.none "—">
 <!ENTITY dblclick.close "Закрыть вкладку">
 <!ENTITY dblclick.pin "Закрепить/открепить вкладку">
+<!ENTITY dblclick.pin "Обновить вкладку">
 <!ENTITY middle-click-tabbar.title "Щелчёк средней кнопкой мыши по панели вкладок:">
 <!ENTITY middle-click-tabbar.desc "(&#171;стандартное действие Firefox&#187; по умолчанию)">
 <!ENTITY middle-click-tabbar.0 "Стандартное действие Firefox (Открыть новую вкладку)">

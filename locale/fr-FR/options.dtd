@@ -21,6 +21,7 @@
 <!ENTITY dblclick.none "Aucune action">
 <!ENTITY dblclick.close "Fermer l'onglet">
 <!ENTITY dblclick.pin "Épingler/relâcher l’onglet'">
+<!ENTITY dblclick.reload "Reload tab">
 <!ENTITY middle-click-tabbar.title "Clic milieu sur la barre d'onglets:">
 <!ENTITY middle-click-tabbar.desc "(&#171;Action standard de Firefox&#187; par défaut)">
 <!ENTITY middle-click-tabbar.0 "Action standard de Firefox (ouvrir un nouvel onglet)">

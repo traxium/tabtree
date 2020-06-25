@@ -38,6 +38,7 @@
             <radio value="0" label="&dblclick.none;"/>
             <radio value="1" label="&dblclick.close;"/>
             <radio value="2" label="&dblclick.pin;"/>
+            <radio value="3" label="&dblclick.reload;"/>
         </radiogroup>
     </setting>
     <setting type="menulist" pref="extensions.tabtree.middle-click-tab" title="&middle-click-tab.title;" desc="&middle-click-tab.desc;">

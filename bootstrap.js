@@ -144,7 +144,7 @@ function startup(data, reason)
 
 	Services.prefs.getDefaultBranch(null).setBoolPref('extensions.tabtree.treelines', true); // setting default pref
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.highlight-unloaded-tabs', 0); // setting default pref
-	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.dblclick', 0); // setting default pref // 0 - No action, 1 - Close tab, 2 - Pin tab
+	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.dblclick', 0); // setting default pref // 0 - No action, 1 - Close tab, 2 - Pin tab, 3 - Reload
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.middle-click-tabbar', false); // #36 (Middle click on empty space to open a new tab)
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.delay', 0); // setting default pref
 	Services.prefs.getDefaultBranch(null).setIntPref('extensions.tabtree.position', 1); // setting default pref // 0 - Left, 1 - Right
@@ -2846,6 +2846,8 @@ var windowListener = {
 				} else {
 					g.pinTab(tab);
 				}
+			} else if (pref === 3) {
+				g.reloadTab(tab);
 			}
 		};
 		
