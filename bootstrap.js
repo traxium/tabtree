@@ -572,7 +572,7 @@ var windowListener = {
 		const closeTabAndAllChildren = function (tab) {
 			const tPos = tab._tPos;
 			const lvl = ss.getTabValue(tab, 'ttLevel');
-			while (ss.getTabValue(g.tabs[tPos+1], 'ttLevel') > lvl) {
+			while (g.tabs[tPos+1] && ss.getTabValue(g.tabs[tPos+1], 'ttLevel') > lvl) {
 				g.removeTab(g.tabs[tPos+1]);
 			}
 			g.removeTab(g.tabs[tPos]);
@@ -581,7 +581,7 @@ var windowListener = {
 		const closeAllChildren = function (tab) {
 			const tPos = tab._tPos;
 			const lvl = ss.getTabValue(tab, 'ttLevel');
-			while (ss.getTabValue(g.tabs[tPos+1], 'ttLevel') > lvl) {
+			while (g.tabs[tPos+1] && ss.getTabValue(g.tabs[tPos+1], 'ttLevel') > lvl) {
 				g.removeTab(g.tabs[tPos+1]);
 			}
 		};
