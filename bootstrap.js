@@ -441,16 +441,8 @@ var windowListener = {
 			if (windowControlsClone && windowControlsClone.parentNode !== null) { // if it exists
 				windowControlsClone.parentNode.removeChild(windowControlsClone);
 			}
-			let menuItemCloseTree = aDOMWindow.document.querySelector('#tt-context-close-tree');
-			menuItemCloseTree.parentNode.removeChild(menuItemCloseTree);
-			let menuItemCloseChildren = aDOMWindow.document.querySelector('#tt-context-close-children');
-			menuItemCloseChildren.parentNode.removeChild(menuItemCloseChildren);
-			let menuItemReloadTree = aDOMWindow.document.querySelector('#tt-context-reload-tree');
-			menuItemReloadTree.parentNode.removeChild(menuItemReloadTree);
-			let menuItemOpenNewTabSibling = aDOMWindow.document.querySelector('#tt-content-open-sibling');
-			menuItemOpenNewTabSibling.parentNode.removeChild(menuItemOpenNewTabSibling);
-			let menuItemOpenNewTabChild = aDOMWindow.document.querySelector('#tt-content-open-child');
-			menuItemOpenNewTabChild.parentNode.removeChild(menuItemOpenNewTabChild);
+			
+			aDOMWindow.tt.toRemove.contextMenuEls.forEach( (el)=>{el.remove();} );
 		}
 		
 		Object.keys(aDOMWindow.tt.toRestore.g).forEach( (x)=>{aDOMWindow.gBrowser[x] = aDOMWindow.tt.toRestore.g[x];} );
@@ -469,6 +461,7 @@ var windowListener = {
 		// it's probably already removed but "Calling removeEventListener() with arguments that do not identify any currently registered EventListener ... has no effect.":
 		aDOMWindow.document.querySelector('#appcontent').removeEventListener('mouseup', aDOMWindow.tt.toRemove.eventListeners.onAppcontentMouseUp, false);
 		aDOMWindow.document.querySelector('#tabContextMenu').removeEventListener("popupshowing", aDOMWindow.tt.toRemove.eventListeners.onPopupshowing, false);
+		aDOMWindow.document.querySelector('#tabContextMenu').removeEventListener("popuphidden", aDOMWindow.tt.toRemove.eventListeners.onPopuphidden, false);
 		if (aDOMWindow.tt.toRestore.tabsintitlebar) { // restoring 'tabsintitlebar' attr
 			aDOMWindow.document.documentElement.setAttribute("tabsintitlebar", "true"); // hide native titlebar
 		} else {
@@ -3034,6 +3027,7 @@ var windowListener = {
 
 		//////////////////// TAB CONTEXT MENU //////////////////////////////////////////////////////////////////////////
 		// Labels are set in prefs observer "extensions.tabtree.prefix-context-menu-items"
+		aDOMWindow.tt.toRemove.contextMenuEls = [];
 
 		let menuItemCloseTree = aDOMWindow.document.createElement('menuitem'); // removed in unloadFromWindow()
 		menuItemCloseTree.id = 'tt-context-close-tree';
@@ -3042,6 +3036,7 @@ var windowListener = {
 			let tab = aDOMWindow.TabContextMenu.contextTab;
 			closeTabAndAllChildren(tab);
 		}, false);
+		aDOMWindow.tt.toRemove.contextMenuEls.push(menuItemCloseTree);
 
 		let menuItemCloseChildren = aDOMWindow.document.createElement('menuitem'); // removed in unloadFromWindow()
 		menuItemCloseChildren.id = 'tt-context-close-children';
@@ -3050,6 +3045,7 @@ var windowListener = {
 			let tab = aDOMWindow.TabContextMenu.contextTab;
 			closeAllChildren(tab);
 		}, false);
+		aDOMWindow.tt.toRemove.contextMenuEls.push(menuItemCloseChildren);
 
 		let menuItemReloadTree = aDOMWindow.document.createElement('menuitem'); // removed in unloadFromWindow()
 		menuItemReloadTree.id = 'tt-context-reload-tree';
@@ -3065,25 +3061,28 @@ var windowListener = {
 			}
 			g.reloadTab(g.tabs[tPos]);
 		}, false);
+		aDOMWindow.tt.toRemove.contextMenuEls.push(menuItemReloadTree);
 		
 		let menuItemOpenNewTabSibling = aDOMWindow.document.createElement("menuitem"); // removed in unloadFromWindow()
-		menuItemOpenNewTabSibling.id = "tt-content-open-sibling";
+		menuItemOpenNewTabSibling.id = "tt-context-open-sibling";
 		//menuItemOpenNewTabSibling.setAttribute("label", stringBundle.GetStringFromName("open_sibling"));
 		menuItemOpenNewTabSibling.addEventListener("command", function (event) {
 			let tab = aDOMWindow.TabContextMenu.contextTab;
 			openNewSibling(tab);
 		}, false);
+		aDOMWindow.tt.toRemove.contextMenuEls.push(menuItemOpenNewTabSibling);
 		
 		let menuItemOpenNewTabChild = aDOMWindow.document.createElement("menuitem"); // removed in unloadFromWindow()
-		menuItemOpenNewTabChild.id = "tt-content-open-child";
+		menuItemOpenNewTabChild.id = "tt-context-open-child";
 		//menuItemOpenNewTabChild.setAttribute("label", stringBundle.GetStringFromName("open_child"));
 		menuItemOpenNewTabChild.addEventListener("command", function (event) {
 			let tab = aDOMWindow.TabContextMenu.contextTab;
 			openNewChild(tab);
 		}, false);
+		aDOMWindow.tt.toRemove.contextMenuEls.push(menuItemOpenNewTabChild);
 		
 		let menuItemDuplicateTabAsSibling = aDOMWindow.document.createElement("menuitem"); // removed in unloadFromWindow()
-		menuItemDuplicateTabAsSibling.id = "tt-content-duplicate-Sibling";
+		menuItemDuplicateTabAsSibling.id = "tt-context-duplicate-sibling";
 		//menuItemDuplicateTabAsSibling.setAttribute("label", stringBundle.GetStringFromName("duplicate_sibling"));
 		menuItemDuplicateTabAsSibling.addEventListener("command", function (event) {
 			let tab = aDOMWindow.TabContextMenu.contextTab;
@@ -3096,9 +3095,10 @@ var windowListener = {
 				}
 			}
 		}, false);
+		aDOMWindow.tt.toRemove.contextMenuEls.push(menuItemDuplicateTabAsSibling);
 		
 		let menuItemDuplicateTabAsChild = aDOMWindow.document.createElement("menuitem"); // removed in unloadFromWindow()
-		menuItemDuplicateTabAsChild.id = "tt-content-open-child";
+		menuItemDuplicateTabAsChild.id = "tt-context-duplicate-child";
 		//menuItemDuplicateTabAsChild.setAttribute("label", stringBundle.GetStringFromName("duplicate_child"));
 		menuItemDuplicateTabAsChild.addEventListener("command", function (event) {
 			let tab = aDOMWindow.TabContextMenu.contextTab;
@@ -3109,15 +3109,17 @@ var windowListener = {
 				tt.duplicateTab(tab, parseInt(lvl) + 1, tt.lastDescendantPos(tab) + 1);
 			}
 		}, false);
+		aDOMWindow.tt.toRemove.contextMenuEls.push(menuItemDuplicateTabAsChild);
 		
 		let menuItemDuplicateTabToBottom = aDOMWindow.document.createElement("menuitem"); // removed in unloadFromWindow()
-		menuItemDuplicateTabToBottom.id = "tt-content-open-child";
+		menuItemDuplicateTabToBottom.id = "tt-context-duplicate-bottom";
 		//menuItemDuplicateTabToBottom.setAttribute("label", stringBundle.GetStringFromName("duplicate_bottom"));
 		menuItemDuplicateTabToBottom.addEventListener("command", function (event) {
 			let tab = aDOMWindow.TabContextMenu.contextTab;
 			tt.duplicateTab(tab, 0);
 		}, false);
-
+		aDOMWindow.tt.toRemove.contextMenuEls.push(menuItemDuplicateTabToBottom);
+		
 		let tabContextMenu = aDOMWindow.document.querySelector('#tabContextMenu');
 		let tabContextMenuCloseTab = aDOMWindow.document.querySelector('#context_closeTab');
 		tabContextMenu.insertBefore(menuItemDuplicateTabToBottom, tabContextMenuCloseTab.nextSibling);
@@ -3128,16 +3130,18 @@ var windowListener = {
 		tabContextMenu.insertBefore(menuItemReloadTree, tabContextMenuCloseTab.nextSibling);
 		tabContextMenu.insertBefore(menuItemCloseChildren, tabContextMenuCloseTab.nextSibling);
 		tabContextMenu.insertBefore(menuItemCloseTree, tabContextMenuCloseTab.nextSibling);
+		
 		tabContextMenu.addEventListener('popupshowing', (aDOMWindow.tt.toRemove.eventListeners.onPopupshowing = function (event) {
 			let tab = aDOMWindow.TabContextMenu.contextTab;
-
 			menuItemReloadTree.hidden = menuItemCloseTree.hidden = menuItemCloseChildren.hidden = !tt.hasAnyChildren(tab._tPos);
 			menuItemOpenNewTabChild.hidden = tab.pinned;
 			menuItemOpenNewTabSibling.hidden = tab._tPos < tt.nPinned - 1;
-			
 			menuItemDuplicateTabAsChild.hidden = tab.pinned;
-			
 			g.mCurrentTab.pinned ? tree.view.selection.clearSelection() : tree.view.selection.select(g.mCurrentTab._tPos - g._numPinnedTabs);
+			aDOMWindow.document.documentElement.setAttribute("tt-showing-tabContextMenu", "true");
+		}), false); // removed in unloadFromWindow()
+		tabContextMenu.addEventListener('popuphidden', (aDOMWindow.tt.toRemove.eventListeners.onPopuphidden = function (event) {
+			aDOMWindow.document.documentElement.removeAttribute("tt-showing-tabContextMenu");
 		}), false); // removed in unloadFromWindow()
 		//////////////////// END TAB CONTEXT MENU //////////////////////////////////////////////////////////////////////
 

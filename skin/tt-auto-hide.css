@@ -28,14 +28,13 @@
 	visibility: collapse;
 }
 
-#main-window[sizemode="fullscreen"][tt-auto-hide-when-fullscreen] #tt-sidebar,
-#main-window[sizemode="fullscreen"][tt-auto-hide-when-fullscreen] #tt-splitter,
-#main-window[sizemode="maximized"][tt-auto-hide-when-maximized] #tt-sidebar,
-#main-window[sizemode="maximized"][tt-auto-hide-when-maximized] #tt-splitter,
-#main-window[sizemode="normal"][tt-auto-hide-when-normal] #tt-sidebar,
-#main-window[sizemode="normal"][tt-auto-hide-when-normal] #tt-splitter,
-#main-window[tt-only-one-tab][tt-auto-hide-when-only-one-tab] #tt-sidebar,
-#main-window[tt-only-one-tab][tt-auto-hide-when-only-one-tab] #tt-splitter {
+#main-window:not([tt-showing-tabContextMenu])[sizemode="fullscreen"][tt-auto-hide-when-fullscreen] #tt-sidebar,
+#main-window:not([tt-showing-tabContextMenu])[sizemode="fullscreen"][tt-auto-hide-when-fullscreen] #tt-splitter,
+#main-window:not([tt-showing-tabContextMenu])[sizemode="maximized"][tt-auto-hide-when-maximized] #tt-sidebar,
+#main-window:not([tt-showing-tabContextMenu])[sizemode="maximized"][tt-auto-hide-when-maximized] #tt-splitter,
+#main-window:not([tt-showing-tabContextMenu])[sizemode="normal"][tt-auto-hide-when-normal] #tt-sidebar,
+#main-window:not([tt-showing-tabContextMenu])[sizemode="normal"][tt-auto-hide-when-normal] #tt-splitter,
+#main-window:not([tt-showing-tabContextMenu])[tt-only-one-tab][tt-auto-hide-when-only-one-tab] #tt-sidebar,
+#main-window:not([tt-showing-tabContextMenu])[tt-only-one-tab][tt-auto-hide-when-only-one-tab] #tt-splitter {
 	visibility: collapse;
 }
-
